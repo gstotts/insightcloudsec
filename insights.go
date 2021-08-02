@@ -2,6 +2,7 @@ package insightcloudsec
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -21,6 +22,7 @@ type Insight struct {
 }
 
 func (c *Client) ListInsights() ([]Insight, error) {
+	// Returns a list of all Insights from the API
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
 	if err != nil {
 		return nil, err
@@ -32,4 +34,20 @@ func (c *Client) ListInsights() ([]Insight, error) {
 	}
 
 	return ret, nil
+}
+
+
+func (c *Client) GetInsight(insight_id interface{}, insight_source string) (*Insight, error) {
+	// Returns the specific Insight associated with the Insight ID and the Source provided
+	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%s/%s", insight_id.(string), insight_source), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret Insight
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
