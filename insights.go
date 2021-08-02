@@ -32,11 +32,11 @@ type BackofficeMetadata struct {
 
 type InsightPack struct {
 	ID                  int                  `json:"pack_id"`
-	OrgID               int                  `json:organization_id`
+	OrgID               int                  `json:"organization_id"`
 	Name                string               `json:"name"`
 	Description         string               `json:"description"`
 	Source              string               `json:"source"`
-	LogoURL            string               `json:"logo_url"`
+	LogoURL             string               `json:"logo_url"`
 	InsertedAt          string               `json:"inserted_at"`
 	UpdatedAt           string               `json:"updated_at"`
 	Backoffice          []int                `json:"backoffice"`
