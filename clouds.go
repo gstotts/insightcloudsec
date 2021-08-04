@@ -1,17 +1,22 @@
 package insightcloudsec
 
-import "time"
+import (
+	"encoding/json"
+	"net/http"
+	"strings"
+	"time"
+)
 
 type Cloud struct {
 	ID                  int                   `json:"id"`
 	Name                string                `json:"name"`
 	CloudTypeID         string                `json:"cloud_type_id"`
 	AccountID           string                `json:"account_id"`
-	Created             time.Time             `json:"creation_time"`
+	Created             ICSTime               `json:"creation_time"`
 	Status              string                `json:"status"`
 	BadgeCount          int                   `json:"badge_count"`
 	ResourceCount       int                   `json:"resource_count"`
-	LastRefreshed       time.Time             `json:"last_refreshed"`
+	LastRefreshed       ICSTime               `json:"last_refreshed"`
 	RoleARN             string                `json:"role_arn"`
 	GroupResourceID     string                `json:"group_resource_id:"`
 	ResourceID          string                `json:"resource_id:"`
@@ -63,4 +68,39 @@ type HarvestingStrategy struct {
 
 type HarevestingStrategyList struct {
 	Strategies []HarvestingStrategy `json:"strategies"`
+}
+
+type ICSTime time.Time
+// Need to Handle Time appropriately given how the API returns.
+
+func (j *ICSTime) UnmarshalJSON(b []byte) error {
+	s := strings.Trim(string(b), "\"")
+	t, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return err
+	}
+	*j = ICSTime(t)
+	return nil
+}
+
+func (j *ICSTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(j)
+}
+
+
+// CLOUD FUNCTIONS
+///////////////////////////////////////////
+func (c Client) List_Clouds() (*CloudList, error) {
+	// Return a CloudList item containing all the clouds from the API.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret CloudList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
