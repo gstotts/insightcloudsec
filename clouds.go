@@ -120,3 +120,19 @@ func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
 
 	return &ret, nil
 }
+
+
+func (c Client) List_Harvesting_Strategies() (*HarvestingStrategyList, error) {
+	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
+	if err != nil {
+		return nil, err
+	}
+	
+	var ret HarvestingStrategyList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+	
+	return &ret, nil
+}
