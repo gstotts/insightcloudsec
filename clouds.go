@@ -38,11 +38,11 @@ type CloudList struct {
 type CloudType struct {
 	ID     string `json:"cloud_type_id"`
 	Name   string `json:"name"`
-	Access string `json:"cloud_acces"`
+	Access string `json:"cloud_access"`
 }
 
 type CloudTypesList struct {
-	CloudsTypes []CloudType `json:"clouds"`
+	CloudTypes []CloudType `json:"clouds"`
 }
 
 type CloudRegion struct {
@@ -98,6 +98,22 @@ func (c Client) List_Clouds() (*CloudList, error) {
 	}
 
 	var ret CloudList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
+}
+
+
+func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
+	// Returns a CloudTypesList item containing all the cloud types from the API.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret CloudTypesList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return nil, err
 	}
