@@ -66,7 +66,7 @@ type HarvestingStrategy struct {
 	CloudTypeID string `json:"cloud_type_id"`
 }
 
-type HarevestingStrategyList struct {
+type HarvestingStrategyList struct {
 	Strategies []HarvestingStrategy `json:"strategies"`
 }
 
