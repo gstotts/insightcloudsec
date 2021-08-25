@@ -1,4 +1,4 @@
-package insightcloudsec-go
+package insightcloudsec
 
 import (
 	"encoding/json"
