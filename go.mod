@@ -1,4 +1,4 @@
-module github.com/gstotts/insightcloudsec-go
+module github.com/gstotts/insightcloudsec-client-go
 
 go 1.16
 
