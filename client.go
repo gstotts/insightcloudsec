@@ -89,6 +89,14 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
+func NewClientWithKey(baseURL string, apiKey string) (*Client, error) {
+	return &Client{
+		APIKey:     apiKey,
+		BaseURL:    baseURL,
+		httpClient: http.DefaultClient,
+	}, nil
+}
+
 func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(
 		method,
