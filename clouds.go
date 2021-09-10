@@ -2,6 +2,7 @@ package insightcloudsec
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -18,8 +19,8 @@ type Cloud struct {
 	ResourceCount       int                   `json:"resource_count"`
 	LastRefreshed       ICSTime               `json:"last_refreshed"`
 	RoleARN             string                `json:"role_arn"`
-	GroupResourceID     string                `json:"group_resource_id:"`
-	ResourceID          string                `json:"resource_id:"`
+	GroupResourceID     string                `json:"group_resource_id"`
+	ResourceID          string                `json:"resource_id"`
 	FailedResourceTypes []FailedResourceTypes `json:"failed_resource_types"`
 	EDHRole             string                `json:"event_driven_harvest_role"`
 	StrategyID          int                   `json:"strategy_id"`
@@ -71,6 +72,7 @@ type HarvestingStrategyList struct {
 }
 
 type ICSTime time.Time
+
 // Need to Handle Time appropriately given how the API returns.
 
 func (j *ICSTime) UnmarshalJSON(b []byte) error {
@@ -86,7 +88,6 @@ func (j *ICSTime) UnmarshalJSON(b []byte) error {
 func (j *ICSTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(j)
 }
-
 
 // CLOUD FUNCTIONS
 ///////////////////////////////////////////
@@ -105,7 +106,6 @@ func (c Client) List_Clouds() (*CloudList, error) {
 	return &ret, nil
 }
 
-
 func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
@@ -119,4 +119,35 @@ func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
 	}
 
 	return &ret, nil
+}
+
+func (c Client) List_Harvesting_Strategies() (*HarvestingStrategyList, error) {
+	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret HarvestingStrategyList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
+}
+
+func (c Client) List_Cloud_Regions(target Cloud) (CloudRegionList, error) {
+	// Returns a CloudRegionList for the given Cloud.
+	var ret CloudRegionList
+	fmt.Println(target.ResourceID)
+	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
+	if err != nil {
+		return ret, err
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return ret, err
+	}
+
+	return ret, nil
 }
