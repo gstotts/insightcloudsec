@@ -3,7 +3,37 @@ Go Module for Interacting with InsightCloudSec API
 
 ### Examples
 
+<details><summary>List Clouds</summary>
 
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	cs, err := c.List_Clouds()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for _, c := range cs.Clouds {
+		fmt.Printf("          Name: %s\n", c.Name)
+		fmt.Printf("Resource Count: %d\n\n", c.ResourceCount)
+	}
+}
+```
+</details>
 <details><summary>List Cloud Regions</summary>
 	
 ```go
