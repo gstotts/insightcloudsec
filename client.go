@@ -22,6 +22,7 @@ type SessionInfo struct {
 type Client struct {
 	APIKey     string
 	BaseURL    string
+	SessionID  string
 	httpClient *http.Client
 }
 
@@ -30,6 +31,7 @@ func NewClient() (*Client, error) {
 	baseURL := os.Getenv("INSIGHTCLOUDSEC_BASE_URL")
 	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
 	client := http.DefaultClient
+	sessionID := ""
 
 	// Prompt for missing baseURL if no env set
 	reader := bufio.NewReader(os.Stdin)
@@ -78,14 +80,15 @@ func NewClient() (*Client, error) {
 		if err := json.NewDecoder(resp.Body).Decode(&session); err != nil {
 			return nil, err
 		}
-		apiKey = session.ID
 		fmt.Println("\n[+] User successfully logged in.")
+		sessionID = session.ID
 	}
 
 	return &Client{
 		APIKey:     apiKey,
 		BaseURL:    baseURL,
 		httpClient: client,
+		SessionID:  sessionID,
 	}, nil
 }
 
@@ -94,6 +97,7 @@ func NewClientWithKey(baseURL string, apiKey string) (*Client, error) {
 		APIKey:     apiKey,
 		BaseURL:    baseURL,
 		httpClient: http.DefaultClient,
+		SessionID:  "",
 	}, nil
 }
 
@@ -108,7 +112,11 @@ func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("X-Auth-Token", c.APIKey)
+	if c.APIKey == "" {
+		req.Header.Set("X-Auth-Token", c.SessionID)
+	} else {
+		req.Header.Set("Api-Key", c.APIKey)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
