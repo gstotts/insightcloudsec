@@ -39,4 +39,33 @@ func main() {
 }
 ```
 </details>
+<details><summary>List Harvesting Strategies</summary>
 
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	hs, err := c.List_Harvesting_Strategies()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for _, s := range hs.Strategies {
+		fmt.Printf("Name: %s\n", s.Name)
+	}
+}
+```
+</details>
