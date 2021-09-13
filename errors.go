@@ -2,11 +2,6 @@ package insightcloudsec
 
 import "fmt"
 
-// Error messages
-const (
-	errMarshallingParams = "error marshalling params to JSON"
-)
-
 // APIRequestError is a type of error raised by API calls made from this library
 type APIRequestError struct {
 	StatusCode int
