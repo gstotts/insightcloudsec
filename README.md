@@ -16,7 +16,7 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.New_Client()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,7 +44,7 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.New_Client()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -73,7 +73,7 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.New_Client()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -108,7 +108,7 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.New_Client()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -138,7 +138,7 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.New_Client()
 	if err != nil {
 		fmt.Println(err)
 	}
