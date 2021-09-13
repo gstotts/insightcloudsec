@@ -9,12 +9,12 @@ import (
 // STRUCTS
 ///////////////////////////////////////////
 type Query struct {
-	Scopes               []string
-	Filters              []string
-	Offset               int
-	Limit                int
-	OrderBy              string
-	SelectedResourceType string
+	scopes               	[]string
+	filters              	[]string
+	offset               	int
+	limit                	int
+	order_by              	string
+	selected_resource_type	string
 }
 
 type QueryResult struct {
