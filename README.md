@@ -159,3 +159,34 @@ func main() {
 }	
 ```
 </details>
+<details><summary>Get Insight 7 Day Stats</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	insightID := 2
+	insightSource := "backoffice"
+
+	details, err := c.Get_Insight_7_Days(insightID, insightSource)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for date, info := range details {
+		fmt.Println(date, info)
+	}
+}	
+```
+</details>
