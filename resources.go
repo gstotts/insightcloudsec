@@ -9,8 +9,8 @@ import (
 // STRUCTS
 ///////////////////////////////////////////
 type Query struct {
-	Scopes               map[string]string
-	Filters              map[string]string
+	Scopes               []string
+	Filters              []string
 	Offset               int
 	Limit                int
 	OrderBy              string
@@ -20,7 +20,7 @@ type Query struct {
 type QueryResult struct {
 	Scopes               map[string]string `json:"scopes"`
 	Filters              []QueryFilter     `json:"filters"`
-	Offset               int               `json:"ofset"`
+	Offset               int               `json:"offset"`
 	OrderBy              string            `json:"order_by"`
 	Counts               map[string]int    `json:"counts"`
 	SelectedResourceType string            `json:"selected_resource_type"`
