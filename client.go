@@ -14,6 +14,8 @@ import (
 	"golang.org/x/term"
 )
 
+// STRUCTS
+///////////////////////////////////////////
 type SessionInfo struct {
 	ID   string `json:"session_id"`
 	User string `json:"username"`
@@ -26,13 +28,10 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// newClient returns a new client for use with the API
-func NewClient() (*Client, error) {
+// HELPER FUNCTIONS
+///////////////////////////////////////////
+func __getBaseURL() string {
 	baseURL := os.Getenv("INSIGHTCLOUDSEC_BASE_URL")
-	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
-	client := http.DefaultClient
-	sessionID := ""
-
 	// Prompt for missing baseURL if no env set
 	reader := bufio.NewReader(os.Stdin)
 	if baseURL == "" {
@@ -41,6 +40,54 @@ func NewClient() (*Client, error) {
 		baseURL = strings.TrimSpace(baseURL)
 	}
 
+	return baseURL
+}
+
+func __getSessionID(baseURL string, user string, pass string) (string, error) {
+	client := http.DefaultClient
+	var data = []byte(fmt.Sprintf("{\"username\":\"%s\",\"password\":\"%s\"}", user, pass))
+	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/v2/public/user/login", baseURL), bytes.NewBuffer(data))
+
+	req.Header.Set("Content-Type", "application/json;UTF-8")
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode >= http.StatusBadRequest {
+		if resp.StatusCode == 401 {
+			fmt.Println("\n[!] Error: Invalid username or account locked.")
+			os.Exit(1)
+		} else if resp.StatusCode == 500 {
+			fmt.Println("\n[!] Error: Invalid password.")
+			os.Exit(1)
+		} else {
+			return "", APIRequestError{
+				StatusCode: resp.StatusCode,
+				Message:    resp.Status,
+			}
+		}
+	}
+	defer resp.Body.Close()
+
+	var session SessionInfo
+	if err := json.NewDecoder(resp.Body).Decode(&session); err != nil {
+		return "", err
+	}
+	fmt.Println("\n[+] User successfully logged in.")
+	return session.ID, nil
+}
+
+// CLIENT FUNCTIONS
+///////////////////////////////////////////
+func NewClient() (*Client, error) {
+	baseURL := __getBaseURL()
+	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
+	client := http.DefaultClient
+	sessionID := ""
+
+	reader := bufio.NewReader(os.Stdin)
 	// Prompt for username and password if no apikey env set
 	if apiKey == "" {
 		fmt.Print("Username: ")
@@ -49,39 +96,11 @@ func NewClient() (*Client, error) {
 
 		fmt.Print("Password: ")
 		bytePassword, _ := term.ReadPassword(int(syscall.Stdin))
-
-		var data = []byte(fmt.Sprintf("{\"username\":\"%s\",\"password\":\"%s\"}", user, string(bytePassword)))
-		req, _ := http.NewRequest("POST", fmt.Sprintf("%s/v2/public/user/login", baseURL), bytes.NewBuffer(data))
-
-		req.Header.Set("Content-Type", "application/json;UTF-8")
-		req.Header.Set("Accept", "application/json")
-
-		resp, err := client.Do(req)
+		var err error
+		sessionID, err = __getSessionID(baseURL, user, string(bytePassword))
 		if err != nil {
 			return nil, err
 		}
-		if resp.StatusCode >= http.StatusBadRequest {
-			if resp.StatusCode == 401 {
-				fmt.Println("\n[!] Error: Invalid username or account locked.")
-				os.Exit(1)
-			} else if resp.StatusCode == 500 {
-				fmt.Println("\n[!] Error: Invalid password.")
-				os.Exit(1)
-			} else {
-				return nil, APIRequestError{
-					StatusCode: resp.StatusCode,
-					Message:    resp.Status,
-				}
-			}
-		}
-		defer resp.Body.Close()
-
-		var session SessionInfo
-		if err := json.NewDecoder(resp.Body).Decode(&session); err != nil {
-			return nil, err
-		}
-		fmt.Println("\n[+] User successfully logged in.")
-		sessionID = session.ID
 	}
 
 	return &Client{
@@ -92,12 +111,26 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
-func NewClientWithKey(baseURL string, apiKey string) (*Client, error) {
+func NewClientWithKey(apiKey string) (*Client, error) {
 	return &Client{
 		APIKey:     apiKey,
-		BaseURL:    baseURL,
+		BaseURL:    __getBaseURL(),
 		httpClient: http.DefaultClient,
 		SessionID:  "",
+	}, nil
+}
+
+func NewClientWithCreds(user string, pass string) (*Client, error) {
+	baseURL := __getBaseURL()
+	sessionID, err := __getSessionID(baseURL, user, pass)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{
+		APIKey:     "",
+		BaseURL:    baseURL,
+		httpClient: http.DefaultClient,
+		SessionID:  sessionID,
 	}, nil
 }
 
