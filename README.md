@@ -4,7 +4,8 @@ Go Module for Interacting with InsightCloudSec API
 ### Examples
 
 
-##### List Cloud Regions
+<details><summary>List Cloud Regions</summary>
+	
 ```go
 package main
 
@@ -37,3 +38,5 @@ func main() {
 	}
 }
 ```
+</details>
+
