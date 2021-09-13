@@ -35,7 +35,7 @@ func main() {
 ```
 </details>
 <details><summary>List Cloud Regions</summary>
-	
+
 ```go
 package main
 
@@ -100,7 +100,7 @@ func main() {
 ```
 </details>
 <details><summary>List Insights</summary>
-	
+
 ```go
 package main
 
@@ -186,6 +186,34 @@ func main() {
 	}
 	for date, info := range details {
 		fmt.Println(date, info)
+	}
+}	
+```
+</details>
+<details><summary>List Insight Packs</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	packs, err := c.List_Packs()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, pack := range packs {
+		fmt.Println(pack.Name)
 	}
 }	
 ```
