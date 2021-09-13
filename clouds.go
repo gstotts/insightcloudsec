@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+// STRUCTS
+///////////////////////////////////////////
 type Cloud struct {
 	ID                  int                   `json:"id"`
 	Name                string                `json:"name"`
@@ -91,7 +93,7 @@ func (j *ICSTime) MarshalJSON() ([]byte, error) {
 
 // CLOUD FUNCTIONS
 ///////////////////////////////////////////
-func (c Client) List_Clouds() (*CloudList, error) {
+func (c Client) List_Clouds() ([]Cloud, error) {
 	// Return a CloudList item containing all the clouds from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
 	if err != nil {
@@ -103,10 +105,10 @@ func (c Client) List_Clouds() (*CloudList, error) {
 		return nil, err
 	}
 
-	return &ret, nil
+	return ret.Clouds, nil
 }
 
-func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
+func (c Client) List_Cloud_Types() ([]CloudType, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
 	if err != nil {
@@ -118,10 +120,10 @@ func (c Client) List_Cloud_Types() (*CloudTypesList, error) {
 		return nil, err
 	}
 
-	return &ret, nil
+	return ret.CloudTypes, nil
 }
 
-func (c Client) List_Harvesting_Strategies() (*HarvestingStrategyList, error) {
+func (c Client) List_Harvesting_Strategies() ([]HarvestingStrategy, error) {
 	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
 	if err != nil {
@@ -133,21 +135,21 @@ func (c Client) List_Harvesting_Strategies() (*HarvestingStrategyList, error) {
 		return nil, err
 	}
 
-	return &ret, nil
+	return ret.Strategies, nil
 }
 
-func (c Client) List_Cloud_Regions(target Cloud) (CloudRegionList, error) {
+func (c Client) List_Cloud_Regions(target Cloud) ([]CloudRegion, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
 	fmt.Println(target.ResourceID)
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
 	if err != nil {
-		return ret, err
+		return nil, err
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return ret, err
+		return nil, err
 	}
 
-	return ret, nil
+	return ret.Regions, nil
 }
