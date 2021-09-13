@@ -10,7 +10,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gstotts/insightcloudsec"
 )
@@ -22,20 +21,46 @@ func main() {
 		fmt.Println(err)
 	}
 
-	cs, err := c.List_Clouds()
+	clouds, err := c.List_Clouds()
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 	}
-	for _, c := range cs.Clouds {
-		fmt.Printf("          Name: %s\n", c.Name)
-		fmt.Printf("Resource Count: %d\n\n", c.ResourceCount)
+	for _, cloud := range clouds {
+		fmt.Println(cloud.Name)
+	}
+}
+```
+</details>
+<details><summary>List Cloud Types</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	types, err := c.List_Cloud_Types()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, t := range types {
+		fmt.Println(t.Name)
 	}
 }
 ```
 </details>
 <details><summary>List Cloud Regions</summary>
-
+	
 ```go
 package main
 
@@ -62,7 +87,7 @@ func main() {
 		fmt.Printf("Name: %s\n", cloud.Name)
 		regions, _ := c.List_Cloud_Regions(cloud)
 		fmt.Println("Regions:")
-		for _, region := range regions.Regions {
+		for _, region := range regions {
 			fmt.Printf("- %s\n", region.Name)
 		}
 	}
@@ -93,14 +118,14 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	for _, s := range hs.Strategies {
+	for _, s := range hs {
 		fmt.Printf("Name: %s\n", s.Name)
 	}
 }
 ```
 </details>
 <details><summary>List Insights</summary>
-
+	
 ```go
 package main
 
@@ -128,93 +153,5 @@ func main() {
 		fmt.Printf("Description: %s\n\n", insight.Description)
 	}
 }
-```
-</details>
-<details><summary>Get Insight</summary>
-
-```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/gstotts/insightcloudsec"
-)
-
-func main() {
-	// Get a client
-	c, err := insightcloudsec.NewClient()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	insightID := 2
-	insightSource := "backoffice"
-
-	details, err := c.Get_Insight(insightID, insightSource)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(details.Name)
-}	
-```
-</details>
-<details><summary>Get Insight 7 Day Stats</summary>
-
-```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/gstotts/insightcloudsec"
-)
-
-func main() {
-	// Get a client
-	c, err := insightcloudsec.NewClient()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	insightID := 2
-	insightSource := "backoffice"
-
-	details, err := c.Get_Insight_7_Days(insightID, insightSource)
-	if err != nil {
-		fmt.Println(err)
-	}
-	for date, info := range details {
-		fmt.Println(date, info)
-	}
-}	
-```
-</details>
-<details><summary>List Insight Packs</summary>
-
-```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/gstotts/insightcloudsec"
-)
-
-func main() {
-	// Get a client
-	c, err := insightcloudsec.NewClient()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	packs, err := c.List_Packs()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, pack := range packs {
-		fmt.Println(pack.Name)
-	}
-}	
 ```
 </details>
