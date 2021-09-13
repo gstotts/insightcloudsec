@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// STRUCTS
+///////////////////////////////////////////
 type Insight struct {
 	ID              int                      `json:"insight_id"`
 	Name            string                   `json:"name"`
@@ -36,13 +38,16 @@ type InsightPack struct {
 	Name                string               `json:"name"`
 	Description         string               `json:"description"`
 	Source              string               `json:"source"`
-	LogoURL            string               `json:"logo_url"`
+	LogoURL             string               `json:"logo_url"`
 	InsertedAt          string               `json:"inserted_at"`
 	UpdatedAt           string               `json:"updated_at"`
 	Backoffice          []int                `json:"backoffice"`
 	Backoffice_Metadata []BackofficeMetadata `json:"backoffice_metadata"`
 	Custom              []int                `json:"custom"`
 }
+
+// INSIGHT FUNCTIONS
+///////////////////////////////////////////
 
 func (c *Client) List_Insights() ([]Insight, error) {
 	// Returns a list of all Insights from the API
@@ -88,6 +93,9 @@ func (c *Client) Get_Insight_7_Days(insight_id int, insight_source string) (map[
 	return ret, nil
 }
 
+// PACK FUNCTIONS
+///////////////////////////////////////////
+
 func (c *Client) List_Packs() ([]InsightPack, error) {
 	// Returns a list of all Insight Packs from the API
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
@@ -102,3 +110,6 @@ func (c *Client) List_Packs() ([]InsightPack, error) {
 
 	return ret, nil
 }
+
+// FILTER FUNCTIONS
+///////////////////////////////////////////
