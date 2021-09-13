@@ -130,3 +130,32 @@ func main() {
 }
 ```
 </details>
+<details><summary>Get Insight</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	// Get a client
+	c, err := insightcloudsec.NewClient()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	insightID := 2
+	insightSource := "backoffice"
+
+	details, err := c.Get_Insight(insightID, insightSource)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(details.Name)
+}	
+```
+</details>
