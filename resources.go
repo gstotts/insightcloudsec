@@ -37,13 +37,37 @@ type QueryFilterConfig struct {
 }
 
 type Resource struct {
-	Dependencies map[string]string `json:"dependencies"`
-	Details      map[string]string `json:"details"`
+	Instance InstanceResource `json:"instance"`
+	Type     string           `json:"resource_type"`
+}
+
+type InstanceResource struct {
+	Type               string               `json:"instance_type"`
+	ImageID            string               `json:"image_id"`
+	KeyName            string               `json:"key_name"`
+	LaunchTime         string               `json:"launch_time"`
+	ID                 string               `json:"instance_id"`
+	Platform           string               `json:"platform"`
+	Tenancy            string               `json:"tenancy"`
+	DetailedMonitoring bool                 `json:"detailed_monitoring"`
+	Common             CommonResourceValues `json:"common"`
+}
+
+type CommonResourceValues struct {
+	//Common Attributes
+	Account          string `json:"account"`
+	Name             string `json:"resource_name"`
+	OrgServiceID     int    `json:"organization_service_id"`
+	AvailabilityZone string `json:"availablility_zone"`
+	Region           string `json:"region"`
+	ID               string `json:"resource_id"`
+	Cloud            string `json:"cloud"`
+	Type             string `json:"type"`
 }
 
 // QUERY FUNCTIONS
 ///////////////////////////////////////////
-func (c Client) Query(q *Query) (map[string]int, error) {
+func (c Client) Query(q *Query) (*QueryResult, error) {
 	if q.Filters == nil {
 		q.Filters = make([]string, 0)
 	}
@@ -66,7 +90,7 @@ func (c Client) Query(q *Query) (map[string]int, error) {
 		return nil, err
 	}
 
-	return ret.Counts, nil
+	return ret, nil
 }
 
 // RESOURCE FUNCTIONS
