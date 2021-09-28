@@ -37,9 +37,22 @@ type QueryFilterConfig struct {
 }
 
 type Resource struct {
-	Instance InstanceResource `json:"instance,omitempty"`
-	Volume   VolumeResource   `json:"volume,omitempty"`
-	Type     string           `json:"resource_type"`
+	Type                    string                          `json:"resource_type"`
+	Instance                InstanceResource                `json:"instance,omitempty"`
+	Volume                  VolumeResource                  `json:"volume,omitempty"`
+	AccessFlowLog           AccessFlowLogResource           `json:"accesslistflowlog,omitempty"`
+	AccessAnalyzer          AccessAnalyzerResource          `json:"accessanalyzer,omitempty"`
+	AirflowEnvironment      AirflowEnvironmentResource      `json:"airflowenvironment,omitempty"`
+	APIAccountingConfig     APIAccountingConfigResource     `json:"apiaccountingconfig,omitempty"`
+	AppRunnerService        AppRunnerServiceResource        `json:"apprunnerservice,omitempty"`
+	AppServer               AppServerResource               `json:"appserver,omitempty"`
+	AutoscalingGroup        AutoscalingGroupResource        `json:"autoscalinggroup,omitempty"`
+	AutoscalingLaunchConfig AutoscalingLaunchConfigResource `json:"autoscalinglaunchconfiguration,omitempty"`
+	AWSConfig               AWSConfigResource               `json:"awsconfig,omitempty"`
+	BackendService          BackendServiceResource          `json:"backendservice,omitempty"`
+	BackupVault             BackupVaultResource             `json:"backupvault,omitempty"`
+	BatchEnvironment        BatchEnvironmentResource        `json:"batchenvironment,omitempty"`
+	BatchPool               BatchPoolResource               `json:"batchpool,omitempty"`
 }
 
 type CommonResourceValues struct {
@@ -59,6 +72,166 @@ type CommonResourceValues struct {
 	Modified         string            `json:"modified_timestamp"`
 	NamespaceID      string            `json:"namespace_id"`
 	Tags             map[string]string `json:"tags"`
+}
+
+type AccessAnalyzerResource struct {
+	Common                   CommonResourceValues `json:"common"`
+	ID                       string               `json:"analyzer_id"`
+	Mapping                  string               `json:"account_mapping"`
+	ActiveFindingCount       int                  `json:"active_finding_count"`
+	PublicFindingCount       int                  `json:"public_finding_count"`
+	CrossAccountFindingCount int                  `json:"cross_account_count"`
+	ThirdPartyFindingCount   int                  `json:"unknown_account_count"`
+}
+
+type AccessFlowLogResource struct {
+	Common                   CommonResourceValues `json:"common"`
+	Name                     string               `json:"name"`
+	RegionName               string               `json:"region_name"`
+	StorageID                string               `json:"storage_id"`
+	TargetResourceID         string               `json:"target_resource_id"`
+	ProvisioningState        string               `json:"provisioning_state"`
+	Enabled                  bool                 `json:"enabled"`
+	Retention                bool                 `json:"retention_enabled"`
+	RetentionTime            string               `json:"retention_time"`
+	TrafficAnalytics         bool                 `json:"traffic_analytics_enabled"`
+	TrafficAnalyticsInterval string               `json:"raffic_analytics_interval"`
+	Version                  string               `json:"version"`
+}
+
+type AirflowEnvironmentResource struct {
+	Common              CommonResourceValues `json:"common"`
+	WebserverAccessMode string               `json:"webserver_access_mode"`
+	WebserverURL        string               `json:"webserver_url"`
+	Status              string               `json:"status"`
+	Class               string               `json:"environment_class"`
+	MaxWorkers          int                  `json:"max_workers"`
+	Encrypted           bool                 `json:"encrypted"`
+	EncryptionKeyID     string               `json:"key_resource_id"`
+	LoggingConfig       string               `json:"logging_config"`
+	ExecutionRoleID     string               `json:"execution_role_resource_id"`
+	ServiceRoleID       string               `json:"service_role_resource_id"`
+}
+
+type APIAccountingConfigResource struct {
+	Common                     CommonResourceValues `json:"common"`
+	ID                         string               `json:"accounting_config_id"`
+	Name                       string               `json:"name"`
+	MultiRegion                bool                 `json:"multi_region"`
+	ParentResourceID           string               `json:"parent_resource_id"`
+	IsLogging                  bool                 `json:"is_logging"`
+	IsOrgTrail                 bool                 `json:"is_organization_trail"`
+	IncludeGlobalServiceEvents bool                 `json:"include_global_service_events"`
+	StorageContainerName       string               `json:"storage_container_name"`
+	ManagementEvents           string               `json:"management_events,omitempty"`
+	SNSTopic                   string               `json:"sns_topic_name"`
+	LogGroup                   string               `json:"cloud_watch_group_arn"`
+	RetentionDays              int                  `json:"retention_days"`
+	Locked                     bool                 `json:"locked"`
+}
+
+type AppRunnerServiceResource struct {
+	Common         CommonResourceValues `json:"commmon"`
+	ID             string               `json:"service_id"`
+	Status         string               `json:"status"`
+	Repository     string               `json:"repository"`
+	RepositoryType string               `json:"repository_type"`
+	Cores          int                  `json:"cores"`
+	Memory         int                  `json:"memory"`
+}
+
+type AppServerResource struct {
+	Common           CommonResourceValues `json:"commmon"`
+	ID               string               `json:"app_server_id"`
+	State            string               `json:"state"`
+	Type             string               `json:"server_type"`
+	InstanceCount    int                  `json:"instance_count"`
+	MaxInstanceCount int                  `json:"max_instance_count"`
+	AppCount         int                  `json:"app_count"`
+}
+
+type AutoscalingGroupResource struct {
+	Common                 CommonResourceValues `json:"commmon"`
+	ID                     string               `json:"group_id"`
+	Created                string               `json:"create_time"`
+	HealthCheckGracePeriod int                  `json:"health_check_grace_period"`
+	MultiAZ                bool                 `json:"multi_az"`
+	MinSize                int                  `json:"min_size"`
+	MaxSize                int                  `json:"max_size"`
+	DesiredCapacity        int                  `json:"desired_capacity"`
+	NewInstanceProtection  bool                 `json:"new_instance_protection"`
+	DefaultCooldown        int                  `json:"default_cooldown"`
+	UpgradePolicy          string               `json:"upgrade_policy"`
+	SuspendedProcesses     []string             `json:"suspended_processes"`
+}
+
+type AutoscalingLaunchConfigResource struct {
+	Common                CommonResourceValues `json:"commmon"`
+	Name                  string               `json:"name"`
+	ImageID               string               `json:"image_id"`
+	InstanceType          string               `json:"instance_type"`
+	IAMRole               string               `json:"identity_management_role"`
+	Region                string               `json:"region_name"`
+	Created               string               `json:"create_time"`
+	Monitoring            bool                 `json:"monitoring"`
+	BlockStorageOptimized bool                 `json:"block_storage_optimized"`
+	AssociateIP           string               `json:"associate_ip"`
+	RAMID                 string               `json:"ram_id"`
+	KernelID              string               `json:"kernel_id"`
+}
+
+type AWSConfigResource struct {
+	Common                      CommonResourceValues `json:"commmon"`
+	ID                          string               `json:"resource_id"`
+	DeliveryChannelCreated      bool                 `json:"delivery_channel_created"`
+	ConfiurationRecorderCreated bool                 `json:"configuration_recorder_created"`
+	AuditingBegun               bool                 `json:"auditing_has_begun"`
+	AuditingEnabled             bool                 `json:"auditing_enabled"`
+	CrossAccount                bool                 `json:"cross_account"`
+	UnknownAccount              bool                 `json:"unknown_account"`
+}
+
+type BackendServiceResource struct {
+	Common             CommonResourceValues `json:"common"`
+	Kind               string               `json:"kind"`
+	StorageContainerID string               `json:"storage_container_resource_id"`
+	PortName           string               `json:"port_name"`
+	Port               string               `json:"port"`
+	Created            string               `json:"created_time"`
+	Scheme             string               `json:"scheme"`
+}
+
+type BackupVaultResource struct {
+	Common          CommonResourceValues `json:"common"`
+	Name            string               `json:"name"`
+	Created         string               `json:"create_time"`
+	RecoveryPoints  int                  `json:"recovery_points"`
+	Policy          string               `json:"policy"`
+	Public          bool                 `json:"public"`
+	EncryptionKeyID string               `json:"key_resource_id"`
+}
+
+type BatchEnvironmentResource struct {
+	Common         CommonResourceValues `json:"common"`
+	Name           string               `json:"name"`
+	Region         string               `json:"region_name"`
+	Endpoint       string               `json:"endpoint"`
+	State          string               `json:"state"`
+	AllocationType string               `json:"allocation_type"`
+	PublicAccess   bool                 `json:"public_access"`
+	MinVCPUs       int                  `json:"minimum_cpus"`
+	MaxVCPUs       int                  `json:"maximum_cpus"`
+	PoolType       string               `json:"pool_type"`
+}
+
+type BatchPoolResource struct {
+	Common                 CommonResourceValues `json:"common"`
+	Name                   string               `json:"name"`
+	Region                 string               `json:"region"`
+	State                  string               `json:"state"`
+	InstanceSize           string               `json:"vm_size"`
+	Autoscaling            string               `json:"autoscaling"`
+	InterNodeCommunication string               `json:"inter_node_communication"`
 }
 
 type InstanceResource struct {
