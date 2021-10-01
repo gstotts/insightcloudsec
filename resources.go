@@ -3,6 +3,7 @@ package insightcloudsec
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -34,6 +35,14 @@ type QueryFilter struct {
 }
 
 type QueryFilterConfig struct {
+}
+
+type ResourceDetails struct {
+	Dependencies ResourceDependencies `json:"dependencies"`
+	Details      Resource             `json:"details"`
+}
+
+type ResourceDependencies struct {
 }
 
 type Resource struct {
@@ -379,3 +388,16 @@ func (c Client) Query(q *Query) (*QueryResult, error) {
 
 // RESOURCE FUNCTIONS
 ///////////////////////////////////////////
+func (c Client) Detail_Resource(id string) (*Resource, error) {
+	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ret *Resource
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
