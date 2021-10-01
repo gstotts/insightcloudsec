@@ -53,6 +53,10 @@ type Resource struct {
 	BackupVault             BackupVaultResource             `json:"backupvault,omitempty"`
 	BatchEnvironment        BatchEnvironmentResource        `json:"batchenvironment,omitempty"`
 	BatchPool               BatchPoolResource               `json:"batchpool,omitempty"`
+	BigDataInstance         BigDataInstanceResource         `json:"bigdatainstance,omitempty"`
+	BigDataSnapshot         BigDataSnapshotResource         `json:"bigdatasnapshot,omitempty"`
+	BigDataWorkspace        BigDataWorkspaceResource        `json:"bigdataworkspace,omitempty"`
+	BrokerInstance          BrokerInstanceResource          `json:"brokerinstance,omitempty"`
 }
 
 type CommonResourceValues struct {
@@ -232,6 +236,62 @@ type BatchPoolResource struct {
 	InstanceSize           string               `json:"vm_size"`
 	Autoscaling            string               `json:"autoscaling"`
 	InterNodeCommunication string               `json:"inter_node_communication"`
+}
+
+type BigDataInstanceResource struct {
+	Common          CommonResourceValues `json:"common"`
+	State           string               `json:"state"`
+	Type            string               `json:"instance_type"`
+	EndpointAddress string               `json:"endpoint_address"`
+	EndpointPort    int                  `json:"endpoint_port"`
+	Version         string               `json:"version"`
+	Nodes           []string             `json:"nodes"`
+	VPCID           string               `json:"vpc_id"`
+	SubnetGroupName string               `json:"subnet_group_name"`
+	Encrypted       bool                 `json:"encrypted"`
+	PublicAccess    bool                 `json:"publicly_accessible"`
+	SSLRequried     bool                 `json:"ssl_required"`
+	Created         string               `json:"create_time"`
+	Logging         bool                 `json:"logging"`
+	LoggingBucket   string               `json:"logging_bucket,omitempty"`
+	ParameterGroups []string             `json:"parameter_groups"`
+}
+
+type BigDataSnapshotResource struct {
+	Common       CommonResourceValues `json:"common"`
+	ID           string               `json:"snapshot_id"`
+	State        string               `json:"state"`
+	Type         string               `json:"snapshot_type"`
+	Nodes        []string             `json:"nodes"`
+	InstanceType string               `json:"instance_type"`
+	Encrypted    bool                 `json:"encrypted"`
+	Created      string               `json:"create_time"`
+}
+
+type BigDataWorkspaceResource struct {
+	Common           CommonResourceValues `json:"common"`
+	Name             string               `json:"name"`
+	State            string               `json:"state"`
+	Region           string               `json:"region_name"`
+	DoubleEncryption bool                 `json:"double_encryption_enabled"`
+	SQLAdmin         string               `json:"sql_administrator_login"`
+	Type             string               `json:"workspace_type"`
+}
+
+type BrokerInstanceResource struct {
+	Common            CommonResourceValues `json:"common"`
+	Type              string               `json:"instance_type"`
+	ID                string               `json:"instance_id"`
+	State             string               `json:"state"`
+	Engine            string               `json:"engine"`
+	EngineVersion     string               `json:"engine_version"`
+	Nodes             []string             `json:"nodes"`
+	EndpointAddress   string               `json:"endpoint_address"`
+	PublicAccess      bool                 `json:"publicly_accessible"`
+	GeneralLogging    bool                 `json:"general_logs"`
+	AuditLogging      bool                 `json:"audit_logs"`
+	AuthStrategy      string               `json:"authentication_strategy"`
+	AutoMinorUpgrades bool                 `json:"auto_minor_upgrades"`
 }
 
 type InstanceResource struct {
