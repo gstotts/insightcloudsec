@@ -250,15 +250,48 @@ type BuildProjectResource struct {
 }
 
 type CloudwatchDestinationResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common          CommonResourceValues `json:"common"`
+	Name            string               `json:"destination_name"`
+	ARN             string               `json:"arn"`
+	TargetARN       string               `json:"target_arn"`
+	RoleARN         string               `json:"role_arn"`
+	AccessPolicy    string               `json:"access_policy"`
+	TrustedAccounts []string             `json:"trusted_accounts"`
+	Created         string               `json:"creation_time"`
 }
 
 type ColdStorageResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common             CommonResourceValues `json:"common"`
+	DateCreated        string               `json:"creation_date"`
+	LastInventoryDate  string               `json:"last_inventory_date"`
+	Size               int                  `json:"size_in_bytes"`
+	ArchivesCount      int                  `json:"number_of_archives"`
+	LockCreationDate   string               `json:"lock_creation_date"`
+	LockExpirationDate string               `json:"lock_expiration_date"`
+	LockState          string               `json:"lock_state"`
 }
 
 type ContainerResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common           CommonResourceValues `json:"common"`
+	Name             string               `json:"name"`
+	PodName          string               `json:"pod_name"`
+	PodID            string               `json:"pod_resource_id"`
+	Namespace        string               `json:"namespace"`
+	Image            string               `json:"image"`
+	ImagePullPolicy  string               `json:"image_pull_policy"`
+	Repository       string               `json:"repository"`
+	Version          string               `json:"version"`
+	RawImageTag      string               `json:"raw_image_tag"`
+	Privileged       bool                 `json:"privileged"`
+	Command          string               `json:"command"`
+	Args             []string             `json:"args"`
+	LogDriver        string               `json:"log_driver"`
+	LogGroupName     string               `json:"log_group_name"`
+	LogGroupID       string               `json:"log_group_resource_id"`
+	TaskDefinitionID string               `json:"task_definition_resource_id"`
+	RestartCount     int                  `json:"restart_count"`
+	TTY              int                  `json:"tty"`
+	WorkingDirectory string               `json:"working_dir"`
 }
 
 type ContainerClusterResource struct {
