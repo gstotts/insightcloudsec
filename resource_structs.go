@@ -295,31 +295,147 @@ type ContainerResource struct {
 }
 
 type ContainerClusterResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common            CommonResourceValues `json:"common"`
+	Name              string               `json:"name"`
+	ARN               string               `json:"arn"`
+	Type              string               `json:"res_type"`
+	Created           string               `json:"created_at"`
+	Endpoint          string               `json:"endpoint"`
+	Fargate           bool                 `json:"fargate"`
+	RoleARN           string               `json:"role_arn"`
+	Region            string               `json:"region_name"`
+	NetworkResourceID string               `json:"network_resource_id"`
+	Status            string               `json:"status"`
+	Version           string               `json:"version"`
+	PlatformVersion   string               `json:"platform_version"`
+	Monitoring        bool                 `json:"moniotring"`
+	Logging           bool                 `json:"logging"`
+	LoggingTypes      []string             `json:"logging_types,omitempty"`
+	PublicAccess      bool                 `json:"endpoint_public_access"`
+	PrivateAccess     bool                 `json:"endpoint_private_access"`
+	PublicCIDRs       []string             `json:"public_access_cidrs,omitempty"`
+	EncryptionKeyID   string               `json:"key_resource_id"`
+	MasterAuthNetwork bool                 `json:"master_auth_network_enabled"`
 }
 
 type ContainerDeploymentResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common              CommonResourceValues `json:"common"`
+	Name                string               `json:"name"`
+	Namespace           string               `json:"namespace"`
+	ARN                 string               `json:"arn"`
+	LastStatus          string               `json:"last_status"`
+	DesiredStatus       string               `json:"desired_status"`
+	LaunchType          string               `json:"launch_type"`
+	Connectivity        string               `json:"connectivity"`
+	Created             string               `json:"create_time"`
+	TaskDefinitionID    string               `json:"task_definition_resource_id"`
+	Paused              bool                 `json:"paused"`
+	Replicas            string               `json:"replicas,omitempty"`
+	AvailableReplicas   []string             `json:"available_replicas,omitempty"`
+	UnavailableReplicas []string             `json:"unavailable_replicas,omitempty"`
+	ReadyReplicas       []string             `json:"ready_replicas,omitempty"`
+	UpdatedReplicas     []string             `json:"updated_replicas,omitempty"`
+	ObservedGeneration  string               `json:"observed_generation,omitempty"`
+	CollisionCount      int                  `json:"collision_count"`
 }
 
 type ContainerImageResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common        CommonResourceValues `json:"common"`
+	Digest        string               `json:"digest"`
+	HashAlgorithm string               `json:"sha256"`
+	PushTime      string               `json:"push_time"`
+	LastScanned   string               `json:"last_scanned"`
+	RegistryID    string               `json:"registry_id"`
+	RegistryName  string               `json:"registry_name"`
+	FindingCount  int                  `json:"finding_count"`
+	Critical      int                  `json:"critical"`
+	High          int                  `json:"high"`
+	Medium        int                  `json:"medium"`
+	Low           int                  `json:"low"`
+	Size          int                  `json:"size"`
+	Tags          map[string]string    `json:"image_tags"`
 }
 
 type ContainerInstanceResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common            CommonResourceValues `json:"common"`
+	ID                string               `json:"instance_resource_id"`
+	NetworkResourceID string               `json:"network_resource_id"`
+	PodCIDR           string               `json:"pod_cidr"`
+	PodCount          int                  `json:"pod_count"`
+	PrivateIPAddress  string               `json:"internal_ip_address"`
+	PublicIPAddress   string               `json:"external_ip_address"`
+	Hostname          string               `json:"hostname"`
+	Architecture      string               `json:"architecture"`
+	BootID            string               `json:"boot_id"`
+	RuntimeVersion    string               `json:"container_runtime_version"`
+	OS                string               `json:"operating_system"`
+	OSImage           string               `json:"os_image"`
+	Ready             bool                 `json:"ready"`
+	Unschedulable     bool                 `json:"unschedulable"`
 }
 
 type ContainerRegistryResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common          CommonResourceValues `json:"common"`
+	Name            string               `json:"name"`
+	Created         string               `json:"create_time"`
+	Status          string               `json:"status,omitempty"`
+	TrustedAccounts []string             `json:"trusted_accounts,omitempty"`
+	LifecyclePolicy string               `json:"lifescycle_policy,omitempty"`
+	ID              string               `json:"registry_id"`
+	NamespaceID     string               `json:"namespace_id"`
+	PublicAccess    bool                 `json:"publicly_accessible"`
+	ScanOnPush      bool                 `json:"scan_on_push:"`
+	ImageCount      int                  `json:"image_count"`
+	EncryptionType  string               `json:"encryption_type"`
+	EncryptionKeyID string               `json:"key_resource_id,omitempty"`
+	TagMutability   bool                 `json:"tag_mutability"`
 }
 
 type ContainerServiceResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common               CommonResourceValues `json:"common"`
+	Created              string               `json:"create_time"`
+	RoleID               string               `json:"role_resource_id"`
+	RoleName             string               `json:"role_name"`
+	ClusterID            string               `json:"cluster_id"`
+	TaskID               string               `json:"task_resource_id"`
+	PlatformVersion      string               `json:"platform_version"`
+	SchedulingStrategy   string               `json:"scheduling_strategy"`
+	AssignPublicIP       bool                 `json:"assign_public_ip"`
+	EnableECSTags        bool                 `json:"enable_ecs_tags"`
+	EnableExecuteCommand bool                 `json:"enable_execute_command"`
+	CreatedBy            string               `json:"created_by"`
+	DesiredCount         int                  `json:"desired_count"`
+	RunningCount         int                  `json:"running_count"`
+	PendingCount         int                  `json:"pending_count"`
 }
 
 type ContentDeliveryNetworkResource struct {
-	Common CommonResourceValues `json:"common"`
+	Common                 CommonResourceValues `json:"common"`
+	DistributionID         string               `json:"distribution_id"`
+	Domain                 string               `json:"domain_name"`
+	AlternateDomains       []string             `json:"alternate_domain_names"`
+	Status                 string               `json:"status"`
+	DeliveryMethod         string               `json:"delivery_method"`
+	State                  string               `json:"state"`
+	RootObject             string               `json:"root_object"`
+	HTTPVersions           []string             `json:"http_versions"`
+	IPV6Enabled            bool                 `json:"ipv6_enabled"`
+	LastModified           string               `json:"last_modified"`
+	LogBucket              string               `json:"log_bucket"`
+	Origins                []string             `json:"origins"`
+	SecurityPolicy         string               `json:"security_policy"`
+	Certificate            string               `json:"certificate"`
+	WebACLID               string               `json:"web_acl_id"`
+	PriceClass             string               `json:"price_class"`
+	Comment                string               `json:"comment"`
+	ARN                    string               `json:"arn"`
+	Logging                bool                 `json:"logging"`
+	CookieLogging          bool                 `json:"cookie_logging"`
+	OriginAccessIdentities []string             `json:"origin_access_identities"`
+	HTTPSRequired          bool                 `json:"https_required"`
+	ViewerProtocolPolicy   string               `json:"viewer_protocol_poilcy"`
+	GeoWhitelist           []string             `json:"geo_whitelist,omitempty"`
+	GeoBlacklist           []string             `json:"geo_blacklist,omitempty"`
 }
 
 type InstanceResource struct {
