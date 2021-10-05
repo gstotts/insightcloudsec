@@ -438,6 +438,28 @@ type ContentDeliveryNetworkResource struct {
 	GeoBlacklist           []string             `json:"geo_blacklist,omitempty"`
 }
 
+type DivvyOrganizationServiceResource struct {
+	Common         CommonResourceValues `json:"common"`
+	ID             string               `json:"resource_id"`
+	OrgServiceID   string               `json:"organization_service_id"`
+	AccountID      string               `json:"account_id,omitempty"`
+	TenantID       string               `json:"tenant_id,omitempty"`
+	PayerAccount   string               `json:"payer_acccount"`
+	Name           string               `json:"name"`
+	AddedTimestamp string               `json:"added_timestamp"`
+	Bots           int                  `json:"bots"`
+	Resources      int                  `json:"resources"`
+}
+
+type InstanceAssociation struct {
+	Common InstanceAssociationDetails `json:"common"`
+}
+
+type InstanceAssociationDetails struct {
+	ResourceID   string `json:"resource_id"`
+	ResourceName string `json:"resource_name"`
+}
+
 type InstanceResource struct {
 	Common                                         CommonResourceValues `json:"common"`
 	ID                                             string               `json:"instance_id"`
@@ -482,13 +504,4 @@ type VolumeResource struct {
 	AttachDeviceName    string               `json:"attach_device_name,omitempty"`
 	InstanceAssociation InstanceAssociation  `json:"instance_association"`
 	Created             string               `json:"creation_time"`
-}
-
-type InstanceAssociation struct {
-	Common InstanceAssociationDetails `json:"common"`
-}
-
-type InstanceAssociationDetails struct {
-	ResourceID   string `json:"resource_id"`
-	ResourceName string `json:"resource_name"`
 }
