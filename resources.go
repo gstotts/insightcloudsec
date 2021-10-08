@@ -77,7 +77,10 @@ type Resource struct {
 	ContainerService         ContainerServiceResource         `json:"containerservice,omitempty"`
 	CDN                      ContentDeliveryNetworkResource   `json:"contentdeliverynetwork,omitempty"`
 	DivvyOrganizationService DivvyOrganizationServiceResource `json:"divvyorganizationservice,omitempty"`
+	DNSZone                  DNSZoneResource                  `json:"dnszone,omitempty"`
+	ECSTaskDefinition        ECSTaskDefinitionResource        `json:"ecstaskdefinition,omitempty"`
 	Instance                 InstanceResource                 `json:"instance,omitempty"`
+	Secret                   SecretResource                   `json:"secret,omitempty"`
 	Volume                   VolumeResource                   `json:"volume,omitempty"`
 }
 

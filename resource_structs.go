@@ -451,6 +451,30 @@ type DivvyOrganizationServiceResource struct {
 	Resources      int                  `json:"resources"`
 }
 
+type DNSZoneResource struct {
+	Common  CommonResourceValues `json:"common"`
+	Name    string               `json:"domain"`
+	Commet  string               `json:"comment,omitempty"`
+	Private bool                 `json:"is_private_zone"`
+	Records int                  `json:"records"`
+}
+
+type ECSTaskDefinitionResource struct {
+	Common           CommonResourceValues `json:"common"`
+	Name             string               `json:"name"`
+	Version          string               `json:"version"`
+	ARN              string               `json:"arn"`
+	Status           string               `json:"status"`
+	NetworkMode      string               `json:"network_mode"`
+	LaunchType       string               `json:"launch_type"`
+	ExecutionRoleARN string               `json:"execution_role_arn"`
+	CPU              string               `json:"cpu"`
+	Memory           string               `json:"memory"`
+	Family           string               `json:"family"`
+	Created          string               `json:"created_at"`
+	ContainerCount   int                  `json:"container_count"`
+}
+
 type InstanceAssociation struct {
 	Common InstanceAssociationDetails `json:"common"`
 }
@@ -489,6 +513,28 @@ type InstanceResource struct {
 	AWSInstanceMetadataServiceEndpointEnabled      string               `json:"aws_instance_metadata_service_endpoint_enabled,omitempty"`
 	AWSInstanceMetadataServiceEndpointConfigStatus string               `json:"aws_instance_metadata_service_endpoint_config_status,omitempty"`
 	StateTransitionReason                          string               `json:"state_transition_reason,omitempty"`
+}
+
+type SecretResource struct {
+	Common            CommonResourceValues `json:"common"`
+	ARN               string               `json:"arn"`
+	Name              string               `json:"name"`
+	Description       string               `json:"description,omitempty"`
+	EncryptionKeyID   string               `json:"key_resource_id,omitempty"`
+	Region            string               `json:"region_name"`
+	RotationEnabled   bool                 `json:"rotation_enabled"`
+	RotationDays      int                  `json:"rotation_days,omitempty"`
+	RotationLambdaARN string               `json:"rotation_lambda_arn"`
+	LastAccessedDate  string               `json:"last_accessed_date"`
+	LastChangedDate   string               `json:"last_changed_date"`
+	Created           string               `json:"creation_date,omitempty"`
+	ActivationDate    string               `json:"activation_date,omitempty"`
+	DeletedDate       string               `json:"deleted_date,omitempty"`
+	ExpirationDate    string               `json:"expiration_date,omitempty"`
+	Enabled           bool                 `json:"enabled,omitempty"`
+	CustomerManaged   bool                 `json:"customer_managed,omitempty"`
+	ContentType       string               `json:"content_type,omitempty"`
+	ParentVault       string               `json:"parent_vault,omitempty"`
 }
 
 type VolumeResource struct {
