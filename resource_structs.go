@@ -14,9 +14,9 @@ type CommonResourceValues struct {
 	OrgServiceID     int               `json:"organization_service_id"`
 	AvailabilityZone string            `json:"availablility_zone"`
 	Region           string            `json:"region"`
-	Created          string            `json:"creation_timestamp"`
-	Discovered       string            `json:"discovered_timestamp"`
-	Modified         string            `json:"modified_timestamp"`
+	Created          ICSTime           `json:"creation_timestamp"`
+	Discovered       ICSTime           `json:"discovered_timestamp"`
+	Modified         ICSTime           `json:"modified_timestamp"`
 	NamespaceID      string            `json:"namespace_id"`
 	Tags             map[string]string `json:"tags"`
 }
@@ -100,7 +100,7 @@ type AppServerResource struct {
 type AutoscalingGroupResource struct {
 	Common                 CommonResourceValues `json:"commmon"`
 	ID                     string               `json:"group_id"`
-	Created                string               `json:"create_time"`
+	Created                ICSTime              `json:"create_time"`
 	HealthCheckGracePeriod int                  `json:"health_check_grace_period"`
 	MultiAZ                bool                 `json:"multi_az"`
 	MinSize                int                  `json:"min_size"`
@@ -119,7 +119,7 @@ type AutoscalingLaunchConfigResource struct {
 	InstanceType          string               `json:"instance_type"`
 	IAMRole               string               `json:"identity_management_role"`
 	Region                string               `json:"region_name"`
-	Created               string               `json:"create_time"`
+	Created               ICSTime              `json:"create_time"`
 	Monitoring            bool                 `json:"monitoring"`
 	BlockStorageOptimized bool                 `json:"block_storage_optimized"`
 	AssociateIP           string               `json:"associate_ip"`
@@ -144,14 +144,14 @@ type BackendServiceResource struct {
 	StorageContainerID string               `json:"storage_container_resource_id"`
 	PortName           string               `json:"port_name"`
 	Port               string               `json:"port"`
-	Created            string               `json:"created_time"`
+	Created            ICSTime              `json:"created_time"`
 	Scheme             string               `json:"scheme"`
 }
 
 type BackupVaultResource struct {
 	Common          CommonResourceValues `json:"common"`
 	Name            string               `json:"name"`
-	Created         string               `json:"create_time"`
+	Created         ICSTime              `json:"create_time"`
 	RecoveryPoints  int                  `json:"recovery_points"`
 	Policy          string               `json:"policy"`
 	Public          bool                 `json:"public"`
@@ -194,7 +194,7 @@ type BigDataInstanceResource struct {
 	Encrypted       bool                 `json:"encrypted"`
 	PublicAccess    bool                 `json:"publicly_accessible"`
 	SSLRequried     bool                 `json:"ssl_required"`
-	Created         string               `json:"create_time"`
+	Created         ICSTime              `json:"create_time"`
 	Logging         bool                 `json:"logging"`
 	LoggingBucket   string               `json:"logging_bucket,omitempty"`
 	ParameterGroups []string             `json:"parameter_groups"`
@@ -208,7 +208,7 @@ type BigDataSnapshotResource struct {
 	Nodes        []string             `json:"nodes"`
 	InstanceType string               `json:"instance_type"`
 	Encrypted    bool                 `json:"encrypted"`
-	Created      string               `json:"create_time"`
+	Created      ICSTime              `json:"create_time"`
 }
 
 type BigDataWorkspaceResource struct {
@@ -240,7 +240,7 @@ type BrokerInstanceResource struct {
 type BuildProjectResource struct {
 	Common            CommonResourceValues `json:"common"`
 	Description       string               `json:"description"`
-	Created           string               `json:"creation_date"`
+	Created           ICSTime              `json:"creation_date"`
 	BuildType         string               `json:"build_type"`
 	BuildImage        string               `json:"build_image"`
 	PrivilegeMode     string               `json:"privilege_mode"`
@@ -257,17 +257,17 @@ type CloudwatchDestinationResource struct {
 	RoleARN         string               `json:"role_arn"`
 	AccessPolicy    string               `json:"access_policy"`
 	TrustedAccounts []string             `json:"trusted_accounts"`
-	Created         string               `json:"creation_time"`
+	Created         ICSTime              `json:"creation_time"`
 }
 
 type ColdStorageResource struct {
 	Common             CommonResourceValues `json:"common"`
-	DateCreated        string               `json:"creation_date"`
-	LastInventoryDate  string               `json:"last_inventory_date"`
+	DateCreated        ICSTime              `json:"creation_date"`
+	LastInventoryDate  ICSTime              `json:"last_inventory_date"`
 	Size               int                  `json:"size_in_bytes"`
 	ArchivesCount      int                  `json:"number_of_archives"`
-	LockCreationDate   string               `json:"lock_creation_date"`
-	LockExpirationDate string               `json:"lock_expiration_date"`
+	LockCreationDate   ICSTime              `json:"lock_creation_date"`
+	LockExpirationDate ICSTime              `json:"lock_expiration_date"`
 	LockState          string               `json:"lock_state"`
 }
 
@@ -299,7 +299,7 @@ type ContainerClusterResource struct {
 	Name              string               `json:"name"`
 	ARN               string               `json:"arn"`
 	Type              string               `json:"res_type"`
-	Created           string               `json:"created_at"`
+	Created           ICSTime              `json:"created_at"`
 	Endpoint          string               `json:"endpoint"`
 	Fargate           bool                 `json:"fargate"`
 	RoleARN           string               `json:"role_arn"`
@@ -327,7 +327,7 @@ type ContainerDeploymentResource struct {
 	DesiredStatus       string               `json:"desired_status"`
 	LaunchType          string               `json:"launch_type"`
 	Connectivity        string               `json:"connectivity"`
-	Created             string               `json:"create_time"`
+	Created             ICSTime              `json:"create_time"`
 	TaskDefinitionID    string               `json:"task_definition_resource_id"`
 	Paused              bool                 `json:"paused"`
 	Replicas            string               `json:"replicas,omitempty"`
@@ -343,8 +343,8 @@ type ContainerImageResource struct {
 	Common        CommonResourceValues `json:"common"`
 	Digest        string               `json:"digest"`
 	HashAlgorithm string               `json:"sha256"`
-	PushTime      string               `json:"push_time"`
-	LastScanned   string               `json:"last_scanned"`
+	PushTime      ICSTime              `json:"push_time"`
+	LastScanned   ICSTime              `json:"last_scanned"`
 	RegistryID    string               `json:"registry_id"`
 	RegistryName  string               `json:"registry_name"`
 	FindingCount  int                  `json:"finding_count"`
@@ -377,7 +377,7 @@ type ContainerInstanceResource struct {
 type ContainerRegistryResource struct {
 	Common          CommonResourceValues `json:"common"`
 	Name            string               `json:"name"`
-	Created         string               `json:"create_time"`
+	Created         ICSTime              `json:"create_time"`
 	Status          string               `json:"status,omitempty"`
 	TrustedAccounts []string             `json:"trusted_accounts,omitempty"`
 	LifecyclePolicy string               `json:"lifescycle_policy,omitempty"`
@@ -393,7 +393,7 @@ type ContainerRegistryResource struct {
 
 type ContainerServiceResource struct {
 	Common               CommonResourceValues `json:"common"`
-	Created              string               `json:"create_time"`
+	Created              ICSTime              `json:"create_time"`
 	RoleID               string               `json:"role_resource_id"`
 	RoleName             string               `json:"role_name"`
 	ClusterID            string               `json:"cluster_id"`
@@ -447,7 +447,7 @@ type DataAnalyticsWorkspaceResource struct {
 	Encrypted       bool                 `json:"encrypted"`
 	EncryptionKeyID string               `json:"key_resource_id,omitempty"`
 	OutputLocation  string               `json:"output_location,omitempty"`
-	Created         string               `json:"create_time"`
+	Created         ICSTime              `json:"create_time"`
 	RequesterPays   bool                 `json:"requester_pays"`
 	MetricsEnabled  bool                 `json:"metrics_enabled"`
 }
@@ -483,7 +483,7 @@ type DivvyOrganizationServiceResource struct {
 type DNSZoneResource struct {
 	Common  CommonResourceValues `json:"common"`
 	Name    string               `json:"domain"`
-	Commet  string               `json:"comment,omitempty"`
+	Comment string               `json:"comment,omitempty"`
 	Private bool                 `json:"is_private_zone"`
 	Records int                  `json:"records"`
 }
@@ -500,7 +500,7 @@ type ECSTaskDefinitionResource struct {
 	CPU              string               `json:"cpu"`
 	Memory           string               `json:"memory"`
 	Family           string               `json:"family"`
-	Created          string               `json:"created_at"`
+	Created          ICSTime              `json:"created_at"`
 	ContainerCount   int                  `json:"container_count"`
 }
 
@@ -554,12 +554,12 @@ type SecretResource struct {
 	RotationEnabled   bool                 `json:"rotation_enabled"`
 	RotationDays      int                  `json:"rotation_days,omitempty"`
 	RotationLambdaARN string               `json:"rotation_lambda_arn"`
-	LastAccessedDate  string               `json:"last_accessed_date"`
-	LastChangedDate   string               `json:"last_changed_date"`
-	Created           string               `json:"creation_date,omitempty"`
+	LastAccessedDate  ICSTime              `json:"last_accessed_date"`
+	LastChangedDate   ICSTime              `json:"last_changed_date"`
+	Created           ICSTime              `json:"creation_date,omitempty"`
 	ActivationDate    string               `json:"activation_date,omitempty"`
 	DeletedDate       string               `json:"deleted_date,omitempty"`
-	ExpirationDate    string               `json:"expiration_date,omitempty"`
+	ExpirationDate    ICSTime              `json:"expiration_date,omitempty"`
 	Enabled           bool                 `json:"enabled,omitempty"`
 	CustomerManaged   bool                 `json:"customer_managed,omitempty"`
 	ContentType       string               `json:"content_type,omitempty"`

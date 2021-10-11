@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
-	"time"
 )
 
 // STRUCTS
@@ -71,24 +69,6 @@ type HarvestingStrategy struct {
 
 type HarvestingStrategyList struct {
 	Strategies []HarvestingStrategy `json:"strategies"`
-}
-
-type ICSTime time.Time
-
-// Need to Handle Time appropriately given how the API returns.
-
-func (j *ICSTime) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), "\"")
-	t, err := time.Parse("2006-01-02 15:04:05", s)
-	if err != nil {
-		return err
-	}
-	*j = ICSTime(t)
-	return nil
-}
-
-func (j *ICSTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(j)
 }
 
 // CLOUD FUNCTIONS
