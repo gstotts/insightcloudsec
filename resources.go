@@ -76,6 +76,9 @@ type Resource struct {
 	ContainerRegistry        ContainerRegistryResource        `json:"containerregistry,omitempty"`
 	ContainerService         ContainerServiceResource         `json:"containerservice,omitempty"`
 	CDN                      ContentDeliveryNetworkResource   `json:"contentdeliverynetwork,omitempty"`
+	DataAnalyticsWorkspace   DataAnalyticsWorkspaceResource   `json:"dataanalyticsworkspce,omitempty"`
+	Database                 DatabaseResource                 `json:"database,omitempty"`
+	DatabrickWorkspace       DatabrickWorkspaceResource       `json:"databrickworkspace,omitempty"`
 	DivvyOrganizationService DivvyOrganizationServiceResource `json:"divvyorganizationservice,omitempty"`
 	DNSZone                  DNSZoneResource                  `json:"dnszone,omitempty"`
 	ECSTaskDefinition        ECSTaskDefinitionResource        `json:"ecstaskdefinition,omitempty"`

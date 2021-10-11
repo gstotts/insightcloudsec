@@ -438,6 +438,35 @@ type ContentDeliveryNetworkResource struct {
 	GeoBlacklist           []string             `json:"geo_blacklist,omitempty"`
 }
 
+type DataAnalyticsWorkspaceResource struct {
+	Common          CommonResourceValues `json:"common"`
+	WorkspaceID     string               `json:"workspace_id"`
+	Name            string               `json:"name"`
+	Description     string               `json:"description"`
+	State           string               `json:"state"`
+	Encrypted       bool                 `json:"encrypted"`
+	EncryptionKeyID string               `json:"key_resource_id,omitempty"`
+	OutputLocation  string               `json:"output_location,omitempty"`
+	Created         string               `json:"create_time"`
+	RequesterPays   bool                 `json:"requester_pays"`
+	MetricsEnabled  bool                 `json:"metrics_enabled"`
+}
+
+type DatabaseResource struct {
+	Common             CommonResourceValues `json:"common"`
+	Type               string               `json:"database_type"`
+	Encrypted          bool                 `json:"encrypted"`
+	CharacterSet       string               `json:"character_set"`
+	Collation          bool                 `json:"collation"`
+	InstanceResourceID string               `json:"instance_resource_id"`
+}
+
+type DatabrickWorkspaceResource struct {
+	Common         CommonResourceValues `json:"common"`
+	State          string               `json:"state"`
+	EncryptionType string               `json:"encryption_type"`
+}
+
 type DivvyOrganizationServiceResource struct {
 	Common         CommonResourceValues `json:"common"`
 	ID             string               `json:"resource_id"`
