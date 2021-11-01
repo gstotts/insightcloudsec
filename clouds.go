@@ -20,6 +20,11 @@ const (
 	INSTANCE_ASSUME_AUTH = "instance_assume_role"
 	STANDARD_AUTH        = "standard"
 	CERT_AUTH            = "client_certificate"
+	GCP_SERVICE_ACCOUNT  = "service_account"
+
+	// GCP Default URIs
+	GCP_DEFAULT_AUTH_URI  = "https://accounts.google.com/o/oauth2/auth"
+	GCP_DEFAULT_TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 )
 
 // STRUCTS
@@ -95,21 +100,39 @@ type AzureCloudAccount struct {
 	CreationParameters CloudAccountParameters `json:"creation_params"`
 }
 
+type GCPCloudAccount struct {
+	CreationParameters CloudAccountParameters `json:"creation_params"`
+}
+
+type GCPAccountApiCreds struct {
+	Type                    string `json:"type"`
+	ProjectID               string `json:"project_id"`
+	PrivateKeyID            string `json:"private_key_id"`
+	PrivateKey              string `json:"private_key"`
+	ClientEmail             string `json:"client_email"`
+	ClientID                string `json:"client_id"`
+	AuthURI                 string `json:"auth_uri"`
+	TokenURI                string `json:"token_uri"`
+	AuthProviderx509CertURL string `json:"auth_provider_x509_cert_url"`
+	Clientx509CertUrl       string `json:"client_x509_cert_url"`
+}
+
 type CloudAccountParameters struct {
-	CloudType             string `json:"cloud_type"`
-	AuthType              string `json:"authentication_type"`
-	Name                  string `json:"name"`
-	AccountNumber         string `json:"account_number,omitempty"`
-	ApiKeyOrCert          string `json:"api_key,omitempty"`
-	SecretKey             string `json:"secret_key,omitempty"`
-	RoleArn               string `json:"role_arn,omitempty"`
-	ExternalID            string `json:"external_id,omitempty"`
-	Duration              int    `json:"duration,omitempty"`
-	SessionName           string `json:"session_name,omitempty"`
-	TenantID              string `json:"tenant_id,omitempty"`
-	AppID                 string `json:"app_id,omitempty"`
-	SubscriptionID        string `json:"subscription_id,omitempty"`
-	CertificateThumbprint string `json:"certificate_thumbprint,omitempty"`
+	CloudType             string             `json:"cloud_type"`
+	AuthType              string             `json:"authentication_type,omitempty"`
+	Name                  string             `json:"name"`
+	AccountNumber         string             `json:"account_number,omitempty"`
+	ApiKeyOrCert          string             `json:"api_key,omitempty"`
+	SecretKey             string             `json:"secret_key,omitempty"`
+	RoleArn               string             `json:"role_arn,omitempty"`
+	ExternalID            string             `json:"external_id,omitempty"`
+	Duration              int                `json:"duration,omitempty"`
+	SessionName           string             `json:"session_name,omitempty"`
+	TenantID              string             `json:"tenant_id,omitempty"`
+	AppID                 string             `json:"app_id,omitempty"`
+	SubscriptionID        string             `json:"subscription_id,omitempty"`
+	CertificateThumbprint string             `json:"certificate_thumbprint,omitempty"`
+	GCPAuth               GCPAccountApiCreds `json:"api_credentials,omitempty"`
 }
 
 // CLOUD FUNCTIONS
@@ -128,7 +151,7 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	}
 
 	// Make sure AWS properties exist only, otherwise return error
-	if cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" {
+	if cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account of type AWS must not have TenantID, SubscriptionID or AppID set")
 	}
 
@@ -165,8 +188,31 @@ func (c Client) Add_Azure_Cloud(cloud_data AzureCloudAccount) (Cloud, error) {
 	}
 
 	// Make sure Azure properties exist only, otherwise eliminate
-	if cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.Duration != 0 || cloud_data.CreationParameters.AccountNumber != "" || cloud_data.CreationParameters.ExternalID != "" {
+	if cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.Duration != 0 || cloud_data.CreationParameters.AccountNumber != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account of type AZURE_ARM must not have RoleArn, SecretKey, SessionName, Duration, AccountNumber or ExternalID set")
+	}
+
+	data, err := json.Marshal(cloud_data)
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	var ret Cloud
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Cloud{}, err
+	}
+
+	return ret, nil
+}
+
+func (c Client) Add_GCP_Account(cloud_data GCPCloudAccount) (Cloud, error) {
+	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
+		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
 
 	data, err := json.Marshal(cloud_data)
