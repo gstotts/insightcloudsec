@@ -73,7 +73,7 @@ type HarvestingStrategyList struct {
 }
 
 type AWSCloudAccount struct {
-	CreationParameters CloudAccountParameters `json:"creation_parameters"`
+	CreationParameters CloudAccountParameters `json:"creation_params"`
 }
 
 type CloudAccountParameters struct {
@@ -99,7 +99,7 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 			return Cloud{}, fmt.Errorf("[-] ERROR: assume role AWS accounts require a secret and key are set")
 		}
 	}
-
+	fmt.Println(cloud_data)
 	data, err := json.Marshal(cloud_data)
 	if err != nil {
 		return Cloud{}, err
