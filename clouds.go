@@ -135,7 +135,7 @@ type CloudAccountParameters struct {
 	GCPAuth               GCPAccountApiCreds `json:"api_credentials,omitempty"`
 }
 
-// CLOUD FUNCTIONS
+// CLOUD ACCOUNT SETUP FUNCTIONS
 ///////////////////////////////////////////
 
 func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
@@ -232,6 +232,12 @@ func (c Client) Add_GCP_Account(cloud_data GCPCloudAccount) (Cloud, error) {
 
 	return ret, nil
 }
+
+// CLOUD ORG FUNCTIONS
+///////////////////////////////////////////
+
+// MANAGING CLOUD FUNCTIONS
+///////////////////////////////////////////
 
 func (c Client) List_Clouds() ([]Cloud, error) {
 	// Return a CloudList item containing all the clouds from the API.
