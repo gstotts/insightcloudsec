@@ -81,7 +81,7 @@ func __getSessionID(baseURL string, user string, pass string) (string, error) {
 
 // CLIENT FUNCTIONS
 ///////////////////////////////////////////
-func New_Client() (*Client, error) {
+func NewClient() (*Client, error) {
 	baseURL := __getBaseURL()
 	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
 	client := http.DefaultClient
@@ -111,7 +111,7 @@ func New_Client() (*Client, error) {
 	}, nil
 }
 
-func New_Client_With_Key(apiKey string) (*Client, error) {
+func NewClientWithKey(apiKey string) (*Client, error) {
 	return &Client{
 		APIKey:     apiKey,
 		BaseURL:    __getBaseURL(),
@@ -120,7 +120,7 @@ func New_Client_With_Key(apiKey string) (*Client, error) {
 	}, nil
 }
 
-func New_Client_With_Creds(user string, pass string) (*Client, error) {
+func NewClientWithCreds(user string, pass string) (*Client, error) {
 	baseURL := __getBaseURL()
 	sessionID, err := __getSessionID(baseURL, user, pass)
 	if err != nil {

@@ -117,7 +117,7 @@ func (c Client) Query(q *Query) (*QueryResult, error) {
 
 // RESOURCE FUNCTIONS
 ///////////////////////////////////////////
-func (c Client) Detail_Resource(id string) (*Resource, error) {
+func (c Client) DetailResource(id string) (*Resource, error) {
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", id), nil)
 	if err != nil {
 		return nil, err

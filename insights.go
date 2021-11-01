@@ -49,7 +49,7 @@ type InsightPack struct {
 // INSIGHT FUNCTIONS
 ///////////////////////////////////////////
 
-func (c *Client) List_Insights() ([]Insight, error) {
+func (c *Client) ListInsights() ([]Insight, error) {
 	// Returns a list of all Insights from the API
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
 	if err != nil {
@@ -64,7 +64,7 @@ func (c *Client) List_Insights() ([]Insight, error) {
 	return ret, nil
 }
 
-func (c *Client) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
+func (c *Client) GetInsight(insight_id int, insight_source string) (*Insight, error) {
 	// Returns the specific Insight associated with the Insight ID and the Source provided
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
 	if err != nil {
@@ -79,7 +79,7 @@ func (c *Client) Get_Insight(insight_id int, insight_source string) (*Insight, e
 	return &ret, nil
 }
 
-func (c *Client) Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error) {
+func (c *Client) GetInsight7Days(insight_id int, insight_source string) (map[string]int, error) {
 	// Returns the 7 Day View of Insight associated with the Insight ID and the Source provided
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s/insight-data-7-days", insight_id, insight_source), nil)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) Get_Insight_7_Days(insight_id int, insight_source string) (map[
 // PACK FUNCTIONS
 ///////////////////////////////////////////
 
-func (c *Client) List_Packs() ([]InsightPack, error) {
+func (c *Client) ListPacks() ([]InsightPack, error) {
 	// Returns a list of all Insight Packs from the API
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
 	if err != nil {

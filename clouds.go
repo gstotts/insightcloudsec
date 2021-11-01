@@ -138,7 +138,7 @@ type CloudAccountParameters struct {
 // CLOUD ACCOUNT SETUP FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
+func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	if cloud_data.CreationParameters.CloudType != AWS_CLOUD_TYPE {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AWS to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
@@ -173,7 +173,7 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) Add_Azure_Cloud(cloud_data AzureCloudAccount) (Cloud, error) {
+func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD_TYPE {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
@@ -210,7 +210,7 @@ func (c Client) Add_Azure_Cloud(cloud_data AzureCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) Add_GCP_Account(cloud_data GCPCloudAccount) (Cloud, error) {
+func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
@@ -239,7 +239,7 @@ func (c Client) Add_GCP_Account(cloud_data GCPCloudAccount) (Cloud, error) {
 // MANAGING CLOUD FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) List_Clouds() ([]Cloud, error) {
+func (c Client) ListClouds() ([]Cloud, error) {
 	// Return a CloudList item containing all the clouds from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
 	if err != nil {
@@ -254,7 +254,7 @@ func (c Client) List_Clouds() ([]Cloud, error) {
 	return ret.Clouds, nil
 }
 
-func (c Client) List_Cloud_Types() ([]CloudType, error) {
+func (c Client) ListCloudTypes() ([]CloudType, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
 	if err != nil {
@@ -269,7 +269,7 @@ func (c Client) List_Cloud_Types() ([]CloudType, error) {
 	return ret.CloudTypes, nil
 }
 
-func (c Client) List_Harvesting_Strategies() ([]HarvestingStrategy, error) {
+func (c Client) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
 	if err != nil {
@@ -284,7 +284,7 @@ func (c Client) List_Harvesting_Strategies() ([]HarvestingStrategy, error) {
 	return ret.Strategies, nil
 }
 
-func (c Client) List_Cloud_Regions(target Cloud) ([]CloudRegion, error) {
+func (c Client) ListCloudRegions(target Cloud) ([]CloudRegion, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
 	fmt.Println(target.ResourceID)

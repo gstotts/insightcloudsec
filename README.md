@@ -16,12 +16,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.New_Client()
+	c, err := insightcloudsec.NewClient()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	clouds, err := c.List_Clouds()
+	clouds, err := c.ListClouds()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,12 +44,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.New_Client()
+	c, err := insightcloudsec.NewClient()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	types, err := c.List_Cloud_Types()
+	types, err := c.ListCloudTypes()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -73,19 +73,19 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.New_Client()
+	c, err := insightcloudsec.NewClient()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	clouds, err := c.List_Clouds()
+	clouds, err := c.ListClouds()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	for _, cloud := range clouds.Clouds {
 		fmt.Printf("Name: %s\n", cloud.Name)
-		regions, _ := c.List_Cloud_Regions(cloud)
+		regions, _ := c.ListCloudRegions(cloud)
 		fmt.Println("Regions:")
 		for _, region := range regions {
 			fmt.Printf("- %s\n", region.Name)
@@ -108,12 +108,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.New_Client()
+	c, err := insightcloudsec.NewClient()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	hs, err := c.List_Harvesting_Strategies()
+	hs, err := c.ListHarvestingStrategies()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -138,12 +138,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.New_Client()
+	c, err := insightcloudsec.NewClient()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	insights, err := c.List_Insights()
+	insights, err := c.ListInsights()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -168,7 +168,7 @@ import (
 )
 
 func main() {
-	ics, _ := insightcloudsec.New_Client()
+	ics, _ := insightcloudsec.NewClient()
 
 	azure_cloud := insightcloudsec.AzureCloudAccount{
 		CreationParameters: insightcloudsec.CloudAccountParameters{
@@ -181,7 +181,7 @@ func main() {
 			AppID:          "01234567-1234-1234-1234-012345678901",
 		},
 	}
-	account, err := ics.Add_Azure_Cloud(azure_cloud)
+	account, err := ics.AddAzureCloud(azure_cloud)
 	if err != nil {
 		fmt.Println(err)
 	}

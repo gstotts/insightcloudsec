@@ -28,7 +28,7 @@ type Servers struct {
 // AUTH SERVER FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) List_Authentication_Servers() (Servers, error) {
+func (c Client) ListAuthenticationServers() (Servers, error) {
 	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil)
 	if err != nil {
 		return Servers{}, err
