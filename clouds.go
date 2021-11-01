@@ -104,6 +104,7 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	if err != nil {
 		return Cloud{}, err
 	}
+	fmt.Println(data)
 
 	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
 	if err != nil {
