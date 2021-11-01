@@ -155,3 +155,38 @@ func main() {
 }
 ```
 </details>
+
+<details><summary>Add Azure Cloud</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	ics, _ := insightcloudsec.New_Client()
+
+	azure_cloud := insightcloudsec.AzureCloudAccount{
+		CreationParameters: insightcloudsec.CloudAccountParameters{
+			CloudType:      insightcloudsec.AZURE_CLOUD_TYPE,
+			AuthType:       insightcloudsec.STANDARD_AUTH,
+			Name:           "Azure Test",
+			ApiKeyOrCert:   "1111111111111111111111111111",
+			TenantID:       "01234567-1234-1234-1234-012345678901",
+			SubscriptionID: "01234567-1234-1234-1234-012345678901",
+			AppID:          "01234567-1234-1234-1234-012345678901",
+		},
+	}
+	account, err := ics.Add_Azure_Cloud(azure_cloud)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(account)
+}
+
+```
+</details>

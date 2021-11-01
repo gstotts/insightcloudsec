@@ -7,6 +7,21 @@ import (
 	"net/http"
 )
 
+// CONSTANTS
+///////////////////////////////////////////
+const (
+	// Cloud Type Constants
+	AWS_CLOUD_TYPE   = "AWS"
+	AZURE_CLOUD_TYPE = "AZURE_ARM"
+	GCP_CLOUD_TYPE   = "GCE"
+
+	// Cloud Authentication Type Constants
+	STS_ASSUME_AUTH      = "assume_role"
+	INSTANCE_ASSUME_AUTH = "instance_assume_role"
+	STANDARD_AUTH        = "standard"
+	CERT_AUTH            = "client_certificate"
+)
+
 // STRUCTS
 ///////////////////////////////////////////
 type Cloud struct {
@@ -101,11 +116,11 @@ type CloudAccountParameters struct {
 ///////////////////////////////////////////
 
 func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != AWS_CLOUD {
+	if cloud_data.CreationParameters.CloudType != AWS_CLOUD_TYPE {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AWS to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
 
-	if cloud_data.CreationParameters.AuthType == "assume_role" {
+	if cloud_data.CreationParameters.AuthType == STS_ASSUME_AUTH {
 		// If using STS Assume Role, make sure secret and key are set
 		if cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.SecretKey == "" {
 			return Cloud{}, fmt.Errorf("[-] ERROR: assume role AWS accounts require a secret and key are set")
@@ -136,17 +151,16 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 }
 
 func (c Client) Add_Azure_Cloud(cloud_data AzureCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD {
+	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD_TYPE {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
 
-	if cloud_data.CreationParameters.AuthType == "standard" && cloud_data.CreationParameters.ApiKeyOrCert == "" {
+	if cloud_data.CreationParameters.AuthType == STANDARD_AUTH && cloud_data.CreationParameters.ApiKeyOrCert == "" {
 		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud of AuthType standard requires ApiKeyOrCert be set")
-	} else if cloud_data.CreationParameters.AuthType == "client_certificate" && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
+	} else if cloud_data.CreationParameters.AuthType == CERT_AUTH && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
 		// If using cert auth, make sure pem and thumbprint set
 		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud of AuthType client_certificate requires ApiKeyOrCert and CertificateThumbprint be set")
-	} else if cloud_data.CreationParameters.AuthType != "standard" && cloud_data.CreationParameters.AuthType != "client_certificate" {
-		// Any other authtype should result in an error
+	} else if cloud_data.CreationParameters.AuthType != STANDARD_AUTH && cloud_data.CreationParameters.AuthType != CERT_AUTH {
 		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud accounts must use authtype standard or client_certificate, not %s", cloud_data.CreationParameters.AuthType)
 	}
 
