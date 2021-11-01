@@ -101,7 +101,7 @@ type CloudAccountParameters struct {
 ///////////////////////////////////////////
 
 func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != "AWS" {
+	if cloud_data.CreationParameters.CloudType != AWS_CLOUD {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AWS to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
 
@@ -136,7 +136,7 @@ func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
 }
 
 func (c Client) Add_Azure_Cloud(cloud_data AzureCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != "AZURE_ARM" {
+	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD {
 		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
 
