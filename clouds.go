@@ -73,14 +73,14 @@ type HarvestingStrategyList struct {
 }
 
 type AWSCloudAccount struct {
-	CreationParameters RoleParameters `json:"creation_parameters"`
+	CreationParameters CloudAccountParameters `json:"creation_parameters"`
 }
 
-type RoleParameters struct {
+type CloudAccountParameters struct {
 	CloudType     string `json:"cloud_type"`
 	AuthType      string `json:"authentication_type"`
 	Name          string `json:"name"`
-	AccountNumber int    `json:"account_number"`
+	AccountNumber string `json:"account_number"`
 	ApiKey        string `json:"api_key,omitempty"`
 	SecretKey     string `json:"secret_key,omitempty"`
 	RoleArn       string `json:"role_arn"`
