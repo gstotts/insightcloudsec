@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -71,8 +72,52 @@ type HarvestingStrategyList struct {
 	Strategies []HarvestingStrategy `json:"strategies"`
 }
 
+type AWSCloudAccount struct {
+	CreationParameters RoleParameters `json:"creation_parameters"`
+}
+
+type RoleParameters struct {
+	CloudType     string `json:"cloud_type"`
+	AuthType      string `json:"authentication_type"`
+	Name          string `json:"name"`
+	AccountNumber int    `json:"account_number"`
+	ApiKey        string `json:"api_key,omitempty"`
+	SecretKey     string `json:"secret_key,omitempty"`
+	RoleArn       string `json:"role_arn"`
+	ExternalID    string `json:"external_id"`
+	Duration      int    `json:"duration"`
+	SessionName   string `json:"session_name"`
+}
+
 // CLOUD FUNCTIONS
 ///////////////////////////////////////////
+
+func (c Client) Add_AWS_Cloud(cloud_data AWSCloudAccount) (Cloud, error) {
+	if cloud_data.CreationParameters.AuthType == "assume_role" {
+		// If using STS Assume Role, make sure secret and key are set
+		if cloud_data.CreationParameters.ApiKey == "" || cloud_data.CreationParameters.SecretKey == "" {
+			return Cloud{}, fmt.Errorf("[-] ERROR: assume role AWS accounts require a secret and key are set")
+		}
+	}
+
+	data, err := json.Marshal(cloud_data)
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	var ret Cloud
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Cloud{}, err
+	}
+
+	return ret, nil
+}
+
 func (c Client) List_Clouds() ([]Cloud, error) {
 	// Return a CloudList item containing all the clouds from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
