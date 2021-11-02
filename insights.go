@@ -71,7 +71,7 @@ type InsightPack struct {
 ///////////////////////////////////////////
 
 func (c Client) CreateInsight(i Insight) error {
-	// Creates an Insight in InsightCloudSec given the insight object with appropriate configs
+	// Creates an Insight in InsightCloudSec given the insight object with appropriate configs.  Returns an error if insight creation fails.
 
 	// Make sure severity is set
 	if i.Severity == 0 {
@@ -139,6 +139,15 @@ func (c Client) GetInsight(insight_id int, insight_source string) (*Insight, err
 	}
 
 	return &ret, nil
+}
+
+func (c Client) DeleteInsight(insight_id int) error {
+	// Deletes the Insight for the given id.  Returns an error if fails.
+	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/insights/%d/delete", insight_id), nil)
+	if err != nil || resp.StatusCode != 200 {
+		return err
+	}
+	return nil
 }
 
 func (c Client) GetInsight7Days(insight_id int, insight_source string) (map[string]int, error) {

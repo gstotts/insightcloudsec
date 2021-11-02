@@ -156,8 +156,9 @@ func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response
 	}
 
 	resp, err := c.httpClient.Do(req)
-	if err != nil {
+	if err != nil || resp.StatusCode != 200 {
 		return nil, APIRequestError{
+			Request:    *req,
 			StatusCode: resp.StatusCode,
 			Message:    resp.Status,
 		}
