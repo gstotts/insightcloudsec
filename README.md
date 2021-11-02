@@ -124,7 +124,7 @@ func main() {
 }
 ```
 </details>
-<details><summmary>Create Insight</summary>
+<details><summary>Create Insight</summary>
 
 ```go
 package main
