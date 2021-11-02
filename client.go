@@ -81,6 +81,8 @@ func __getSessionID(baseURL string, user string, pass string) (string, error) {
 
 // CLIENT FUNCTIONS
 ///////////////////////////////////////////
+
+// Creates a new InsightCloudSec client.  If no information is passed, it will request interactively.
 func NewClient() (*Client, error) {
 	baseURL := __getBaseURL()
 	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
@@ -111,6 +113,7 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
+// Creates a new InsightCloudSec client using the provided Api-Key
 func NewClientWithKey(apiKey string) (*Client, error) {
 	return &Client{
 		APIKey:     apiKey,
@@ -120,6 +123,7 @@ func NewClientWithKey(apiKey string) (*Client, error) {
 	}, nil
 }
 
+// Creates a new InsightCloudSec client using the provided credentials
 func NewClientWithCreds(user string, pass string) (*Client, error) {
 	baseURL := __getBaseURL()
 	sessionID, err := __getSessionID(baseURL, user, pass)
