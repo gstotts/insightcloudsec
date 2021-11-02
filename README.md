@@ -124,6 +124,36 @@ func main() {
 }
 ```
 </details>
+<details><summmary>Create Insight</summary>
+
+```go
+package main
+
+import (
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+
+	filter := insightcloudsec.InsightFilter{}
+	filter.Name = "divvy.filter.cloud_trail_in_all_regions"
+	insight := insightcloudsec.Insight{}
+	insight.Name = "Test Divvy Insight"
+	insight.Description = "Test Divvy Insight Description"
+	insight.Severity = insightcloudsec.INSIGHT_SEVERITY_MINOR
+	insight.Tags = nil
+	insight.Badges = nil
+	insight.BadgeFilterOperator = ""
+	insight.ResourceTypes = []string{"divvyorganizationservice"}
+	insight.Filters = []insightcloudsec.InsightFilter{filter}
+
+	ics, _ := insightcloudsec.NewClient()
+	ics.CreateInsight(insight)
+
+}
+
+```
+</details>
 <details><summary>List Insights</summary>
 	
 ```go
