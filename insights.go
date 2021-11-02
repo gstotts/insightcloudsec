@@ -44,10 +44,6 @@ type InsightFilter struct {
 	Collections map[string]interface{} `json:"collections"`
 }
 
-type InsightFilterCollectionsObject struct {
-	Regex string `json:"regex,omitempty"`
-}
-
 type BackofficeMetadata struct {
 	PackID       int    `json:"pack_id"`
 	PackName     string `json:"pack_name"`
