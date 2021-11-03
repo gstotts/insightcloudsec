@@ -13,10 +13,6 @@ type Organization struct {
 	Name string `json:"organization_name"`
 }
 
-type OrganizationList struct {
-	Orgs []Organizations
-}
-
 type Organizations struct {
 	Name string `json:"name"`
 	ID   int    `json:"organization_id"`
@@ -53,7 +49,7 @@ func (c Client) EditOrganizationName(resource_id int, name string) error {
 	if err != nil {
 		return fmt.Errorf("[-] error marshalling organization")
 	}
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/domain/organization/%d/update", resource_id), bytes.NewBuffer(data))
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/domain/organization/divvyorganization:%d/update", resource_id), bytes.NewBuffer(data))
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
@@ -61,22 +57,22 @@ func (c Client) EditOrganizationName(resource_id int, name string) error {
 }
 
 func (c Client) DeleteOrganization(resource_id int) error {
-	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/domain/organization/%d/delete", resource_id), nil)
+	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/domain/organization/divvyorganization:%d/delete", resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
 	return nil
 }
 
-func (c Client) ListOrganizations() (OrganizationList, error) {
+func (c Client) ListOrganizations() ([]Organizations, error) {
 	resp, err := c.makeRequest(http.MethodGet, "/v2/prototype/domain/organizations/get", nil)
 	if err != nil {
-		return OrganizationList{}, err
+		return []Organizations{}, err
 	}
 
-	var ret OrganizationList
+	var ret []Organizations
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return OrganizationList{}, err
+		return []Organizations{}, err
 	}
 	return ret, nil
 }
