@@ -34,18 +34,18 @@ type Cloud struct {
 	Name                string                `json:"name"`
 	CloudTypeID         string                `json:"cloud_type_id"`
 	AccountID           string                `json:"account_id"`
-	Created             ICSTime               `json:"creation_time"`
+	Created             string                `json:"creation_time"`
 	Status              string                `json:"status"`
-	BadgeCount          int                   `json:"badge_count"`
-	ResourceCount       int                   `json:"resource_count"`
-	LastRefreshed       ICSTime               `json:"last_refreshed"`
-	RoleARN             string                `json:"role_arn"`
+	BadgeCount          int                   `json:"badge_count,omitempty"`
+	ResourceCount       int                   `json:"resource_count,omitempty"`
+	LastRefreshed       string                `json:"last_refreshed"`
+	RoleARN             string                `json:"role_arn,omitempty"`
 	GroupResourceID     string                `json:"group_resource_id"`
 	ResourceID          string                `json:"resource_id"`
-	FailedResourceTypes []FailedResourceTypes `json:"failed_resource_types"`
-	EDHRole             string                `json:"event_driven_harvest_role"`
-	StrategyID          int                   `json:"strategy_id"`
-	CloudOrgID          string                `json:"cloud_organization_id"`
+	FailedResourceTypes []FailedResourceTypes `json:"failed_resource_types,omitempty"`
+	EDHRole             string                `json:"event_driven_harvest_role,omitempty"`
+	StrategyID          int                   `json:"strategy_id,omitempty"`
+	CloudOrgID          string                `json:"cloud_organization_id,omitempty"`
 }
 
 type FailedResourceTypes struct {
@@ -133,6 +133,43 @@ type CloudAccountParameters struct {
 	SubscriptionID        string             `json:"subscription_id,omitempty"`
 	CertificateThumbprint string             `json:"certificate_thumbprint,omitempty"`
 	GCPAuth               GCPAccountApiCreds `json:"api_credentials,omitempty"`
+}
+
+type QueueStatus struct {
+	P0          int       `json:"p0"`
+	P1          int       `json:"p1"`
+	P2          int       `json:"p2"`
+	SlowestJobs []SlowJob `json:"slowest_jobs"`
+	ProcessTime TimeStats `json:"process_time"`
+	Workers     int       `json:"workers"`
+	QueueWait   TimeStats `json:"queue_wait"`
+}
+
+type SlowJob struct {
+	Name     string
+	Duration float64
+}
+
+// Custom Unmarshal to separate out the array into name and duration
+func (s *SlowJob) UnmarshalJSON(b []byte) error {
+	var v []interface{}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+
+	s.Name, _ = v[0].(string)
+	s.Duration, _ = v[1].(float64)
+	return nil
+}
+
+type TimeStats struct {
+	Count   int     `json:"count"`
+	Min     float32 `json:"min"`
+	Max     float32 `json:"max"`
+	Sum     float32 `json:"sum"`
+	SumSQ   float64 `json:"sumsq"`
+	StdDev  float64 `json:"stddev"`
+	Average float64 `json:"average"`
 }
 
 // CLOUD ACCOUNT SETUP FUNCTIONS
@@ -267,6 +304,34 @@ func (c Client) ListCloudTypes() ([]CloudType, error) {
 	}
 
 	return ret.CloudTypes, nil
+}
+
+func (c Client) ListProvisioningClouds() (CloudList, error) {
+	// Returns a list of provisioning clouds.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/provisioning/list", nil)
+	if err != nil {
+		return CloudList{}, err
+	}
+
+	var ret CloudList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return CloudList{}, err
+	}
+	return ret, nil
+}
+
+func (c Client) QueueStatus() (QueueStatus, error) {
+	// Returns the queue status statistics.
+	resp, err := c.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
+	if err != nil {
+		return QueueStatus{}, err
+	}
+
+	var ret QueueStatus
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return QueueStatus{}, err
+	}
+	return ret, nil
 }
 
 func (c Client) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
