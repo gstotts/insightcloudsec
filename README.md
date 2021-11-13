@@ -220,3 +220,33 @@ func main() {
 
 ```
 </details>
+
+<details><summary>Create User</summary>
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+	ics, _ := insightcloudsec.NewClient()
+	details, err := ics.CreateUser(insightcloudsec.User{
+		Name:        "Testy McTester",
+		Username:    "tmctester",
+		Email:       "tmctester@test.com",
+		Password:    "testpassword123",
+		AccessLevel: "BASIC_USER",
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(details)
+}
+```
+</details>
