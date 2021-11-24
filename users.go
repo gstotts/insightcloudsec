@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // STRUCTS
@@ -154,4 +155,45 @@ func (c Client) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 		return APIUserResponse{}, err
 	}
 	return ret, nil
+}
+
+func (c Client) DeleteUser(user_resource_id string) error {
+	// Deletes the user corresponding to the given user_resource_id.
+	//
+	// Example usage:  client.DeleteUser("divvyuser:7")
+
+	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
+	if err != nil || resp.StatusCode != 200 {
+		return err
+	}
+	return nil
+}
+
+func (c Client) DeleteUserByUsername(username string) error {
+	// Deletes the user corresponding to the given username.
+	//
+	// Example usage: client.DeleteUserByUsername("jdoe")
+
+	users, err := c.ListUsers()
+	if err != nil {
+		return err
+	}
+
+	var id string
+	for _, user := range users {
+		if user.Username == strings.ToLower(username) {
+			id = user.ResourceID
+		}
+	}
+
+	if id == "" {
+		return fmt.Errorf("[-] ERROR: Username not found")
+	}
+
+	err = c.DeleteUser(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
