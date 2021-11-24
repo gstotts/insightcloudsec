@@ -1,5 +1,5 @@
 # insightcloudsec
-Go Module for Interacting with InsightCloudSec API
+Go Module for Interacting with InsightCloudSec API (formerly DivvyCloud)
 
 ### Examples
 
