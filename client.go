@@ -25,7 +25,7 @@ type Client struct {
 	APIKey     string
 	BaseURL    string
 	SessionID  string
-	httpClient *http.Client
+	HttpClient *http.Client
 }
 
 // HELPER FUNCTIONS
@@ -108,7 +108,7 @@ func NewClient() (*Client, error) {
 	return &Client{
 		APIKey:     apiKey,
 		BaseURL:    baseURL,
-		httpClient: client,
+		HttpClient: client,
 		SessionID:  sessionID,
 	}, nil
 }
@@ -118,7 +118,7 @@ func NewClientWithKey(apiKey string) (*Client, error) {
 	return &Client{
 		APIKey:     apiKey,
 		BaseURL:    __getBaseURL(),
-		httpClient: http.DefaultClient,
+		HttpClient: http.DefaultClient,
 		SessionID:  "",
 	}, nil
 }
@@ -133,7 +133,7 @@ func NewClientWithCreds(user string, pass string) (*Client, error) {
 	return &Client{
 		APIKey:     "",
 		BaseURL:    baseURL,
-		httpClient: http.DefaultClient,
+		HttpClient: http.DefaultClient,
 		SessionID:  sessionID,
 	}, nil
 }
@@ -155,7 +155,7 @@ func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response
 		req.Header.Set("Api-Key", c.APIKey)
 	}
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil || resp.StatusCode != 200 {
 		return nil, APIRequestError{
 			Request:    *req,
