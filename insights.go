@@ -67,6 +67,8 @@ type InsightPack struct {
 	Custom              []int                `json:"custom"`
 }
 
+type FilterRegistry map[string]FilterRegistryItem
+
 type FilterRegistryItem struct {
 	ID                 string           `json:"filter_id"`
 	Name               string           `json:"name"`
@@ -83,8 +85,8 @@ type FilterSettings struct {
 	DisplayName string          `json:"display_name,omitempty"`
 	Options     []string        `json:"options,omitempty"`
 	Choices     []FilterChoices `json:"choices,omitempty"`
-	MinValue    int             `json:"min_value,omitempty"`
-	_StateHash  string          `json:"_state_hash,omitempty"`
+	MinValue    float64         `json:"min_value,omitempty"`
+	StateHash   string          `json:"_state_hash,omitempty"`
 }
 
 type FilterChoices struct {
@@ -210,16 +212,16 @@ func (c Client) ListPacks() ([]InsightPack, error) {
 // FILTER FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) ListFilters() ([]FilterRegistryItem, error) {
+func (c Client) ListFilters() (FilterRegistry, error) {
 	// Returns a list of available filters from the Filter Registry
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/filter-registry", nil)
 	if err != nil {
-		return nil, err
+		return FilterRegistry{}, err
 	}
 
-	var ret []FilterRegistryItem
+	var ret FilterRegistry
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return FilterRegistry{}, err
 	}
 
 	return ret, nil
