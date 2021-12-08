@@ -67,6 +67,33 @@ type InsightPack struct {
 	Custom              []int                `json:"custom"`
 }
 
+type FilterRegistry map[string]FilterRegistryItem
+
+type FilterRegistryItem struct {
+	ID                 string           `json:"filter_id"`
+	Name               string           `json:"name"`
+	Description        string           `json:"description"`
+	SupportedResources []string         `json:"supported_resources"`
+	SupportsCommon     bool             `json:"supports_common"`
+	SupportedClouds    []string         `json:"supported_clouds"`
+	SettingsConfig     []FilterSettings `json:"settings_config,omitempty"`
+}
+
+type FilterSettings struct {
+	FieldType   string          `json:"field_type,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	DisplayName string          `json:"display_name,omitempty"`
+	Options     []string        `json:"options,omitempty"`
+	Choices     []FilterChoices `json:"choices,omitempty"`
+	MinValue    float64         `json:"min_value,omitempty"`
+	StateHash   string          `json:"_state_hash,omitempty"`
+}
+
+type FilterChoices struct {
+	Value        string `json:"value,omitempty"`
+	DisplayValue string `json:"display_value,omitempty"`
+}
+
 // INSIGHT FUNCTIONS
 ///////////////////////////////////////////
 
@@ -184,3 +211,18 @@ func (c Client) ListPacks() ([]InsightPack, error) {
 
 // FILTER FUNCTIONS
 ///////////////////////////////////////////
+
+func (c Client) ListFilters() (FilterRegistry, error) {
+	// Returns a list of available filters from the Filter Registry
+	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/filter-registry", nil)
+	if err != nil {
+		return FilterRegistry{}, err
+	}
+
+	var ret FilterRegistry
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return FilterRegistry{}, err
+	}
+
+	return ret, nil
+}
