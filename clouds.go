@@ -291,19 +291,19 @@ func (c Client) ListClouds() ([]Cloud, error) {
 	return ret.Clouds, nil
 }
 
-func (c Client) ListCloudTypes() ([]CloudType, error) {
+func (c Client) ListCloudTypes() (CloudTypesList, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
 	if err != nil {
-		return nil, err
+		return CloudTypesList{}, err
 	}
 
 	var ret CloudTypesList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return CloudTypesList{}, err
 	}
 
-	return ret.CloudTypes, nil
+	return ret, nil
 }
 
 func (c Client) ListProvisioningClouds() (CloudList, error) {
