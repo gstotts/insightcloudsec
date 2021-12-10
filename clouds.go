@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // CONSTANTS
@@ -289,6 +290,18 @@ func (c Client) ListClouds() (CloudList, error) {
 	}
 
 	return ret, nil
+}
+
+func (c Client) GetCloudByName(name string) (Cloud, error) {
+	// Returns the specific cloud of the name given.
+	all_clouds, _ := c.ListClouds()
+	for _, cloud := range all_clouds.Clouds {
+		if strings.EqualFold(cloud.Name, name) {
+			return cloud, nil
+		}
+	}
+
+	return Cloud{}, fmt.Errorf("[-] ERROR: Cloud Named %s Not Found", name)
 }
 
 func (c Client) ListCloudTypes() (CloudTypesList, error) {
