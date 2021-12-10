@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _, t := range types.CloudTypes {
+	for _, t := range types {
 		fmt.Println(t.Name)
 	}
 }
