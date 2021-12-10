@@ -304,6 +304,18 @@ func (c Client) GetCloudByName(name string) (Cloud, error) {
 	return Cloud{}, fmt.Errorf("[-] ERROR: Cloud Named %s Not Found", name)
 }
 
+func (c Client) GetCloudByID(id int) (Cloud, error) {
+	// Returns the specific cloud of the ID given.
+	all_clouds, _ := c.ListClouds()
+	for _, cloud := range all_clouds.Clouds {
+		if id == cloud.ID {
+			return cloud, nil
+		}
+	}
+
+	return Cloud{}, fmt.Errorf("[-] ERROR: Cloud of ID %d Not Found", id)
+}
+
 func (c Client) ListCloudTypes() (CloudTypesList, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
