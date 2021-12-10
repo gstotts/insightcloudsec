@@ -276,19 +276,19 @@ func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 // MANAGING CLOUD FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) ListClouds() ([]Cloud, error) {
+func (c Client) ListClouds() (CloudList, error) {
 	// Return a CloudList item containing all the clouds from the API.
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
 	if err != nil {
-		return nil, err
+		return CloudList{}, err
 	}
 
 	var ret CloudList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return CloudList{}, err
 	}
 
-	return ret.Clouds, nil
+	return ret, nil
 }
 
 func (c Client) ListCloudTypes() (CloudTypesList, error) {
@@ -349,18 +349,18 @@ func (c Client) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 	return ret.Strategies, nil
 }
 
-func (c Client) ListCloudRegions(target Cloud) ([]CloudRegion, error) {
+func (c Client) ListCloudRegions(target Cloud) (CloudRegionList, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
 	fmt.Println(target.ResourceID)
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
 	if err != nil {
-		return nil, err
+		return CloudRegionList{}, err
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return CloudRegionList{}, err
 	}
 
-	return ret.Regions, nil
+	return ret, nil
 }

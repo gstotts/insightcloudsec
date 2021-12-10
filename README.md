@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for _, cloud := range clouds {
+	for _, cloud := range clouds.Clouds {
 		fmt.Println(cloud.Name)
 	}
 }
@@ -87,7 +87,7 @@ func main() {
 		fmt.Printf("Name: %s\n", cloud.Name)
 		regions, _ := c.ListCloudRegions(cloud)
 		fmt.Println("Regions:")
-		for _, region := range regions {
+		for _, region := range regions.Regions {
 			fmt.Printf("- %s\n", region.Name)
 		}
 	}
