@@ -177,20 +177,9 @@ type TimeStats struct {
 ///////////////////////////////////////////
 
 func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != AWS_CLOUD_TYPE {
-		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AWS to use, not %s", cloud_data.CreationParameters.CloudType)
-	}
-
-	if cloud_data.CreationParameters.AuthType == STS_ASSUME_AUTH {
-		// If using STS Assume Role, make sure secret and key are set
-		if cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.SecretKey == "" {
-			return Cloud{}, fmt.Errorf("[-] ERROR: assume role AWS accounts require a secret and key are set")
-		}
-	}
-
-	// Make sure AWS properties exist only, otherwise return error
-	if cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
-		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account of type AWS must not have TenantID, SubscriptionID or AppID set")
+	err := validateAWSCloud(cloud_data)
+	if err != nil {
+		return Cloud{}, nil
 	}
 
 	data, err := json.Marshal(cloud_data)
@@ -212,22 +201,9 @@ func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 }
 
 func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD_TYPE {
-		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
-	}
-
-	if cloud_data.CreationParameters.AuthType == STANDARD_AUTH && cloud_data.CreationParameters.ApiKeyOrCert == "" {
-		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud of AuthType standard requires ApiKeyOrCert be set")
-	} else if cloud_data.CreationParameters.AuthType == CERT_AUTH && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
-		// If using cert auth, make sure pem and thumbprint set
-		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud of AuthType client_certificate requires ApiKeyOrCert and CertificateThumbprint be set")
-	} else if cloud_data.CreationParameters.AuthType != STANDARD_AUTH && cloud_data.CreationParameters.AuthType != CERT_AUTH {
-		return Cloud{}, fmt.Errorf("[-] ERROR: azure cloud accounts must use authtype standard or client_certificate, not %s", cloud_data.CreationParameters.AuthType)
-	}
-
-	// Make sure Azure properties exist only, otherwise eliminate
-	if cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.Duration != 0 || cloud_data.CreationParameters.AccountNumber != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
-		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account of type AZURE_ARM must not have RoleArn, SecretKey, SessionName, Duration, AccountNumber or ExternalID set")
+	err := validateAzureCloud(cloud_data)
+	if err != nil {
+		return Cloud{}, err
 	}
 
 	data, err := json.Marshal(cloud_data)
@@ -249,10 +225,11 @@ func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 }
 
 func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
-	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
-		return Cloud{}, fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
-	}
+	err := validateGCPCloud(cloud_data)
+	if err != nil {
+		return Cloud{}, err
 
+	}
 	data, err := json.Marshal(cloud_data)
 	if err != nil {
 		return Cloud{}, err
@@ -269,6 +246,90 @@ func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 	}
 
 	return ret, nil
+}
+
+func (c Client) UpdateCloud(org_id int, cloud_data CloudAccountParameters) (Cloud, error) {
+	if cloud_data.CloudType == AWS_CLOUD_TYPE {
+		err := validateAWSCloud(AWSCloudAccount{cloud_data})
+		if err != nil {
+			return Cloud{}, err
+		}
+	} else if cloud_data.CloudType == AZURE_CLOUD_TYPE {
+		err := validateAzureCloud(AzureCloudAccount{cloud_data})
+		if err != nil {
+			return Cloud{}, err
+		}
+	} else if cloud_data.CloudType == GCP_CLOUD_TYPE {
+		err := validateGCPCloud(GCPCloudAccount{cloud_data})
+		if err != nil {
+			return Cloud{}, err
+		}
+	} else {
+		return Cloud{}, fmt.Errorf("[-] ERROR: Invalid cloud type to update: %s", cloud_data.CloudType)
+	}
+
+	data, err := json.Marshal(cloud_data)
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", org_id), bytes.NewBuffer(data))
+	if err != nil {
+		return Cloud{}, err
+	}
+
+	var ret Cloud
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Cloud{}, err
+	}
+
+	return ret, nil
+}
+
+func validateAWSCloud(cloud_data AWSCloudAccount) error {
+	if cloud_data.CreationParameters.CloudType != AWS_CLOUD_TYPE {
+		return fmt.Errorf("[-] ERROR: cloud account must be of type AWS to use, not %s", cloud_data.CreationParameters.CloudType)
+	}
+
+	if cloud_data.CreationParameters.AuthType == STS_ASSUME_AUTH {
+		// If using STS Assume Role, make sure secret and key are set
+		if cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.SecretKey == "" {
+			return fmt.Errorf("[-] ERROR: assume role AWS accounts require a secret and key are set")
+		}
+	}
+
+	// Make sure AWS properties exist only, otherwise return error
+	if cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type AWS must not have TenantID, SubscriptionID or AppID set")
+	}
+
+	return nil
+}
+
+func validateAzureCloud(cloud_data AzureCloudAccount) error {
+	if cloud_data.CreationParameters.AuthType == STANDARD_AUTH && cloud_data.CreationParameters.ApiKeyOrCert == "" {
+		return fmt.Errorf("[-] ERROR: azure cloud of AuthType standard requires ApiKeyOrCert be set")
+	} else if cloud_data.CreationParameters.AuthType == CERT_AUTH && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
+		// If using cert auth, make sure pem and thumbprint set
+		return fmt.Errorf("[-] ERROR: azure cloud of AuthType client_certificate requires ApiKeyOrCert and CertificateThumbprint be set")
+	} else if cloud_data.CreationParameters.AuthType != STANDARD_AUTH && cloud_data.CreationParameters.AuthType != CERT_AUTH {
+		return fmt.Errorf("[-] ERROR: azure cloud accounts must use authtype standard or client_certificate, not %s", cloud_data.CreationParameters.AuthType)
+	}
+
+	// Make sure Azure properties exist only, otherwise eliminate
+	if cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.Duration != 0 || cloud_data.CreationParameters.AccountNumber != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type AZURE_ARM must not have RoleArn, SecretKey, SessionName, Duration, AccountNumber or ExternalID set")
+	}
+
+	return nil
+}
+
+func validateGCPCloud(cloud_data GCPCloudAccount) error {
+	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
+		return fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
+	}
+
+	return nil
 }
 
 // CLOUD ORG FUNCTIONS
