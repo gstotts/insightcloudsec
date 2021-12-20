@@ -248,7 +248,7 @@ func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) UpdateCloud(org_id int, cloud_data CloudAccountParameters) (Cloud, error) {
+func (c Client) UpdateCloud(id int, cloud_data CloudAccountParameters) (Cloud, error) {
 	if cloud_data.CloudType == AWS_CLOUD_TYPE {
 		err := validateAWSCloud(AWSCloudAccount{cloud_data})
 		if err != nil {
@@ -273,7 +273,7 @@ func (c Client) UpdateCloud(org_id int, cloud_data CloudAccountParameters) (Clou
 		return Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", org_id), bytes.NewBuffer(data))
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), bytes.NewBuffer(data))
 	if err != nil {
 		return Cloud{}, err
 	}
