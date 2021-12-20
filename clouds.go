@@ -332,6 +332,15 @@ func validateGCPCloud(cloud_data GCPCloudAccount) error {
 	return nil
 }
 
+func (c Client) DeleteCloud(cloud_resource_id string) error {
+	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/cloud/%s/delete", cloud_resource_id), nil)
+	if err != nil || resp.StatusCode != 200 {
+		return err
+	}
+
+	return nil
+}
+
 // CLOUD ORG FUNCTIONS
 ///////////////////////////////////////////
 
