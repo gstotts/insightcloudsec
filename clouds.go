@@ -134,6 +134,7 @@ type CloudAccountParameters struct {
 	SubscriptionID        string             `json:"subscription_id,omitempty"`
 	CertificateThumbprint string             `json:"certificate_thumbprint,omitempty"`
 	GCPAuth               GCPAccountApiCreds `json:"api_credentials,omitempty"`
+	Project               string             `json:"project,omitempty"`
 }
 
 type QueueStatus struct {
