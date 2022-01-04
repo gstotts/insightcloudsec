@@ -81,20 +81,20 @@ type UserList struct {
 
 // USER FUNCTIONS
 
-func (c Client) ListUsers() ([]UserListDetails, error) {
+func (c Client) ListUsers() (UserList, error) {
 	// List all InsightCloudSec users
 
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
 	if err != nil {
-		return nil, err
+		return UserList{}, err
 	}
 
 	var ret UserList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return UserList{}, err
 	}
 
-	return ret.Users, nil
+	return ret, nil
 }
 
 func (c Client) CreateUser(user User) (UserListDetails, error) {
@@ -180,7 +180,7 @@ func (c Client) DeleteUserByUsername(username string) error {
 	}
 
 	var id string
-	for _, user := range users {
+	for _, user := range users.Users {
 		if user.Username == strings.ToLower(username) {
 			id = user.ResourceID
 		}
