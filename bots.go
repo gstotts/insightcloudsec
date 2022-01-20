@@ -7,6 +7,37 @@ import (
 	"net/http"
 )
 
+// CONSTANTS
+///////////////////////////////////////////
+
+const (
+	// Bot Severities
+	BOT_SEVERITY_LOW    = "low"
+	BOT_SEVERITY_MEDIUM = "medium"
+	BOT_SEVERITY_HIGH   = "high"
+
+	// Bot Categories
+	BOT_CATEGORY_SECURITY       = "Security"
+	BOT_CATEGORY_OPTIMIZATION   = "Optimization"
+	BOT_CATEGORY_CURATION       = "Curation"
+	BOT_CATEGORY_BEST_PRACTICES = "Best Practices"
+	BOT_CATEOGRY_MISC           = "Miscellaneous"
+
+	// Bot States
+	BOT_STATE_RUNNING  = "RUNNING"
+	BOT_STATE_ARCHIVED = "ARCHIVED"
+	BOT_STATE_SCANNING = "SCANNING"
+	BOT_STATE_PAUSED   = "PAUSED"
+)
+
+// VARIABLES FOR VALIDATIONS
+///////////////////////////////////////////
+var (
+	BOT_SEVERITY_RANGES = []string{BOT_SEVERITY_HIGH, BOT_SEVERITY_MEDIUM, BOT_SEVERITY_LOW}
+	BOT_CATEGORIES      = []string{BOT_CATEGORY_SECURITY, BOT_CATEGORY_OPTIMIZATION, BOT_CATEGORY_CURATION, BOT_CATEGORY_BEST_PRACTICES, BOT_CATEOGRY_MISC}
+	BOT_STATES          = []string{BOT_STATE_RUNNING, BOT_STATE_PAUSED, BOT_STATE_ARCHIVED, BOT_STATE_SCANNING}
+)
+
 // STRUCTS
 ///////////////////////////////////////////
 type Bot struct {
@@ -70,6 +101,11 @@ type BotAction struct {
 ///////////////////////////////////////////
 
 func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
+	err := validateBot(bot_data)
+	if err != nil {
+		return BotResults{}, nil
+	}
+
 	data, err := json.Marshal(bot_data)
 	if err != nil {
 		return BotResults{}, err
@@ -100,4 +136,15 @@ func (c Client) GetBotByID(id string) (BotResults, error) {
 	}
 
 	return ret, nil
+}
+
+func validateBot(b Bot) error {
+	if !isInSlice(b.Severity, BOT_SEVERITY_RANGES) {
+		return fmt.Errorf("[-] ERROR: Bot Severity must be one of %s", BOT_SEVERITY_RANGES)
+	}
+
+	if !isInSlice(b.Category, BOT_CATEGORIES) {
+		return fmt.Errorf("[-] ERROR: Bot Category must be one of %s", BOT_CATEGORIES)
+	}
+	return nil
 }
