@@ -180,7 +180,7 @@ type TimeStats struct {
 func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	err := validateAWSCloud(cloud_data)
 	if err != nil {
-		return Cloud{}, nil
+		return Cloud{}, err
 	}
 
 	data, err := json.Marshal(cloud_data)
