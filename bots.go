@@ -101,6 +101,7 @@ type BotAction struct {
 ///////////////////////////////////////////
 
 func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
+	// Function creates a bot with the given information provided in a Bot type
 	err := validateBot(bot_data)
 	if err != nil {
 		return BotResults{}, nil
@@ -125,6 +126,7 @@ func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
 }
 
 func (c Client) GetBotByID(id string) (BotResults, error) {
+	// Function returns bot results for the given Resource ID or an error if failure
 	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/get", id), nil)
 	if err != nil {
 		return BotResults{}, err
@@ -138,7 +140,20 @@ func (c Client) GetBotByID(id string) (BotResults, error) {
 	return ret, nil
 }
 
+func (c Client) PauseBot(id string) error {
+	// Function pauses the bot of the given Resource ID and returns error if failed
+	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/pause", id), nil)
+	return err
+}
+
+func (c Client) EnableBot(id string) error {
+	// Function enables the both of the given Resource ID and returns error if failed
+	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/resume", id), nil)
+	return err
+}
+
 func validateBot(b Bot) error {
+	// Function validates the severity and categories of a bot are valid prior to creation.
 	if !isInSlice(b.Severity, BOT_SEVERITY_RANGES) {
 		return fmt.Errorf("[-] ERROR: Bot Severity must be one of %s", BOT_SEVERITY_RANGES)
 	}
