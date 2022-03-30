@@ -124,6 +124,11 @@ func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
 	return ret, nil
 }
 
+func (c Client) ArchiveBot(id string) error {
+	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/archive", id), nil)
+	return err
+}
+
 func (c Client) GetBotByID(id string) (BotResults, error) {
 	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/get", id), nil)
 	if err != nil {
