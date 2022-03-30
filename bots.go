@@ -129,6 +129,18 @@ func (c Client) ArchiveBot(id string) error {
 	return err
 }
 
+func (c Client) PauseBot(id string) error {
+	// Function pauses the bot of the given Resource ID and returns error if failed
+	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/pause", id), nil)
+	return err
+}
+
+func (c Client) EnableBot(id string) error {
+	// Function enables the both of the given Resource ID and returns error if failed
+	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/resume", id), nil)
+	return err
+}
+
 func (c Client) GetBotByID(id string) (BotResults, error) {
 	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/get", id), nil)
 	if err != nil {
