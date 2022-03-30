@@ -161,18 +161,6 @@ func (c Client) GetBotByID(id string) (BotResults, error) {
 	return ret, nil
 }
 
-func (c Client) PauseBot(id string) error {
-	// Function pauses the bot of the given Resource ID and returns error if failed
-	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/pause", id), nil)
-	return err
-}
-
-func (c Client) EnableBot(id string) error {
-	// Function enables the both of the given Resource ID and returns error if failed
-	_, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/resume", id), nil)
-	return err
-}
-
 func (c Client) ListBotActions(args... ) (BotActionResults, error) {
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/botfactory/function-registry/list", nil)
 	if err != nil {
