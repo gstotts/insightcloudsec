@@ -138,12 +138,15 @@ func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
 }
 
 func (c Client) ListBots() (BotList, error) {
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/botfactory/list", nil)
+	default_body := make(map[string]interface{})
+	default_body["filters"] = []string{}
+	default_body["offset"] = 0
+	data, _ := json.Marshal(default_body)
+
+	resp, err := c.makeRequest(http.MethodPost, "/v2/public/botfactory/list", bytes.NewBuffer(data))
 	if err != nil {
 		return BotList{}, err
 	}
-	print(resp.Body)
-	print(resp.StatusCode)
 
 	var ret BotList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
