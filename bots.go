@@ -86,7 +86,7 @@ type BotResults struct {
 }
 
 type BotErrors struct {
-	Errors       int `json:"erorrs"`
+	Errors       int `json:"errors"`
 	Timeouts     int `json:"timeouts"`
 	InvalidPerms int `json:"invalid_perms"`
 }
