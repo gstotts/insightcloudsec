@@ -50,40 +50,53 @@ type Bot struct {
 	Instructions    BotInstructions `json:"instructions"`
 }
 
-type BotList struct{}
+type BotList struct {
+	Bots  []BotResults `json:"bots"`
+	Count int          `json:"count"`
+}
 
 type BotResults struct {
-	ResourceID         string          `json:"resource_id"`
-	Name               string          `json:"name"`
-	Description        string          `json:"description"`
-	Notes              string          `json:"notes"`
-	InsightID          string          `json:"insight_id"`
-	Source             string          `json:"source"`
-	InsightName        string          `json:"insight_name"`
-	Owner              string          `json:"owner"`
-	OwnerName          string          `json:"owner_name"`
-	State              string          `json:"state"`
-	DateCreated        string          `json:"date_created"`
-	DateModified       string          `json:"date_modified"`
-	Category           string          `json:"category"`
-	BadgeScopeOperator string          `json:"badge_scope_operator"`
-	Instructions       BotInstructions `json:"instructions"`
-	Valid              bool            `json:"valid"`
-	Errors             []interface{}   `json:"errors"`
-	Severity           string          `json:"severity"`
-	DetailedLogging    bool            `json:"detailed_logging"`
-	Scope              []string        `json:"scope"`
+	ResourceID            string                 `json:"resource_id"`
+	Name                  string                 `json:"name"`
+	Description           string                 `json:"description"`
+	Notes                 string                 `json:"notes"`
+	InsightID             string                 `json:"insight_id"`
+	Source                string                 `json:"source"`
+	InsightName           string                 `json:"insight_name"`
+	Owner                 string                 `json:"owner"`
+	OwnerName             string                 `json:"owner_name"`
+	State                 string                 `json:"state"`
+	DateCreated           string                 `json:"date_created"`
+	DateModified          string                 `json:"date_modified"`
+	Category              string                 `json:"category"`
+	BadgeScopeOperator    string                 `json:"badge_scope_operator"`
+	Instructions          BotInstructions        `json:"instructions"`
+	Schedule              map[string]interface{} `json:"schedule"`
+	HookpointCreated      bool                   `json:"hookpoint_created"`
+	HookpointModified     bool                   `json:"hookpoint_modified"`
+	HookpointTagsModified bool                   `json:"hookpoint_tags_modified"`
+	HookpointDestroyed    bool                   `json:"hookpoint_destroyed"`
+	NextScheduled         string                 `json:"next_scheduled_run"`
+	Valid                 bool                   `json:"valid"`
+	Errors                BotErrors              `json:"errors"`
+	Severity              string                 `json:"severity"`
+	DetailedLogging       bool                   `json:"detailed_logging"`
+	Version               int                    `json:"version"`
+	ExemptionsCount       int                    `json:"exemptions_count"`
+}
+
+type BotErrors struct {
+	Errors       int `json:"erorrs"`
+	Timeouts     int `json:"timeouts"`
+	InvalidPerms int `json:"invalid_perms"`
 }
 
 type BotInstructions struct {
-	ResourceTypes       []string            `json:"resource_types"`
-	Filters             []BotFilter         `json:"filters"`
-	Actions             []BotAction         `json:"actions"`
-	Groups              []string            `json:"groups"`
-	Badges              []map[string]string `json:"badges"`
-	Hookpoints          []string            `json:"hookpoints"`
-	Schedule            string              `json:"schedule,omitempty"`
-	ScheduleDescription string              `json:"schedule_description,omitempty"`
+	ResourceTypes []string            `json:"resource_types"`
+	Filters       []BotFilter         `json:"filters"`
+	Actions       []BotAction         `json:"actions"`
+	Groups        []string            `json:"groups"`
+	Badges        []map[string]string `json:"badges"`
 }
 
 type BotFilter struct {
@@ -119,6 +132,25 @@ func (c Client) CreateBot(bot_data Bot) (BotResults, error) {
 	var ret BotResults
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return BotResults{}, err
+	}
+
+	return ret, nil
+}
+
+func (c Client) ListBots() (BotList, error) {
+	default_body := make(map[string]interface{})
+	default_body["filters"] = []string{}
+	default_body["offset"] = 0
+	data, _ := json.Marshal(default_body)
+
+	resp, err := c.makeRequest(http.MethodPost, "/v2/public/botfactory/list", bytes.NewBuffer(data))
+	if err != nil {
+		return BotList{}, err
+	}
+
+	var ret BotList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return BotList{}, err
 	}
 
 	return ret, nil
