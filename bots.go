@@ -56,39 +56,56 @@ type BotList struct {
 }
 
 type BotResults struct {
-	ResourceID            string                 `json:"resource_id"`
-	Name                  string                 `json:"name"`
-	Description           string                 `json:"description"`
-	Notes                 string                 `json:"notes"`
-	InsightID             string                 `json:"insight_id"`
-	Source                string                 `json:"source"`
-	InsightName           string                 `json:"insight_name"`
-	Owner                 string                 `json:"owner"`
-	OwnerName             string                 `json:"owner_name"`
-	State                 string                 `json:"state"`
-	DateCreated           string                 `json:"date_created"`
-	DateModified          string                 `json:"date_modified"`
-	Category              string                 `json:"category"`
-	BadgeScopeOperator    string                 `json:"badge_scope_operator"`
-	Instructions          BotInstructions        `json:"instructions"`
-	Schedule              map[string]interface{} `json:"schedule"`
-	HookpointCreated      bool                   `json:"hookpoint_created"`
-	HookpointModified     bool                   `json:"hookpoint_modified"`
-	HookpointTagsModified bool                   `json:"hookpoint_tags_modified"`
-	HookpointDestroyed    bool                   `json:"hookpoint_destroyed"`
-	NextScheduled         string                 `json:"next_scheduled_run"`
-	Valid                 bool                   `json:"valid"`
-	EventFailures         BotErrors              `json:"event_failures"`
-	Severity              string                 `json:"severity"`
-	DetailedLogging       bool                   `json:"detailed_logging"`
-	Version               int                    `json:"version"`
-	ExemptionsCount       int                    `json:"exemptions_count"`
+	ResourceID            string          `json:"resource_id"`
+	Name                  string          `json:"name"`
+	Description           string          `json:"description"`
+	Notes                 string          `json:"notes"`
+	InsightID             string          `json:"insight_id"`
+	Source                string          `json:"source"`
+	InsightName           string          `json:"insight_name"`
+	Owner                 string          `json:"owner"`
+	OwnerName             string          `json:"owner_name"`
+	State                 string          `json:"state"`
+	DateCreated           string          `json:"date_created"`
+	DateModified          string          `json:"date_modified"`
+	Category              string          `json:"category"`
+	BadgeScopeOperator    string          `json:"badge_scope_operator"`
+	Instructions          BotInstructions `json:"instructions"`
+	Schedule              BotSchedule     `json:"schedule"`
+	HookpointCreated      bool            `json:"hookpoint_created"`
+	HookpointModified     bool            `json:"hookpoint_modified"`
+	HookpointTagsModified bool            `json:"hookpoint_tags_modified"`
+	HookpointDestroyed    bool            `json:"hookpoint_destroyed"`
+	NextScheduled         float32         `json:"next_scheduled_run"`
+	Valid                 bool            `json:"valid"`
+	EventFailures         BotErrors       `json:"event_failures"`
+	Severity              string          `json:"severity"`
+	DetailedLogging       bool            `json:"detailed_logging"`
+	Version               int             `json:"version"`
+	ExemptionsCount       int             `json:"exemptions_count"`
 }
 
 type BotErrors struct {
 	Errors       int `json:"errors"`
 	Timeouts     int `json:"timeouts"`
 	InvalidPerms int `json:"invalid_perms"`
+}
+
+type BotSchedule struct {
+	Type         string               `json:"_type"`
+	TimeOfDay    BotScheduleTimeOfDay `json:"time_of_day"`
+	DayOfMonth   int                  `json:"day_of_month"`
+	DayOfWeek    int                  `json:"day_of_week"`
+	ExcludeDays  []int                `json:"exclude_days"`
+	MinuteOfHour int                  `json:"minute_of_hour"`
+	SecondOfHour int                  `json:"second_of_hour"`
+}
+
+type BotScheduleTimeOfDay struct {
+	Type   string `json:"_type"`
+	Second int    `json:"second"`
+	Minute int    `json:"minute"`
+	Hour   int    `json:"hour"`
 }
 
 type BotInstructions struct {
@@ -100,8 +117,8 @@ type BotInstructions struct {
 }
 
 type BotFilter struct {
-	Config interface{} `json:"config"`
-	Name   string      `json:"name"`
+	Config map[string]interface{} `json:"config"`
+	Name   string                 `json:"name"`
 }
 
 type BotAction struct {
