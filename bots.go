@@ -76,7 +76,7 @@ type BotResults struct {
 	HookpointModified     bool            `json:"hookpoint_modified"`
 	HookpointTagsModified bool            `json:"hookpoint_tags_modified"`
 	HookpointDestroyed    bool            `json:"hookpoint_destroyed"`
-	NextScheduled         string          `json:"next_scheduled_run"`
+	NextScheduled         float32         `json:"next_scheduled_run"`
 	Valid                 bool            `json:"valid"`
 	EventFailures         BotErrors       `json:"event_failures"`
 	Severity              string          `json:"severity"`
