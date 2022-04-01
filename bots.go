@@ -91,6 +91,23 @@ type BotErrors struct {
 	InvalidPerms int `json:"invalid_perms"`
 }
 
+type BotSchedule struct {
+	Type         string               `json:"_type"`
+	TimeOfDay    BotScheduleTimeOfDay `json:"time_of_day"`
+	DayOfMonth   int                  `json:"day_of_month"`
+	DayOfWeek    int                  `json:"day_of_week"`
+	ExcludeDays  []int                `json:"exclude_days"`
+	MinuteOfHour int                  `json:"minute_of_hour"`
+	SecondOfHour int                  `json:"second_of_hour"`
+}
+
+type BotScheduleTimeOfDay struct {
+	Type   string `json:"_type"`
+	Second int    `json:"second"`
+	Minute int    `json:"minute"`
+	Hour   int    `json:"hour"`
+}
+
 type BotInstructions struct {
 	ResourceTypes []string            `json:"resource_types"`
 	Filters       []BotFilter         `json:"filters"`
@@ -100,8 +117,8 @@ type BotInstructions struct {
 }
 
 type BotFilter struct {
-	Config interface{} `json:"config"`
-	Name   string      `json:"name"`
+	Config map[string]interface{} `json:"config"`
+	Name   string                 `json:"name"`
 }
 
 type BotAction struct {
