@@ -10,7 +10,7 @@ import (
 
 // STRUCTS
 ///////////////////////////////////////////
-type Server struct {
+type Authentication_Server struct {
 	ID           int    `json:"server_id"`
 	Name         string `json:"server_name"`
 	Host         string `json:"server_host"`
@@ -21,22 +21,22 @@ type Server struct {
 	MappedGroups int    `json:"mapped_groups"`
 }
 
-type Servers struct {
-	Servers []Server `json:"servers"`
+type Authentication_Servers struct {
+	Servers []Authentication_Server `json:"servers"`
 }
 
 // AUTH SERVER FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) ListAuthenticationServers() (Servers, error) {
+func (c Client) List_Authentication_Servers() (Authentication_Servers, error) {
 	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil)
 	if err != nil {
-		return Servers{}, err
+		return Authentication_Servers{}, err
 	}
 
-	var ret Servers
+	var ret Authentication_Servers
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return Servers{}, err
+		return Authentication_Servers{}, err
 	}
 
 	return ret, nil
