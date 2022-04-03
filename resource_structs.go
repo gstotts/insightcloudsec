@@ -4,21 +4,21 @@ package insightcloudsec
 ///////////////////////////////////////////
 type Common_Resource_Values struct {
 	//Common Attributes
-	ID                   string            `json:"resource_id"`
-	Name                 string            `json:"resource_name"`
-	Type                 string            `json:"type"`
-	Cloud                string            `json:"cloud"`
-	Account              string            `json:"account"`
-	Account_ID           string            `json:"account_id"`
-	Account_Status       string            `json:"account_status"`
-	Org_Service_ID       int               `json:"organization_service_id"`
-	Availability_Zone    string            `json:"availablility_zone"`
-	Region               string            `json:"region"`
-	Creation_Timestamp   string            `json:"creation_timestamp"`
-	Discovered_Timestamp string            `json:"discovered_timestamp"`
-	Modified_Timestamp   string            `json:"modified_timestamp"`
-	Namespace_ID         string            `json:"namespace_id"`
-	Tags                 map[string]string `json:"tags"`
+	Resource_ID             string            `json:"resource_id"`
+	Resource_Name           string            `json:"resource_name"`
+	Type                    string            `json:"type"`
+	Cloud                   string            `json:"cloud"`
+	Account                 string            `json:"account"`
+	Account_ID              string            `json:"account_id"`
+	Account_Status          string            `json:"account_status"`
+	Organization_Service_ID int               `json:"organization_service_id"`
+	Availability_Zone       string            `json:"availablility_zone"`
+	Region                  string            `json:"region"`
+	Creation_Timestamp      string            `json:"creation_timestamp"`
+	Discovered_Timestamp    string            `json:"discovered_timestamp"`
+	Modified_Timestamp      string            `json:"modified_timestamp"`
+	Namespace_ID            string            `json:"namespace_id"`
+	Tags                    map[string]string `json:"tags"`
 }
 
 type Access_Analyzer struct {
@@ -472,71 +472,71 @@ type Databrick_Workspace struct {
 }
 
 type Data_Factory struct {
-	Common Common_Resource_Values `json:"datafactory,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Data_Lake_Storage struct {
-	Common Common_Resource_Values `json:"datalakestorage,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Datastore struct {
-	Common Common_Resource_Values `json:"datastore,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Datastream struct {
-	Common Common_Resource_Values `json:"datastream,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Datasync_Task struct {
-	Common Common_Resource_Values `json:"datasynctask,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DB_Cluster struct {
-	Common Common_Resource_Values `json:"dbcluster,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DB_Instance struct {
-	Common Common_Resource_Values `json:"dbinstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DB_Migration_Instance struct {
-	Common Common_Resource_Values `json:"dbmigrationinstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DB_Proxy struct {
-	Common Common_Resource_Values `json:"dbproxy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DB_Snapshot struct {
-	Common Common_Resource_Values `json:"dbsnapshot,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DDOS_Protection struct {
-	Common Common_Resource_Values `json:"ddosprotection,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Delivery_Stream struct {
-	Common Common_Resource_Values `json:"deliverystream,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Diagnostic_Setting struct {
-	Common Common_Resource_Values `json:"diagnosticsetting,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type DirectConnect struct {
-	Common Common_Resource_Values `json:"directconnect,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Directory_Service struct {
-	Common Common_Resource_Values `json:"directoryservice,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Distributed_Table struct {
-	Common Common_Resource_Values `json:"distributedtable,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Distributed_Table_Cluster struct {
-	Common Common_Resource_Values `json:"distributedtablecluster,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Divvy_Organization_Service struct {
@@ -561,11 +561,11 @@ type DNS_Zone struct {
 }
 
 type Domain_Group struct {
-	Common Common_Resource_Values `json:"domaingroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Domain_User struct {
-	Common Common_Resource_Values `json:"domainuser,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type ECS_Task_Definition struct {
@@ -585,51 +585,51 @@ type ECS_Task_Definition struct {
 }
 
 type Email_Service_Domain struct {
-	Common Common_Resource_Values `json:"emailservicedomain,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type ES_Instance struct {
-	Common Common_Resource_Values `json:"esinstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type ETL_Data_Catalog struct {
-	Common Common_Resource_Values `json:"etldatacatalog,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type ETL_Security_Config struct {
-	Common Common_Resource_Values `json:"etlsecurityconfig,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Event_Subscription struct {
-	Common Common_Resource_Values `json:"eventsubscription,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Fileshare struct {
-	Common Common_Resource_Values `json:"fileshare,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Forwarding_Rule struct {
-	Common Common_Resource_Values `json:"forwardingrule,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type GCP_Stackdriver_Sink struct {
-	Common Common_Resource_Values `json:"gcpstackdriversink,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Global_Loadbalancer struct {
-	Common Common_Resource_Values `json:"globalloadbalancer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Graph_Api struct {
-	Common Common_Resource_Values `json:"graphapi,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Hypervisor struct {
-	Common Common_Resource_Values `json:"hypervisor,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Identity_Provider struct {
-	Common Common_Resource_Values `json:"identityprovider,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type InstanceAssociation struct {
@@ -673,247 +673,255 @@ type Instance struct {
 }
 
 type Instance_Reservation struct {
-	Common Common_Resource_Values `json:"instancereservation,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Internet_Gateway struct {
-	Common Common_Resource_Values `json:"internetgateway,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Cluster_Role struct {
-	Common Common_Resource_Values `json:"kubernetesclusterrole,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Config_Map struct {
-	Common Common_Resource_Values `json:"kubernetesconfigmap,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Control_Plane struct {
-	Common Common_Resource_Values `json:"kubernetescontrolplane,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Cron_Job struct {
-	Common Common_Resource_Values `json:"kubernetescronjob,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Daemon_Set struct {
-	Common Common_Resource_Values `json:"kubernetesdaemonset,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Ingress struct {
-	Common Common_Resource_Values `json:"kubernetesingress,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Job struct {
-	Common Common_Resource_Values `json:"kubernetesjob,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Mutating_Webhook_Configuration struct {
-	Common Common_Resource_Values `json:"kubernetesmutatingwebhookconfiguration,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Namespace struct {
-	Common Common_Resource_Values `json:"kubernetesnamespace,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Network_Policy struct {
-	Common Common_Resource_Values `json:"kubernetesnetworkpolicy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Persistent_Volume struct {
-	Common Common_Resource_Values `json:"kubernetespersistentvolume,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Replica_Set struct {
-	Common Common_Resource_Values `json:"kubernetesreplicaset,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Role struct {
-	Common Common_Resource_Values `json:"kubernetesrole,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Secret struct {
-	Common Common_Resource_Values `json:"kubernetessecret,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Service struct {
-	Common Common_Resource_Values `json:"kubernetesservice,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Service_Account struct {
-	Common Common_Resource_Values `json:"kubernetesserviceaccount,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Stateful_Set struct {
-	Common Common_Resource_Values `json:"kubernetesstatefulset,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type K8s_Validating_Webhook_Configuration struct {
-	Common Common_Resource_Values `json:"kubernetesvalidatingwebhookconfiguration,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Lightsail struct {
-	Common Common_Resource_Values `json:"lightsail,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Loadbalancer struct {
-	Common Common_Resource_Values `json:"loadbalancer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Log_Analytics_Workspace struct {
-	Common Common_Resource_Values `json:"loganalyticsworkspace,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Logic_App struct {
-	Common Common_Resource_Values `json:"logicapp,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type MapReduce_Cluster struct {
-	Common Common_Resource_Values `json:"mapreducecluster,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type MC_Database_Cluster struct {
-	Common Common_Resource_Values `json:"mcdatabasecluster,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type MC_Instance struct {
-	Common Common_Resource_Values `json:"mcinstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type MC_Snapshot struct {
-	Common Common_Resource_Values `json:"mcsnapshot,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Message_Queue struct {
-	Common Common_Resource_Values `json:"messagequeue,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type ML_Instance struct {
-	Common Common_Resource_Values `json:"mlinstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type NAT_Gateway struct {
-	Common Common_Resource_Values `json:"natgateway,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Address_Group struct {
-	Common Common_Resource_Values `json:"networkaddressgroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Endpoint struct {
-	Common Common_Resource_Values `json:"networkendpoint,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Endpoint_Service struct {
-	Common Common_Resource_Values `json:"networkendpointservice,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Firewall struct {
-	Common Common_Resource_Values `json:"networkfirewall,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Firewall_Rule struct {
-	Common Common_Resource_Values `json:"networkfirewallrule,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Firewall_Rule_List struct {
-	Common Common_Resource_Values `json:"networkfirewallrulelist,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Flow_Log struct {
-	Common Common_Resource_Values `json:"networkflowlog,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Interface struct {
-	Common Common_Resource_Values `json:"networkinterface,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Network_Peer struct {
-	Common Common_Resource_Values `json:"networkpeer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Notification_Subscription struct {
-	Common Common_Resource_Values `json:"notificationsubscription,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Notification_Topic struct {
-	Common Common_Resource_Values `json:"notificationtopic,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Pod struct {
-	Common Common_Resource_Values `json:"pod,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Pod_Security_Policy struct {
-	Common Common_Resource_Values `json:"podsecuritypolicy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Private_Image struct {
-	Common Common_Resource_Values `json:"privateimage,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Private_Network struct {
-	Common Common_Resource_Values `json:"privatenetwork,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Private_Subnet struct {
-	Common Common_Resource_Values `json:"privatesubnet,omitempty"`
+	Common                  Common_Resource_Values `json:"common,omitempty"`
+	Subnet_ID               string                 `json:"subnet_id"`
+	Availability_Zone       string                 `json:"availability_zone"`
+	CIDR                    string                 `json:"cidr"`
+	Available_IPs           int                    `json:"available_ips"`
+	Network_Resource_ID     string                 `json:"network_resource_id"`
+	Network_ID              string                 `json:"network_id"`
+	Route_Table_Resource_ID string                 `json:"route_table_resource_id"`
+	Public                  bool                   `json:"public"`
 }
 
 type Public_IP struct {
-	Common Common_Resource_Values `json:"publicip,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Query_Log_Config struct {
-	Common Common_Resource_Values `json:"querylogconfig,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Recycle_Bin_Rule struct {
-	Common Common_Resource_Values `json:"recyclebinrule,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Resource_Access_List struct {
-	Common Common_Resource_Values `json:"resourceaccesslist,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Resource_Access_List_Rule struct {
-	Common Common_Resource_Values `json:"resourceaccesslistrule,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Resource_Group struct {
-	Common Common_Resource_Values `json:"resourcegroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type REST_Api struct {
-	Common Common_Resource_Values `json:"restapi,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type REST_Api_Domain struct {
-	Common Common_Resource_Values `json:"restapidomain,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type REST_Api_Key struct {
-	Common Common_Resource_Values `json:"restapikey,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type REST_API_Stage struct {
-	Common Common_Resource_Values `json:"restapistage,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Route struct {
-	Common Common_Resource_Values `json:"route,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Route_Table struct {
-	Common Common_Resource_Values `json:"routetable,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Search_Cluster struct {
-	Common Common_Resource_Values `json:"searchcluster,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Search_Index struct {
-	Common Common_Resource_Values `json:"searchindex,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Secret struct {
@@ -939,223 +947,223 @@ type Secret struct {
 }
 
 type Secure_File_Transfer struct {
-	Common Common_Resource_Values `json:"securefiletransfer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Serverless_Application struct {
-	Common Common_Resource_Values `json:"serverlessapplication,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Serverless_Function struct {
-	Common Common_Resource_Values `json:"serverlessfunction,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Serverless_Layer struct {
-	Common Common_Resource_Values `json:"serverlesslayer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Access_Key struct {
-	Common Common_Resource_Values `json:"serviceaccesskey,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Access_Point struct {
-	Common Common_Resource_Values `json:"serviceaccesspoint,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Alarm struct {
-	Common Common_Resource_Values `json:"servicealarm,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_App struct {
-	Common Common_Resource_Values `json:"serviceapp,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Certificate struct {
-	Common Common_Resource_Values `json:"servicecertificate,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Check struct {
-	Common Common_Resource_Values `json:"servicecheck,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Control_Policy struct {
-	Common Common_Resource_Values `json:"servicecontrolpolicy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Cost struct {
-	Common Common_Resource_Values `json:"servicecost,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Dataset struct {
-	Common Common_Resource_Values `json:"servicedataset,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Detector struct {
-	Common Common_Resource_Values `json:"servicedetector,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Domain struct {
-	Common Common_Resource_Values `json:"servicedomain,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Encryption_Key struct {
-	Common Common_Resource_Values `json:"serviceencryptionkey,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Encryption_Key_Vault struct {
-	Common Common_Resource_Values `json:"serviceencryptionkeyvault,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Event_Bus struct {
-	Common Common_Resource_Values `json:"serviceeventbus,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Event_Rule struct {
-	Common Common_Resource_Values `json:"serviceeventrule,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Group struct {
-	Common Common_Resource_Values `json:"servicegroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Limit struct {
-	Common Common_Resource_Values `json:"servicelimit,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Log_Group struct {
-	Common Common_Resource_Values `json:"serviceloggroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Outpost struct {
-	Common Common_Resource_Values `json:"serviceoutpost,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Policy struct {
-	Common Common_Resource_Values `json:"servicepolicy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Region struct {
-	Common Common_Resource_Values `json:"serviceregion,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_Role struct {
-	Common Common_Resource_Values `json:"servicerole,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Service_User struct {
-	Common Common_Resource_Values `json:"serviceuser,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Shared_Filesystem struct {
-	Common Common_Resource_Values `json:"sharedfilesystem,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Shared_Gallery struct {
-	Common Common_Resource_Values `json:"sharedgallery,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Shared_Gallery_Image struct {
-	Common Common_Resource_Values `json:"sharedgalleryimage,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Shared_Gallery_Image_Version struct {
-	Common Common_Resource_Values `json:"sharedgalleryimageversion,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Site_To_Site_VPN struct {
-	Common Common_Resource_Values `json:"sitetositevpn,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Snapshot struct {
-	Common Common_Resource_Values `json:"snapshot,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Spanner struct {
-	Common Common_Resource_Values `json:"spanner,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Spanner_Database struct {
-	Common Common_Resource_Values `json:"spannerdatabase,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type SSH_Keypair struct {
-	Common Common_Resource_Values `json:"sshkeypair,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type SSM_Document struct {
-	Common Common_Resource_Values `json:"ssmdocument,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Stack_Template struct {
-	Common Common_Resource_Values `json:"stacktemplate,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Step_Function struct {
-	Common Common_Resource_Values `json:"stepfunction,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Storage_Account struct {
-	Common Common_Resource_Values `json:"storageaccount,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Storage_Container struct {
-	Common Common_Resource_Values `json:"storagecontainer,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Storage_Gateway struct {
-	Common Common_Resource_Values `json:"storagegateway,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Stored_Parameter struct {
-	Common Common_Resource_Values `json:"storedparameter,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Stream_Instance struct {
-	Common Common_Resource_Values `json:"streaminstance,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Target_Proxy struct {
-	Common Common_Resource_Values `json:"targetproxy,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Threat_Finding struct {
-	Common Common_Resource_Values `json:"threatfinding,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Threat_Finding_Resource struct {
-	Common Common_Resource_Values `json:"threatfindingresource,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Timeseries_Database struct {
-	Common Common_Resource_Values `json:"timeseriesdatabase,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Traffic_Mirror_Target struct {
-	Common Common_Resource_Values `json:"trafficmirrortarget,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Transcoding_Pipeline struct {
-	Common Common_Resource_Values `json:"transcodingpipeline,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Transcription_Job struct {
-	Common Common_Resource_Values `json:"transcriptionjob,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Transit_Gateway struct {
-	Common Common_Resource_Values `json:"transitgateway,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type User_Pool struct {
-	Common Common_Resource_Values `json:"userpool,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Video_Stream struct {
-	Common Common_Resource_Values `json:"videostream,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Virtual_Private_Gateway struct {
-	Common Common_Resource_Values `json:"virtualprivategateway,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Volume struct {
@@ -1174,17 +1182,17 @@ type Volume struct {
 }
 
 type WAF struct {
-	Common Common_Resource_Values `json:"waf,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Web_App struct {
-	Common Common_Resource_Values `json:"webapp,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Web_App_Group struct {
-	Common Common_Resource_Values `json:"webappgroup,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }
 
 type Workspace struct {
-	Common Common_Resource_Values `json:"workspace,omitempty"`
+	Common Common_Resource_Values `json:"common"`
 }

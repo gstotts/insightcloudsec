@@ -6,6 +6,7 @@ package insightcloudsec
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -35,7 +36,7 @@ type Badge struct {
 }
 
 type Query_Filter struct {
-	// The name and configuration of a query filter from the filter registry
+	// The name and configuration (as strings) of a query filter from the filter registry
 	Name   string `json:"name"`
 	Config string `json:"config"`
 }
@@ -52,6 +53,18 @@ type Query_Results struct {
 	Order_By               string             `json:"order_by"`
 	Filters                []Query_Filter     `json:"filters"`
 	Next_Cursor            string             `json:"next_cursor"`
+}
+
+type Resource_Details struct {
+	Dependencies map[string]([]Dependency_Details) `json:"dependencies"`
+	Details      Resource_Results                  `json:"details"`
+}
+
+type Dependency_Details struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Resource_ID string `json:"resource_id"`
+	Type        string `json:"type"`
 }
 
 type Resource_Results struct {
@@ -281,6 +294,20 @@ func (c Client) Query_Resources(q Query) (Query_Results, error) {
 	var ret Query_Results
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return Query_Results{}, err
+	}
+
+	return ret, nil
+}
+
+func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
+	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil)
+	if err != nil {
+		return Resource_Details{}, err
+	}
+
+	var ret Resource_Details
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Resource_Details{}, err
 	}
 
 	return ret, nil
