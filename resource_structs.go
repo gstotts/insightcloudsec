@@ -113,27 +113,72 @@ type Autoscaling_Group struct {
 }
 
 type Autoscaling_Launch_Configuration struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+	Common                  Common_Resource_Values `json:"common"`
+	Name                    string                 `json:"name"`
+	Image_ID                string                 `json:"image_id"`
+	Instance_Type           string                 `json:"instance_type"`
+	IAM_Role                string                 `json:"identity_management_role"`
+	Region_Name             string                 `json:"region_name"`
+	Create_Time             string                 `json:"create_time"`
+	Monitoring              bool                   `json:"monitoring"`
+	Block_Storage_Optimized bool                   `json:"block_storage_optimized"`
+	Associate_IP            string                 `json:"associate_ip"`
+	RAM_ID                  string                 `json:"ram_id"`
+	Kernel_ID               string                 `json:"kernel_id"`
 }
 
 type AWS_Config struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+	Common                        Common_Resource_Values `json:"common"`
+	Resource_ID                   string                 `json:"resource_id"`
+	Delivery_Channel_Created      bool                   `json:"delivery_channel_created"`
+	Confiuration_Recorder_Created bool                   `json:"configuration_recorder_created"`
+	Auditing_Has_Begun            bool                   `json:"auditing_has_begun"`
+	Auditing_Enabled              bool                   `json:"auditing_enabled"`
+	Cross_Account                 bool                   `json:"cross_account"`
+	Unknown_Account               bool                   `json:"unknown_account"`
 }
 
 type Backend_Service struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+	Common               Common_Resource_Values `json:"common"`
+	Kind                 string                 `json:"kind"`
+	Storage_Container_ID string                 `json:"storage_container_resource_id"`
+	PortName             string                 `json:"port_name"`
+	Port                 string                 `json:"port"`
+	Created_Time         string                 `json:"created_time"`
+	Scheme               string                 `json:"scheme"`
 }
 
 type Backup_Vault struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+	Common          Common_Resource_Values `json:"common"`
+	Name            string                 `json:"name"`
+	Create_Time     string                 `json:"create_time"`
+	Recovery_Points int                    `json:"recovery_points"`
+	Policy          string                 `json:"policy"`
+	Public          bool                   `json:"public"`
+	Key_Resource_ID string                 `json:"key_resource_id"`
 }
 
 type Batch_Environment struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+	Common          Common_Resource_Values `json:"common"`
+	Name            string                 `json:"name"`
+	Region          string                 `json:"region_name"`
+	Endpoint        string                 `json:"endpoint"`
+	State           string                 `json:"state"`
+	Allocation_Type string                 `json:"allocation_type"`
+	Public_Access   bool                   `json:"public_access"`
+	Min_CPUs        int                    `json:"minimum_cpus"`
+	Max_CPUs        int                    `json:"maximum_cpus"`
+	Pool_Type       string                 `json:"pool_type"`
 }
 
-type BatchPool struct {
-	Common Common_Resource_Values `json:"common,omitempty"`
+type Batch_Pool struct {
+	Common                   Common_Resource_Values `json:"common"`
+	Name                     string                 `json:"name"`
+	Region                   string                 `json:"region"`
+	State                    string                 `json:"state"`
+	VM_Size                  string                 `json:"vm_size"`
+	Autoscaling              string                 `json:"autoscaling"`
+	Inter_Node_Communication string                 `json:"inter_node_communication"`
 }
 
 type BigData_Instance struct {
