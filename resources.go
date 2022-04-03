@@ -265,6 +265,10 @@ type Set_Resource_Owner_Request struct {
 	Owner_Resource_ID string   `json:"owner_resource_id"`
 }
 
+type Resource_Associations struct {
+	Resource_Groups []Resource_Group `json:"resource_groups"`
+}
+
 // FUNCTIONS
 ///////////////////////////////////////////
 
@@ -335,6 +339,20 @@ func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id stri
 	}
 
 	return nil
+}
+
+func (c Client) Get_Resource_Associations(resource_id string) (Resource_Associations, error) {
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/associations/get", resource_id), nil)
+	if err != nil {
+		return Resource_Associations{}, err
+	}
+
+	var ret Resource_Associations
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Resource_Associations{}, nil
+	}
+
+	return ret, nil
 }
 
 // VALIDATION FUNCTIONS

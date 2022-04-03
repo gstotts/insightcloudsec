@@ -889,7 +889,13 @@ type Resource_Access_List_Rule struct {
 }
 
 type Resource_Group struct {
-	Common Common_Resource_Values `json:"common"`
+	Common            Common_Resource_Values `json:"common,omitemtpy"`
+	Resource_ID       string                 `json:"resource_id"`
+	Name              string                 `json:"name"`
+	Group_Type        string                 `json:"group_type"`
+	Owner_Type        string                 `json:"owner_type"`
+	Resource_Count    int                    `json:"resource_count"`
+	Owner_Resource_ID string                 `json:"owner_resource_id,omitempty"`
 }
 
 type REST_Api struct {
