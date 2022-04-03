@@ -260,6 +260,11 @@ type Resource_Results struct {
 	Workspace                            Workspace                            `json:"workspace,omitempty"`
 }
 
+type Set_Resource_Owner_Request struct {
+	Resource_IDs      []string `json:"resource_ids"`
+	Owner_Resource_ID string   `json:"owner_resource_id"`
+}
+
 // FUNCTIONS
 ///////////////////////////////////////////
 
@@ -312,6 +317,25 @@ func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
 	}
 
 	return ret, nil
+}
+
+func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id string) error {
+	data := Set_Resource_Owner_Request{
+		Resource_IDs:      resource_ids,
+		Owner_Resource_ID: owner_resource_id,
+	}
+
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // VALIDATION FUNCTIONS
