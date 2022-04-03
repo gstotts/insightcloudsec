@@ -15,3 +15,13 @@ type APIRequestError struct {
 func (e APIRequestError) Error() string {
 	return fmt.Sprintf("\nRequested URL: %s\nHTTP Status: %d: %s\n", e.Request.URL, e.StatusCode, e.Message)
 }
+
+// ValidationError is a type of error raised when validation of a given string is not of an expected/required value
+type ValidationError struct {
+	ItemToValidate string
+	ExpectedValues []string
+}
+
+func (e ValidationError) Error() string {
+	return fmt.Sprintf("\n Validation Error:  %s should be one of %s", e.ItemToValidate, e.ExpectedValues)
+}
