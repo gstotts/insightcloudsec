@@ -271,7 +271,6 @@ type Set_Resource_Owner_Request struct {
 func (c Client) Query_Resources(q Query) (Query_Results, error) {
 	// Queries InsightCloudSec for resources with the given query (using v3-ETL endpoint of the API)
 
-	// Verify Badge_Filter_Operator is appropriate
 	if q.Badge_Filter_Operator != "" {
 		err := validateBadgeFilterOperator(q.Badge_Filter_Operator)
 		if err != nil {
@@ -279,7 +278,6 @@ func (c Client) Query_Resources(q Query) (Query_Results, error) {
 		}
 	}
 
-	// Verify required Limit is within requirements
 	if q.Limit == 0 {
 		q.Limit = 1000
 	} else {
@@ -320,6 +318,7 @@ func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
 }
 
 func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id string) error {
+	// Given a list of resource ids as strings and an owner_resource_id as string, it sets the given user as the owner of the list
 	data := Set_Resource_Owner_Request{
 		Resource_IDs:      resource_ids,
 		Owner_Resource_ID: owner_resource_id,
@@ -341,8 +340,8 @@ func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id stri
 // VALIDATION FUNCTIONS
 ///////////////////////////////////////////
 
-// Validation Function for Query.Badge_Filter_Operator
 func validateBadgeFilterOperator(b string) error {
+	// Validation Function for Query.Badge_Filter_Operator
 	if strings.ToUpper(b) != "OR" || strings.ToUpper(b) != "AND" {
 		return ValidationError{
 			ItemToValidate: "BadgeFilterOperator",
@@ -353,8 +352,8 @@ func validateBadgeFilterOperator(b string) error {
 	}
 }
 
-// Validation Function for Query.Limit
 func validateQueryLimit(l int32) error {
+	// Validation Function for Query.Limit
 	if l < 0 || l > 1000 {
 		return ValidationError{
 			ItemToValidate: "Limit",
