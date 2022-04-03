@@ -1,132 +1,124 @@
+// Last Reviewed: 2-Apr-2022
+// InsightCloudSec Version at time of review: 22.2
+
 package insightcloudsec
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 )
 
 // STRUCTS
 ///////////////////////////////////////////
+
 type Query struct {
-	Scopes               []string `json:"scopes"`
-	Filters              []string `json:"filters"`
-	Offset               int      `json:"offset"`
-	Limit                int      `json:"limit"`
-	OrderBy              string   `json:"order_by"`
-	SelectedResourceType string   `json:"selected_resource_type"`
+	// Built off of the Query v3-ETL endpoint of the InsightCloudSec API
+	Badges                 []Badge        `json:"badges,omitempty"`
+	Badge_Filter_Operator  string         `json:"badge_filter_operator,omitempty"`
+	Filters                []Query_Filter `json:"filters,omitempty"`
+	Insight                string         `json:"insight,omitempty"`
+	Limit                  int32          `json:"limit"`
+	Offset                 int32          `json:"offset,omitempty"`
+	OrderBy                string         `json:"order_by,omitempty"`
+	Scopes                 []string       `json:"scopes,omitempty"`
+	Selected_Resource_Type string         `json:"selected_resource_type,omitempty"`
+	Tags                   []string       `json:"tags,omitempty"`
+	Cursor                 string         `json:"cursor,omitempty"`
 }
 
-type QueryResult struct {
-	Scopes               []string       `json:"scopes"`
-	Filters              []QueryFilter  `json:"filters"`
-	Offset               int            `json:"offset"`
-	OrderBy              string         `json:"order_by"`
-	Counts               map[string]int `json:"counts"`
-	SelectedResourceType string         `json:"selected_resource_type"`
-	Resources            []Resource     `json:"resources"`
-	SupportedTypes       []string       `json:"supported_resources"`
+type Badge struct {
+	// The key and value of a given badge for use with filters, insights, etc.
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
-type QueryFilter struct {
-	Config QueryFilterConfig
-	Name   string
+type Query_Filter struct {
+	// The name and configuration of a query filter from the filter registry
+	Name   string `json:"name"`
+	Config string `json:"config"`
 }
 
-type QueryFilterConfig struct {
+type Query_Results struct {
+	// The result response from the query provided
+	Counts                 map[string]int     `json:"counts,omitempty"`
+	Selected_Resource_Type string             `json:"selected_resource_type"`
+	Supported_Types        []string           `json:"supported_types"`
+	Resources              []Resource_Results `json:"resources"`
+	Scopes                 []string           `json:"scopes"`
+	Limit                  int32              `json:"limit"`
+	Offset                 int32              `json:"offset"`
+	Order_By               string             `json:"order_by"`
+	Filters                []Query_Filter     `json:"filters"`
+	Next_Cursor            string             `json:"next_cursor"`
 }
 
-type ResourceDetails struct {
-	Dependencies ResourceDependencies `json:"dependencies"`
-	Details      Resource             `json:"details"`
+type Resource_Results struct {
+	Resource_Type   string          `json:"resource_type"`
+	Access_Analyzer Access_Analyzer `json:"accessanalyzer,omitempty"`
+	Private_Subnet  Private_Subnet  `json:"privatesubnet,omitempty"`
 }
 
-type ResourceDependencies struct {
-}
-
-// See resource_structs.go for individual resource types
-type Resource struct {
-	Type                     string                           `json:"resource_type"`
-	AccessFlowLog            AccessFlowLogResource            `json:"accesslistflowlog,omitempty"`
-	AccessAnalyzer           AccessAnalyzerResource           `json:"accessanalyzer,omitempty"`
-	AirflowEnvironment       AirflowEnvironmentResource       `json:"airflowenvironment,omitempty"`
-	APIAccountingConfig      APIAccountingConfigResource      `json:"apiaccountingconfig,omitempty"`
-	AppRunnerService         AppRunnerServiceResource         `json:"apprunnerservice,omitempty"`
-	AppServer                AppServerResource                `json:"appserver,omitempty"`
-	AutoscalingGroup         AutoscalingGroupResource         `json:"autoscalinggroup,omitempty"`
-	AutoscalingLaunchConfig  AutoscalingLaunchConfigResource  `json:"autoscalinglaunchconfiguration,omitempty"`
-	AWSConfig                AWSConfigResource                `json:"awsconfig,omitempty"`
-	BackendService           BackendServiceResource           `json:"backendservice,omitempty"`
-	BackupVault              BackupVaultResource              `json:"backupvault,omitempty"`
-	BatchEnvironment         BatchEnvironmentResource         `json:"batchenvironment,omitempty"`
-	BatchPool                BatchPoolResource                `json:"batchpool,omitempty"`
-	BigDataInstance          BigDataInstanceResource          `json:"bigdatainstance,omitempty"`
-	BigDataSnapshot          BigDataSnapshotResource          `json:"bigdatasnapshot,omitempty"`
-	BigDataWorkspace         BigDataWorkspaceResource         `json:"bigdataworkspace,omitempty"`
-	BrokerInstance           BrokerInstanceResource           `json:"brokerinstance,omitempty"`
-	BuildProject             BuildProjectResource             `json:"buildproject,omitempty"`
-	CloudwatchDestination    CloudwatchDestinationResource    `json:"cloudwatchdestination,omitempty"`
-	ColdStorage              ColdStorageResource              `json:"coldstorage,omitempty"`
-	Container                ContainerResource                `json:"container,omitempty"`
-	ContainerCluster         ContainerClusterResource         `json:"containercluster,omitempty"`
-	ContainerDeployment      ContainerDeploymentResource      `json:"containerdeployment,omitempty"`
-	ContainerImage           ContainerImageResource           `json:"containerimage,omitempty"`
-	ContainerInstance        ContainerInstanceResource        `json:"containerinstance,omitempty"`
-	ContainerRegistry        ContainerRegistryResource        `json:"containerregistry,omitempty"`
-	ContainerService         ContainerServiceResource         `json:"containerservice,omitempty"`
-	CDN                      ContentDeliveryNetworkResource   `json:"contentdeliverynetwork,omitempty"`
-	DataAnalyticsWorkspace   DataAnalyticsWorkspaceResource   `json:"dataanalyticsworkspce,omitempty"`
-	Database                 DatabaseResource                 `json:"database,omitempty"`
-	DatabrickWorkspace       DatabrickWorkspaceResource       `json:"databrickworkspace,omitempty"`
-	DivvyOrganizationService DivvyOrganizationServiceResource `json:"divvyorganizationservice,omitempty"`
-	DNSZone                  DNSZoneResource                  `json:"dnszone,omitempty"`
-	ECSTaskDefinition        ECSTaskDefinitionResource        `json:"ecstaskdefinition,omitempty"`
-	Instance                 InstanceResource                 `json:"instance,omitempty"`
-	Secret                   SecretResource                   `json:"secret,omitempty"`
-	Volume                   VolumeResource                   `json:"volume,omitempty"`
-}
-
-// QUERY FUNCTIONS
+// FUNCTIONS
 ///////////////////////////////////////////
-func (c Client) Query(q *Query) (*QueryResult, error) {
-	if q.Filters == nil {
-		q.Filters = make([]string, 0)
+
+func (c Client) Query_Resources(q Query) (Query_Results, error) {
+	// Queries InsightCloudSec for resources with the given query (using v3-ETL endpoint of the API)
+
+	// Verify Badge_Filter_Operator is appropriate
+	if q.Badge_Filter_Operator != "" {
+		err := validateBadgeFilterOperator(q.Badge_Filter_Operator)
+		if err != nil {
+			return Query_Results{}, err
+		}
 	}
-	if q.Scopes == nil {
-		q.Scopes = make([]string, 0)
+
+	// Verify required Limit is within requirements
+	if q.Limit == 0 {
+		q.Limit = 1000
+	} else {
+		validateQueryLimit(q.Limit)
 	}
 
 	data, err := json.Marshal(q)
 	if err != nil {
-		return nil, err
+		return Query_Results{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/resource/query", bytes.NewBuffer(data))
+	resp, err := c.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", bytes.NewBuffer(data))
 	if err != nil {
-		return nil, err
+		return Query_Results{}, err
 	}
 
-	var ret *QueryResult
+	var ret Query_Results
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+		return Query_Results{}, err
 	}
 
 	return ret, nil
 }
 
-// RESOURCE FUNCTIONS
-///////////////////////////////////////////
-func (c Client) DetailResource(id string) (*Resource, error) {
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", id), nil)
-	if err != nil {
-		return nil, err
+// Validation Function for Query.Badge_Filter_Operator
+func validateBadgeFilterOperator(b string) error {
+	if strings.ToUpper(b) != "OR" || strings.ToUpper(b) != "AND" {
+		return ValidationError{
+			ItemToValidate: "BadgeFilterOperator",
+			ExpectedValues: []string{"OR", "AND"},
+		}
+	} else {
+		return nil
 	}
+}
 
-	var ret *Resource
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
+// Validation Function for Query.Limit
+func validateQueryLimit(l int32) error {
+	if l < 0 || l > 1000 {
+		return ValidationError{
+			ItemToValidate: "Limit",
+			ExpectedValues: []string{"0-1000"},
+		}
+	} else {
+		return nil
 	}
-
-	return ret, nil
 }
