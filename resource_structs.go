@@ -374,6 +374,10 @@ type Container_Instance struct {
 	Unschedulable             bool                   `json:"unschedulable"`
 }
 
+type Container_Node_Group struct {
+	Common Common_Resource_Values `json:"common"`
+}
+
 type Container_Registry struct {
 	Common              Common_Resource_Values `json:"common"`
 	Name                string                 `json:"name"`
