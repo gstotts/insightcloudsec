@@ -20,7 +20,7 @@ type Organizations struct {
 
 // ORGANIZATION CLIENT FUNCTIONS
 ///////////////////////////////////////////
-func (c Client) CreateOrganization(name string) error {
+func (c Client) Create_Organization(name string) error {
 	data, err := json.Marshal(Organization{Name: name})
 	if err != nil {
 		return fmt.Errorf("[-] error marshalling organization")
@@ -32,7 +32,7 @@ func (c Client) CreateOrganization(name string) error {
 	return nil
 }
 
-func (c Client) SwitchOrganization(name string) error {
+func (c Client) Switch_Organization(name string) error {
 	data, err := json.Marshal(Organization{Name: name})
 	if err != nil {
 		return fmt.Errorf("[-] error marshalling organization")
@@ -44,7 +44,7 @@ func (c Client) SwitchOrganization(name string) error {
 	return nil
 }
 
-func (c Client) EditOrganizationName(resource_id int, name string) error {
+func (c Client) Edit_Organization_Name(resource_id int, name string) error {
 	data, err := json.Marshal(Organization{Name: name})
 	if err != nil {
 		return fmt.Errorf("[-] error marshalling organization")
@@ -56,7 +56,7 @@ func (c Client) EditOrganizationName(resource_id int, name string) error {
 	return nil
 }
 
-func (c Client) DeleteOrganization(resource_id int) error {
+func (c Client) Delete_Organization(resource_id int) error {
 	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/domain/organization/divvyorganization:%d/delete", resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
@@ -64,7 +64,7 @@ func (c Client) DeleteOrganization(resource_id int) error {
 	return nil
 }
 
-func (c Client) ListOrganizations() ([]Organizations, error) {
+func (c Client) List_Organizations() ([]Organizations, error) {
 	resp, err := c.makeRequest(http.MethodGet, "/v2/prototype/domain/organizations/get", nil)
 	if err != nil {
 		return []Organizations{}, err
