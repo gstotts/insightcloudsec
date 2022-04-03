@@ -25,7 +25,7 @@ type Query struct {
 	OrderBy                string          `json:"order_by,omitempty"`
 	Scopes                 []string        `json:"scopes,omitempty"`
 	Selected_Resource_Type string          `json:"selected_resource_type,omitempty"`
-	Tags                   []string        `json:"tags,omitempty"`
+	Tags                   *[]Tags         `json:"tags,omitempty"`
 	Cursor                 string          `json:"cursor,omitempty"`
 }
 
@@ -33,6 +33,15 @@ type Badge struct {
 	// The key and value of a given badge for use with filters, insights, etc.
 	Key   string `json:"key"`
 	Value string `json:"value"`
+}
+
+type Tags struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type Tags_Response struct {
+	Tags []Tags `json:"resource_tags"`
 }
 
 type Query_Filter struct {
@@ -353,6 +362,19 @@ func (c Client) Get_Resource_Associations(resource_id string) (Resource_Associat
 	}
 
 	return ret, nil
+}
+
+func (c Client) List_Resource_Tags(resource_id string) ([]Tags, error) {
+	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil)
+	if err != nil {
+		return []Tags{}, err
+	}
+
+	var ret Tags_Response
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return []Tags{}, nil
+	}
+	return ret.Tags, nil
 }
 
 // VALIDATION FUNCTIONS
