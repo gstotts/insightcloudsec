@@ -300,6 +300,7 @@ func (c Client) Query_Resources(q Query) (Query_Results, error) {
 }
 
 func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
+	// Given a resource_id as a string, it returns the resource details and dependencies
 	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil)
 	if err != nil {
 		return Resource_Details{}, err
@@ -312,6 +313,9 @@ func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
 
 	return ret, nil
 }
+
+// VALIDATION FUNCTIONS
+///////////////////////////////////////////
 
 // Validation Function for Query.Badge_Filter_Operator
 func validateBadgeFilterOperator(b string) error {
