@@ -69,8 +69,6 @@ type Resource_Results struct {
 	Backup_Vault                     Backup_Vault                     `json:"backupvault,omitempty"`
 	Batch_Environment                Batch_Environment                `json:"batchenvironment,omitempty"`
 	Batch_Pool                       Batch_Pool                       `json:"batchpool,omitempty"`
-
-	Private_Subnet Private_Subnet `json:"privatesubnet,omitempty"`
 }
 
 // FUNCTIONS
