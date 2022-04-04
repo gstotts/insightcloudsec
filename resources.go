@@ -29,12 +29,6 @@ type Query struct {
 	Cursor                 string          `json:"cursor,omitempty"`
 }
 
-type Badge struct {
-	// The key and value of a given badge for use with filters, insights, etc.
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
 type Tags struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
