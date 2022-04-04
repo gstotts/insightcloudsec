@@ -269,6 +269,10 @@ type Resource_Results struct {
 	Workspace                            Workspace                            `json:"workspace,omitempty"`
 }
 
+type Resource_Settings struct {
+	Settings []interface{} `json:"setting_list"`
+}
+
 type Set_Resource_Owner_Request struct {
 	Resource_IDs      []string `json:"resource_ids"`
 	Owner_Resource_ID string   `json:"owner_resource_id"`
@@ -375,6 +379,19 @@ func (c Client) List_Resource_Tags(resource_id string) ([]Tags, error) {
 		return []Tags{}, nil
 	}
 	return ret.Tags, nil
+}
+
+func (c Client) List_Resource_Settings(resource_id string) (Resource_Settings, error) {
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/settings/list", resource_id), nil)
+	if err != nil {
+		return Resource_Settings{}, err
+	}
+
+	var ret Resource_Settings
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Resource_Settings{}, nil
+	}
+	return ret, nil
 }
 
 // VALIDATION FUNCTIONS
