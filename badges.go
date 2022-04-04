@@ -21,7 +21,7 @@ type Badges struct {
 	Badges []Badge `json:"badges"`
 }
 
-type Badge_Creation_Request struct {
+type Badge_Request struct {
 	Resource_IDs []string `json:"target_resource_ids"`
 	Badges       []Badge  `json:"badges"`
 }
@@ -35,7 +35,7 @@ type Badge_Count_Response struct {
 
 func (c Client) Create_Badge(target_org_resource_ids []string, badge_data []Badge) error {
 	// Creates a badge for target organization resource ids of key and value pairings provided in map
-	data, err := json.Marshal(Badge_Creation_Request{
+	data, err := json.Marshal(Badge_Request{
 		Resource_IDs: target_org_resource_ids,
 		Badges:       badge_data,
 	})
@@ -66,14 +66,18 @@ func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data Badges) e
 	return nil
 }
 
-func (c Client) Delete_Badges(badges Badges) error {
+func (c Client) Delete_Badges(target_org_resource_ids []string, badges Badges) error {
 	// Deletes given list of badges
-	data, err := json.Marshal(badges)
+	data := Badge_Request{
+		Resource_IDs: target_org_resource_ids,
+		Badges:       badges.Badges,
+	}
+	payload, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/badges/delete", bytes.NewBuffer(data))
+	_, err = c.makeRequest(http.MethodPost, "/v2/public/badges/delete", bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
