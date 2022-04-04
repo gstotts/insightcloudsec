@@ -26,6 +26,10 @@ type Badge_Creation_Request struct {
 	Badges       []Badge  `json:"badges"`
 }
 
+type Badge_Count_Response struct {
+	Resource_Count []interface{} `json:"resource_count"`
+}
+
 // FUNCTIONS
 ///////////////////////////////////////////
 
@@ -107,6 +111,21 @@ func (c Client) List_Resource_Badges(org_resource_id string) ([]Badge, error) {
 	var ret []Badge
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return []Badge{}, err
+	}
+
+	return ret, nil
+}
+
+func (c Client) List_Resources_Badge_Count() (Badge_Count_Response, error) {
+	// Returns a list of badge counts for all resources.
+	resp, err := c.makeRequest(http.MethodPost, "/v2/public/badges/count", nil)
+	if err != nil {
+		return Badge_Count_Response{}, err
+	}
+
+	var ret Badge_Count_Response
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return Badge_Count_Response{}, err
 	}
 
 	return ret, nil
