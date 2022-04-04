@@ -12,8 +12,9 @@ import (
 
 type Badge struct {
 	// The key and value of a given badge for use with filters, insights, etc.
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key            string `json:"key"`
+	Value          string `json:"value"`
+	Auto_Generated bool   `json:"auto_generated,omitempty"`
 }
 
 type Badges struct {
@@ -94,4 +95,19 @@ func (c Client) List_Clouds_With_Badges(badges Badges) ([]Cloud, error) {
 	}
 
 	return clouds, nil
+}
+
+func (c Client) List_Resource_Badges(org_resource_id string) ([]Badge, error) {
+	// Returns a list of resource badges for a given organization
+	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/badges/%s/list", org_resource_id), nil)
+	if err != nil {
+		return []Badge{}, err
+	}
+
+	var ret []Badge
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return []Badge{}, err
+	}
+
+	return ret, nil
 }
