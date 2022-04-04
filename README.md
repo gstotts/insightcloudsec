@@ -148,7 +148,7 @@ func main() {
 	insight.Filters = []insightcloudsec.InsightFilter{filter}
 
 	ics, _ := insightcloudsec.NewClient()
-	ics.CreateInsight(insight)
+	ics.Create_Insight(insight)
 
 }
 
@@ -173,7 +173,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	insights, err := c.ListInsights()
+	insights, err := c.List_Insights()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
