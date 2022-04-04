@@ -33,11 +33,11 @@ type Badge_Count_Response struct {
 // FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) Create_Badge(target_org_resource_ids []string, badge_data []Badge) error {
+func (c Client) Create_Badge(target_org_resource_ids []string, badge_data map[string]string) error {
 	// Creates a badge for target organization resource ids of key and value pairings provided in map
 	data, err := json.Marshal(Badge_Request{
 		Org_Resource_IDs: target_org_resource_ids,
-		Badges:           badge_data,
+		Badges:           createBadgesFromMap(badge_data),
 	})
 	if err != nil {
 		return err
@@ -51,9 +51,9 @@ func (c Client) Create_Badge(target_org_resource_ids []string, badge_data []Badg
 	return nil
 }
 
-func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data Badges) error {
+func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data map[string]string) error {
 	// Updates cloud badges for given organization but overwrites any existing. USE WITH CAUTION
-	data, err := json.Marshal(badge_data)
+	data, err := json.Marshal(createBadgesFromMap(badge_data))
 	if err != nil {
 		return err
 	}
@@ -66,11 +66,11 @@ func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data Badges) e
 	return nil
 }
 
-func (c Client) Delete_Badges(target_org_resource_ids []string, badges Badges) error {
-	// Deletes given list of badges
+func (c Client) Delete_Badges(target_org_resource_ids []string, badges map[string]string) error {
+	// Deletes given list of badges defined as a map of key/values.
 	data := Badge_Request{
 		Org_Resource_IDs: target_org_resource_ids,
-		Badges:           badges.Badges,
+		Badges:           createBadgesFromMap(badges),
 	}
 	payload, err := json.Marshal(data)
 	if err != nil {
@@ -85,8 +85,8 @@ func (c Client) Delete_Badges(target_org_resource_ids []string, badges Badges) e
 	return nil
 }
 
-func (c Client) List_Clouds_With_Badges(badges Badges) ([]Cloud, error) {
-	// Returns a list of cloud accounts what contain the given badges
+func (c Client) List_Clouds_With_Badges(badges map[string]string) ([]Cloud, error) {
+	// Returns a list of cloud accounts what contain the given badges defined as a map of key / values.
 	data, err := json.Marshal(badges)
 	if err != nil {
 		return []Cloud{}, err
@@ -133,4 +133,17 @@ func (c Client) List_Resources_Badge_Count() (Badge_Count_Response, error) {
 	}
 
 	return ret, nil
+}
+
+func createBadgesFromMap(m map[string]string) []Badge {
+	badges := []Badge{}
+	for badge, value := range m {
+		item := Badge{
+			Key:   badge,
+			Value: value,
+		}
+		badges = append(badges, item)
+	}
+
+	return badges
 }
