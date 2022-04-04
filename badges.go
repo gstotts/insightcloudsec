@@ -33,10 +33,10 @@ type Badge_Count_Response struct {
 // FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) Create_Badge(target_resource_ids []string, badge_data []Badge) error {
-	// Creates a badge for target resource ids of key and value pairings provided in map
+func (c Client) Create_Badge(target_org_resource_ids []string, badge_data []Badge) error {
+	// Creates a badge for target organization resource ids of key and value pairings provided in map
 	data, err := json.Marshal(Badge_Creation_Request{
-		Resource_IDs: target_resource_ids,
+		Resource_IDs: target_org_resource_ids,
 		Badges:       badge_data,
 	})
 	if err != nil {
