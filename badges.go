@@ -60,3 +60,18 @@ func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data Badges) e
 
 	return nil
 }
+
+func (c Client) Delete_Badges(badges Badges) error {
+	// Deletes given list of badges
+	data, err := json.Marshal(badges)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.makeRequest(http.MethodPost, "/v2/public/badges/delete", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
