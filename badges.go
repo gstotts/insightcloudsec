@@ -10,11 +10,6 @@ import (
 // STRUCTS
 ///////////////////////////////////////////
 
-type Badge_Creation_Request struct {
-	Resource_IDs []string `json:"target_resource_ids"`
-	Badges       []Badge  `json:"badges"`
-}
-
 type Badge struct {
 	// The key and value of a given badge for use with filters, insights, etc.
 	Key   string `json:"key"`
@@ -23,6 +18,11 @@ type Badge struct {
 
 type Badges struct {
 	Badges []Badge `json:"badges"`
+}
+
+type Badge_Creation_Request struct {
+	Resource_IDs []string `json:"target_resource_ids"`
+	Badges       []Badge  `json:"badges"`
 }
 
 // FUNCTIONS
@@ -74,4 +74,24 @@ func (c Client) Delete_Badges(badges Badges) error {
 	}
 
 	return nil
+}
+
+func (c Client) List_Clouds_With_Badges(badges Badges) ([]Cloud, error) {
+	// Returns a list of cloud accounts what contain the given badges
+	data, err := json.Marshal(badges)
+	if err != nil {
+		return []Cloud{}, err
+	}
+
+	resp, err := c.makeRequest(http.MethodPost, "/v2/public/badge/clouds/list", bytes.NewBuffer(data))
+	if err != nil {
+		return []Cloud{}, err
+	}
+
+	var clouds []Cloud
+	if err := json.NewDecoder(resp.Body).Decode(&clouds); err != nil {
+		return []Cloud{}, err
+	}
+
+	return clouds, nil
 }
