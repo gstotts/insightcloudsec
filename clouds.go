@@ -342,10 +342,7 @@ func (c Client) DeleteCloud(cloud_resource_id string) error {
 	return nil
 }
 
-// CLOUD ORG FUNCTIONS
-///////////////////////////////////////////
-
-// MANAGING CLOUD FUNCTIONS
+// CLOUD FUNCTIONS
 ///////////////////////////////////////////
 
 func (c Client) ListClouds() (CloudList, error) {
