@@ -5,12 +5,17 @@ import (
 	"net/http"
 )
 
-// CONSTANTS
-///////////////////////////////////////////
+var _ AuthenticationServers = (*authServers)(nil)
 
-// STRUCTS
-///////////////////////////////////////////
-type Server struct {
+type AuthenticationServers interface {
+	List() (AuthenticationServersList, error)
+}
+
+type authServers struct {
+	client *Client
+}
+
+type AuthenticationServer struct {
 	ID           int    `json:"server_id"`
 	Name         string `json:"server_name"`
 	Host         string `json:"server_host"`
@@ -21,22 +26,19 @@ type Server struct {
 	MappedGroups int    `json:"mapped_groups"`
 }
 
-type Servers struct {
-	Servers []Server `json:"servers"`
+type AuthenticationServersList struct {
+	Servers []AuthenticationServer `json:"servers"`
 }
 
-// AUTH SERVER FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) ListAuthenticationServers() (Servers, error) {
-	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil)
+func (s *authServers) List() (AuthenticationServersList, error) {
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil)
 	if err != nil {
-		return Servers{}, err
+		return AuthenticationServersList{}, err
 	}
 
-	var ret Servers
+	var ret AuthenticationServersList
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return Servers{}, err
+		return AuthenticationServersList{}, err
 	}
 
 	return ret, nil

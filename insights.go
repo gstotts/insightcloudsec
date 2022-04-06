@@ -7,9 +7,6 @@ import (
 	"net/http"
 )
 
-// INSIGHT CONSTANTS
-///////////////////////////////////////////
-
 const (
 	INSIGHT_SEVERITY_CRITICAL = 5
 	INSIGHT_SEVERITY_SEVERE   = 4
@@ -18,8 +15,21 @@ const (
 	INSIGHT_SEVERITY_MINOR    = 1
 )
 
-// STRUCTS
-///////////////////////////////////////////
+var _ Insights = (*insights)(nil)
+
+type Insights interface {
+	Create(i Insight) error
+	Delete(insight_id int) error
+	Get_Insight(insight_id int, insight_source string) (*Insight, error)
+	Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error)
+	List() ([]Insight, error)
+	List_Packs() ([]InsightPack, error)
+}
+
+type insights struct {
+	client *Client
+}
+
 type Insight struct {
 	ID                  int             `json:"insight_id,omitempty"`
 	Name                string          `json:"name"`
@@ -67,37 +77,7 @@ type InsightPack struct {
 	Custom              []int                `json:"custom"`
 }
 
-type FilterRegistry map[string]FilterRegistryItem
-
-type FilterRegistryItem struct {
-	ID                 string           `json:"filter_id"`
-	Name               string           `json:"name"`
-	Description        string           `json:"description"`
-	SupportedResources []string         `json:"supported_resources"`
-	SupportsCommon     bool             `json:"supports_common"`
-	SupportedClouds    []string         `json:"supported_clouds"`
-	SettingsConfig     []FilterSettings `json:"settings_config,omitempty"`
-}
-
-type FilterSettings struct {
-	FieldType   string          `json:"field_type,omitempty"`
-	Name        string          `json:"name,omitempty"`
-	DisplayName string          `json:"display_name,omitempty"`
-	Options     []string        `json:"options,omitempty"`
-	Choices     []FilterChoices `json:"choices,omitempty"`
-	MinValue    float64         `json:"min_value,omitempty"`
-	StateHash   string          `json:"_state_hash,omitempty"`
-}
-
-type FilterChoices struct {
-	Value        string `json:"value,omitempty"`
-	DisplayValue string `json:"display_value,omitempty"`
-}
-
-// INSIGHT FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) CreateInsight(i Insight) error {
+func (c *insights) Create(i Insight) error {
 	// Creates an Insight in InsightCloudSec given the insight object with appropriate configs.  Returns an error if insight creation fails.
 
 	// Make sure severity is set
@@ -130,7 +110,7 @@ func (c Client) CreateInsight(i Insight) error {
 		return fmt.Errorf("[-] ERROR: Marshal error: %s", err)
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
+	_, err = c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -138,9 +118,9 @@ func (c Client) CreateInsight(i Insight) error {
 	return nil
 }
 
-func (c Client) ListInsights() ([]Insight, error) {
+func (c *insights) List() ([]Insight, error) {
 	// Returns a list of all Insights from the API
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -153,9 +133,9 @@ func (c Client) ListInsights() ([]Insight, error) {
 	return ret, nil
 }
 
-func (c Client) GetInsight(insight_id int, insight_source string) (*Insight, error) {
+func (c *insights) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
 	// Returns the specific Insight associated with the Insight ID and the Source provided
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -168,18 +148,18 @@ func (c Client) GetInsight(insight_id int, insight_source string) (*Insight, err
 	return &ret, nil
 }
 
-func (c Client) DeleteInsight(insight_id int) error {
+func (c *insights) Delete(insight_id int) error {
 	// Deletes the Insight for the given id.  Returns an error if fails.
-	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/insights/%d/delete", insight_id), nil)
+	resp, err := c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/insights/%d/delete", insight_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
 	return nil
 }
 
-func (c Client) GetInsight7Days(insight_id int, insight_source string) (map[string]int, error) {
+func (c *insights) Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error) {
 	// Returns the 7 Day View of Insight associated with the Insight ID and the Source provided
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s/insight-data-7-days", insight_id, insight_source), nil)
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s/insight-data-7-days", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -191,12 +171,9 @@ func (c Client) GetInsight7Days(insight_id int, insight_source string) (map[stri
 	return ret, nil
 }
 
-// PACK FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) ListPacks() ([]InsightPack, error) {
+func (c *insights) List_Packs() ([]InsightPack, error) {
 	// Returns a list of all Insight Packs from the API
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,24 +181,6 @@ func (c Client) ListPacks() ([]InsightPack, error) {
 	var ret []InsightPack
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return nil, err
-	}
-
-	return ret, nil
-}
-
-// FILTER FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) ListFilters() (FilterRegistry, error) {
-	// Returns a list of available filters from the Filter Registry
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/filter-registry", nil)
-	if err != nil {
-		return FilterRegistry{}, err
-	}
-
-	var ret FilterRegistry
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return FilterRegistry{}, err
 	}
 
 	return ret, nil
