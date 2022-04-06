@@ -7,9 +7,6 @@ import (
 	"net/http"
 )
 
-// INSIGHT CONSTANTS
-///////////////////////////////////////////
-
 const (
 	INSIGHT_SEVERITY_CRITICAL = 5
 	INSIGHT_SEVERITY_SEVERE   = 4
@@ -18,8 +15,21 @@ const (
 	INSIGHT_SEVERITY_MINOR    = 1
 )
 
-// STRUCTS
-///////////////////////////////////////////
+var _ Insights = (*insights)(nil)
+
+type Insights interface {
+	Create(i Insight) error
+	Delete(insight_id int) error
+	Get_Insight(insight_id int, insight_source string) (*Insight, error)
+	Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error)
+	List() ([]Insight, error)
+	List_Packs() ([]InsightPack, error)
+}
+
+type insights struct {
+	client *Client
+}
+
 type Insight struct {
 	ID                  int             `json:"insight_id,omitempty"`
 	Name                string          `json:"name"`
@@ -67,10 +77,7 @@ type InsightPack struct {
 	Custom              []int                `json:"custom"`
 }
 
-// INSIGHT FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) CreateInsight(i Insight) error {
+func (c *insights) Create(i Insight) error {
 	// Creates an Insight in InsightCloudSec given the insight object with appropriate configs.  Returns an error if insight creation fails.
 
 	// Make sure severity is set
@@ -103,7 +110,7 @@ func (c Client) CreateInsight(i Insight) error {
 		return fmt.Errorf("[-] ERROR: Marshal error: %s", err)
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
+	_, err = c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -111,9 +118,9 @@ func (c Client) CreateInsight(i Insight) error {
 	return nil
 }
 
-func (c Client) List_Insights() ([]Insight, error) {
+func (c *insights) List() ([]Insight, error) {
 	// Returns a list of all Insights from the API
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/insights/list", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -126,9 +133,9 @@ func (c Client) List_Insights() ([]Insight, error) {
 	return ret, nil
 }
 
-func (c Client) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
+func (c *insights) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
 	// Returns the specific Insight associated with the Insight ID and the Source provided
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -141,18 +148,18 @@ func (c Client) Get_Insight(insight_id int, insight_source string) (*Insight, er
 	return &ret, nil
 }
 
-func (c Client) Delete_Insight(insight_id int) error {
+func (c *insights) Delete(insight_id int) error {
 	// Deletes the Insight for the given id.  Returns an error if fails.
-	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/insights/%d/delete", insight_id), nil)
+	resp, err := c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/public/insights/%d/delete", insight_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
 	return nil
 }
 
-func (c Client) Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error) {
+func (c *insights) Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error) {
 	// Returns the 7 Day View of Insight associated with the Insight ID and the Source provided
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s/insight-data-7-days", insight_id, insight_source), nil)
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s/insight-data-7-days", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -164,12 +171,9 @@ func (c Client) Get_Insight_7_Days(insight_id int, insight_source string) (map[s
 	return ret, nil
 }
 
-// PACK FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) List_Packs() ([]InsightPack, error) {
+func (c *insights) List_Packs() ([]InsightPack, error) {
 	// Returns a list of all Insight Packs from the API
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/insights/packs/list", nil)
 	if err != nil {
 		return nil, err
 	}

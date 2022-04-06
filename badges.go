@@ -7,8 +7,20 @@ import (
 	"net/http"
 )
 
-// STRUCTS
-///////////////////////////////////////////
+var _ Badges = (*badges)(nil)
+
+type Badges interface {
+	Create(target_org_resource_ids []string, badge_data map[string]string) error
+	Update(org_resource_id string, badges map[string]string) error
+	Delete(target_org_resource_ids []string, badges map[string]string) error
+	ListCloudsWithBadges(badges map[string]string) ([]Cloud, error)
+	ListResourceBadges(org_resource_id string) ([]Badge, error)
+	ListResourcesBadgeCount() (BadgeCountResponse, error)
+}
+
+type badges struct {
+	client *Client
+}
 
 type Badge struct {
 	// The key and value of a given badge for use with filters, insights, etc.
@@ -17,25 +29,22 @@ type Badge struct {
 	Auto_Generated bool   `json:"auto_generated,omitempty"`
 }
 
-type Badges struct {
+type BadgesList struct {
 	Badges []Badge `json:"badges"`
 }
 
-type Badge_Request struct {
+type BadgeRequest struct {
 	Org_Resource_IDs []string `json:"target_resource_ids"`
 	Badges           []Badge  `json:"badges"`
 }
 
-type Badge_Count_Response struct {
+type BadgeCountResponse struct {
 	Resource_Count []interface{} `json:"resource_count"`
 }
 
-// FUNCTIONS
-///////////////////////////////////////////
-
-func (c Client) Create_Badge(target_org_resource_ids []string, badge_data map[string]string) error {
+func (s *badges) Create(target_org_resource_ids []string, badge_data map[string]string) error {
 	// Creates a badge for target organization resource ids of key and value pairings provided in map
-	data, err := json.Marshal(Badge_Request{
+	data, err := json.Marshal(BadgeRequest{
 		Org_Resource_IDs: target_org_resource_ids,
 		Badges:           createBadgesFromMap(badge_data),
 	})
@@ -43,7 +52,7 @@ func (c Client) Create_Badge(target_org_resource_ids []string, badge_data map[st
 		return err
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/badges/create", bytes.NewBuffer(data))
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/badges/create", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -51,14 +60,14 @@ func (c Client) Create_Badge(target_org_resource_ids []string, badge_data map[st
 	return nil
 }
 
-func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data map[string]string) error {
+func (s *badges) Update(org_resource_id string, badges map[string]string) error {
 	// Updates cloud badges for given organization but overwrites any existing. USE WITH CAUTION
-	data, err := json.Marshal(createBadgesFromMap(badge_data))
+	data, err := json.Marshal(createBadgesFromMap(badges))
 	if err != nil {
 		return err
 	}
 
-	_, err = c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/badges/%s/update", org_resource_id), bytes.NewBuffer(data))
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/badges/%s/update", org_resource_id), bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -66,9 +75,9 @@ func (c Client) Update_Cloud_Badges(org_resource_id string, badge_data map[strin
 	return nil
 }
 
-func (c Client) Delete_Badges(target_org_resource_ids []string, badges map[string]string) error {
+func (s *badges) Delete(target_org_resource_ids []string, badges map[string]string) error {
 	// Deletes given list of badges defined as a map of key/values.
-	data := Badge_Request{
+	data := BadgeRequest{
 		Org_Resource_IDs: target_org_resource_ids,
 		Badges:           createBadgesFromMap(badges),
 	}
@@ -77,7 +86,7 @@ func (c Client) Delete_Badges(target_org_resource_ids []string, badges map[strin
 		return err
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/badges/delete", bytes.NewBuffer(payload))
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/badges/delete", bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
@@ -85,14 +94,14 @@ func (c Client) Delete_Badges(target_org_resource_ids []string, badges map[strin
 	return nil
 }
 
-func (c Client) List_Clouds_With_Badges(badges map[string]string) ([]Cloud, error) {
+func (s *badges) ListCloudsWithBadges(badges map[string]string) ([]Cloud, error) {
 	// Returns a list of cloud accounts what contain the given badges defined as a map of key / values.
 	data, err := json.Marshal(badges)
 	if err != nil {
 		return []Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/badge/clouds/list", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/badge/clouds/list", bytes.NewBuffer(data))
 	if err != nil {
 		return []Cloud{}, err
 	}
@@ -105,9 +114,9 @@ func (c Client) List_Clouds_With_Badges(badges map[string]string) ([]Cloud, erro
 	return clouds, nil
 }
 
-func (c Client) List_Resource_Badges(org_resource_id string) ([]Badge, error) {
+func (s *badges) ListResourceBadges(org_resource_id string) ([]Badge, error) {
 	// Returns a list of resource badges for a given organization
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/badges/%s/list", org_resource_id), nil)
+	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/badges/%s/list", org_resource_id), nil)
 	if err != nil {
 		return []Badge{}, err
 	}
@@ -120,16 +129,16 @@ func (c Client) List_Resource_Badges(org_resource_id string) ([]Badge, error) {
 	return ret, nil
 }
 
-func (c Client) List_Resources_Badge_Count() (Badge_Count_Response, error) {
+func (s *badges) ListResourcesBadgeCount() (BadgeCountResponse, error) {
 	// Returns a list of badge counts for all resources.
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/badges/count", nil)
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/badges/count", nil)
 	if err != nil {
-		return Badge_Count_Response{}, err
+		return BadgeCountResponse{}, err
 	}
 
-	var ret Badge_Count_Response
+	var ret BadgeCountResponse
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return Badge_Count_Response{}, err
+		return BadgeCountResponse{}, err
 	}
 
 	return ret, nil
