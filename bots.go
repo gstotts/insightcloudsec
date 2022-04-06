@@ -216,7 +216,7 @@ func (s *bots) GetBotByID(id string) (BotResults, error) {
 	return ret, nil
 }
 
-func (c Client) ListBotActions(args... ) (BotActionResults, error) {
+func (c Client) ListBotActions() (BotActionResults, error) {
 	resp, err := c.makeRequest(http.MethodGet, "/v2/public/botfactory/function-registry/list", nil)
 	if err != nil {
 		return BotActionResults{}, err
