@@ -1,147 +1,106 @@
 package insightcloudsec
 
 import (
-	"bufio"
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
-	"strings"
-	"syscall"
-
-	"golang.org/x/term"
 )
 
-// STRUCTS
-///////////////////////////////////////////
-type SessionInfo struct {
-	ID   string `json:"session_id"`
-	User string `json:"username"`
+const (
+	_userAgent = "insightcloudsec-client"
+)
+
+// Config provides configuration details to the client
+
+type Config struct {
+	BaseURL    string
+	ApiKey     string
+	Headers    http.Header
+	HTTPClient *http.Client
 }
+
+// DefaultConfig returns a default configuration structure
+
+func DefaultConfig() *Config {
+	config := &Config{
+		BaseURL:    os.Getenv("INSIGHTCLOUDSEC_BASE_URL"),
+		ApiKey:     os.Getenv("INSIGHTCLOUDSEC_API_KEY"),
+		HTTPClient: http.DefaultClient,
+	}
+
+	return config
+}
+
+// Client is the InsightCloudSec API client.
 
 type Client struct {
-	APIKey     string
-	BaseURL    string
-	SessionID  string
-	HttpClient *http.Client
+	baseURL *url.URL
+	apikey  string
+	http    *http.Client
+
+	AuthenticationServers AuthenticationServers
+	Badges                Badges
+	Bots                  Bots
+	Clouds                Clouds
+	Filters               Filters
+	Insights              Insights
+	Organizations         Organizations
+	Resources             Resources
+	Users                 Users
 }
 
-// HELPER FUNCTIONS
-///////////////////////////////////////////
-func __getBaseURL() string {
-	baseURL := os.Getenv("INSIGHTCLOUDSEC_BASE_URL")
-	// Prompt for missing baseURL if no env set
-	reader := bufio.NewReader(os.Stdin)
-	if baseURL == "" {
-		fmt.Print("BaseURL: ")
-		baseURL, _ = reader.ReadString('\n')
-		baseURL = strings.TrimSpace(baseURL)
-	}
+// NewClient creates a new InsightCloudSec API client
+func NewClient(cfg *Config) (*Client, error) {
+	config := DefaultConfig()
 
-	return baseURL
-}
-
-func __getSessionID(baseURL string, user string, pass string) (string, error) {
-	client := http.DefaultClient
-	var data = []byte(fmt.Sprintf("{\"username\":\"%s\",\"password\":\"%s\"}", user, pass))
-	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/v2/public/user/login", baseURL), bytes.NewBuffer(data))
-
-	req.Header.Set("Content-Type", "application/json;UTF-8")
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode >= http.StatusBadRequest {
-		if resp.StatusCode == 401 {
-			fmt.Println("\n[!] Error: Invalid username or account locked.")
-			os.Exit(1)
-		} else if resp.StatusCode == 500 {
-			fmt.Println("\n[!] Error: Invalid password.")
-			os.Exit(1)
-		} else {
-			return "", APIRequestError{
-				StatusCode: resp.StatusCode,
-				Message:    resp.Status,
-			}
+	if cfg != nil {
+		if cfg.BaseURL != "" {
+			config.BaseURL = cfg.BaseURL
 		}
-	}
-	defer resp.Body.Close()
-
-	var session SessionInfo
-	if err := json.NewDecoder(resp.Body).Decode(&session); err != nil {
-		return "", err
-	}
-	fmt.Println("\n[+] User successfully logged in.")
-	return session.ID, nil
-}
-
-// CLIENT FUNCTIONS
-///////////////////////////////////////////
-
-// Creates a new InsightCloudSec client.  If no information is passed, it will request interactively.
-func NewClient() (*Client, error) {
-	baseURL := __getBaseURL()
-	apiKey := os.Getenv("INSIGHTCLOUDSEC_API_KEY")
-	client := http.DefaultClient
-	sessionID := ""
-
-	reader := bufio.NewReader(os.Stdin)
-	// Prompt for username and password if no apikey env set
-	if apiKey == "" {
-		fmt.Print("Username: ")
-		user, _ := reader.ReadString('\n')
-		user = strings.TrimSpace(user)
-
-		fmt.Print("Password: ")
-		bytePassword, _ := term.ReadPassword(int(syscall.Stdin))
-		var err error
-		sessionID, err = __getSessionID(baseURL, user, string(bytePassword))
-		if err != nil {
-			return nil, err
+		if cfg.ApiKey != "" {
+			config.ApiKey = cfg.ApiKey
+		}
+		for k, v := range cfg.Headers {
+			config.Headers[k] = v
+		}
+		if cfg.HTTPClient != nil {
+			config.HTTPClient = cfg.HTTPClient
 		}
 	}
 
-	return &Client{
-		APIKey:     apiKey,
-		BaseURL:    baseURL,
-		HttpClient: client,
-		SessionID:  sessionID,
-	}, nil
-}
-
-// Creates a new InsightCloudSec client using the provided Api-Key
-func NewClientWithKey(apiKey string) (*Client, error) {
-	return &Client{
-		APIKey:     apiKey,
-		BaseURL:    __getBaseURL(),
-		HttpClient: http.DefaultClient,
-		SessionID:  "",
-	}, nil
-}
-
-// Creates a new InsightCloudSec client using the provided credentials
-func NewClientWithCreds(user string, pass string) (*Client, error) {
-	baseURL := __getBaseURL()
-	sessionID, err := __getSessionID(baseURL, user, pass)
+	baseURL, err := url.Parse(config.BaseURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid baseURL address: %w", err)
 	}
-	return &Client{
-		APIKey:     "",
-		BaseURL:    baseURL,
-		HttpClient: http.DefaultClient,
-		SessionID:  sessionID,
-	}, nil
+
+	if config.ApiKey == "" {
+		return nil, fmt.Errorf("missing API token")
+	}
+
+	client := &Client{
+		baseURL: baseURL,
+		apikey:  config.ApiKey,
+		http:    config.HTTPClient,
+	}
+
+	client.AuthenticationServers = &authServers{client: client}
+	client.Badges = &badges{client: client}
+	client.Bots = &bots{client: client}
+	client.Clouds = &clouds{client: client}
+	client.Filters = &filters{client: client}
+	client.Insights = &insights{client: client}
+	client.Users = &users{client: client}
+	client.Organizations = &orgs{client: client}
+	client.Resources = &resources{client: client}
+	return client, nil
 }
 
 func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(
 		method,
-		fmt.Sprintf("%s%s", c.BaseURL, path),
+		fmt.Sprintf("%s%s", c.baseURL, path),
 		data,
 	)
 	if err != nil {
@@ -149,14 +108,11 @@ func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	if c.APIKey == "" {
-		req.Header.Set("X-Auth-Token", c.SessionID)
-	} else {
-		req.Header.Set("Api-Key", c.APIKey)
-	}
+	req.Header.Set("Api-Key", c.apikey)
+	req.Header.Set("User-Agent", _userAgent)
 
-	resp, err := c.HttpClient.Do(req)
-	if err != nil || (resp.StatusCode != 200 && resp.StatusCode != 201 && resp.StatusCode != 204) {
+	resp, err := c.http.Do(req)
+	if err != nil || (resp.StatusCode >= 300) {
 		return nil, APIRequestError{
 			Request:    *req,
 			StatusCode: resp.StatusCode,
