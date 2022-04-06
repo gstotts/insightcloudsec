@@ -5,6 +5,16 @@ import (
 	"net/http"
 )
 
+// MissingConfigError is a type of error raised by create a client without required config elements
+type MissingConfigError struct {
+	MissingItem string
+	Details     string
+}
+
+func (e MissingConfigError) Error() string {
+	return fmt.Sprintf("\nError:\nMissing configuration item: %s\n%s", e.MissingItem, e.Details)
+}
+
 // APIRequestError is a type of error raised by API calls made from this library
 type APIRequestError struct {
 	Request    http.Request

@@ -1,6 +1,27 @@
 # insightcloudsec
 Go Module for Interacting with InsightCloudSec API (formerly DivvyCloud)
 
+### General Usage
+
+```go 
+package main
+
+import(
+    "github.com/gstotts/insightcloudsec"
+)
+
+func main() {
+    config := insightcloudsec.Config{
+        BaseURL: "http://localhost:8001",
+        ApiKey: "1232351351235ABSLAFL:JSDFA"
+    }
+
+    // Can also use environment variables above and pass nil
+    ics := insightcloudsec.NewClient(config)
+}
+
+```
+
 ### Examples
 
 <details><summary>List Clouds</summary>
@@ -16,12 +37,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.NewClient(nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	clouds, err := c.ListClouds()
+	clouds, err := c.Clouds.List()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -44,12 +65,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.NewClient(nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	types, err := c.ListCloudTypes()
+	types, err := c.Clouds.ListTypes()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -73,12 +94,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.NewClient(nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	clouds, err := c.ListClouds()
+	clouds, err := c.Clouds.ListClouds()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -108,12 +129,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.NewClient(nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	hs, err := c.ListHarvestingStrategies()
+	hs, err := c.Clouds.ListHarvestingStrategies()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -147,8 +168,8 @@ func main() {
 	insight.ResourceTypes = []string{"divvyorganizationservice"}
 	insight.Filters = []insightcloudsec.InsightFilter{filter}
 
-	ics, _ := insightcloudsec.NewClient()
-	ics.Create_Insight(insight)
+	ics, _ := insightcloudsec.NewClient(nil)
+	ics.Insights.Create(insight)
 
 }
 
@@ -168,12 +189,12 @@ import (
 
 func main() {
 	// Get a client
-	c, err := insightcloudsec.NewClient()
+	c, err := insightcloudsec.NewClient(nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	insights, err := c.List_Insights()
+	insights, err := c.Insights.List()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -198,7 +219,7 @@ import (
 )
 
 func main() {
-	ics, _ := insightcloudsec.NewClient()
+	ics, _ := insightcloudsec.NewClient(nil)
 
 	azure_cloud := insightcloudsec.AzureCloudAccount{
 		CreationParameters: insightcloudsec.CloudAccountParameters{
@@ -211,7 +232,7 @@ func main() {
 			AppID:          "01234567-1234-1234-1234-012345678901",
 		},
 	}
-	account, err := ics.AddAzureCloud(azure_cloud)
+	account, err := ics.Clouds.AddAzureCloud(azure_cloud)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -233,8 +254,8 @@ import (
 )
 
 func main() {
-	ics, _ := insightcloudsec.NewClient()
-	details, err := ics.CreateUser(insightcloudsec.User{
+	ics, _ := insightcloudsec.NewClient(nil)
+	details, err := ics.Users.Create(insightcloudsec.User{
 		Name:        "Testy McTester",
 		Username:    "tmctester",
 		Email:       "tmctester@test.com",

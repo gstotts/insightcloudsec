@@ -11,8 +11,20 @@ import (
 	"strings"
 )
 
-// STRUCTS
-///////////////////////////////////////////
+var _ Resources = (*resources)(nil)
+
+type Resources interface {
+	Query(q Query) (Query_Results, error)
+	GetDetails(resource_id string) (Resource_Details, error)
+	GetAssociations(resource_id string) (Resource_Associations, error)
+	ListTags(resource_id string) ([]Tag, error)
+	List_Settings(resource_id string) (Resource_Settings, error)
+	SetOwner(resource_ids []string, owner_resource_id string) error
+}
+
+type resources struct {
+	client *Client
+}
 
 type Query struct {
 	// Built off of the Query v3-ETL endpoint of the InsightCloudSec API
@@ -25,17 +37,8 @@ type Query struct {
 	OrderBy                string          `json:"order_by,omitempty"`
 	Scopes                 []string        `json:"scopes,omitempty"`
 	Selected_Resource_Type string          `json:"selected_resource_type,omitempty"`
-	Tags                   *[]Tags         `json:"tags,omitempty"`
+	Tags                   *[]Tag          `json:"tags,omitempty"`
 	Cursor                 string          `json:"cursor,omitempty"`
-}
-
-type Tags struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type Tags_Response struct {
-	Tags []Tags `json:"resource_tags"`
 }
 
 type Query_Filter struct {
@@ -279,7 +282,7 @@ type Resource_Associations struct {
 // FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) Query_Resources(q Query) (Query_Results, error) {
+func (c *resources) Query(q Query) (Query_Results, error) {
 	// Queries InsightCloudSec for resources with the given query (using v3-ETL endpoint of the API)
 
 	if q.Badge_Filter_Operator != "" {
@@ -300,7 +303,7 @@ func (c Client) Query_Resources(q Query) (Query_Results, error) {
 		return Query_Results{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", bytes.NewBuffer(data))
 	if err != nil {
 		return Query_Results{}, err
 	}
@@ -313,9 +316,9 @@ func (c Client) Query_Resources(q Query) (Query_Results, error) {
 	return ret, nil
 }
 
-func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
+func (c *resources) GetDetails(resource_id string) (Resource_Details, error) {
 	// Given a resource_id as a string, it returns the resource details and dependencies
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil)
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil)
 	if err != nil {
 		return Resource_Details{}, err
 	}
@@ -328,7 +331,7 @@ func (c Client) Detail_Resource(resource_id string) (Resource_Details, error) {
 	return ret, nil
 }
 
-func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id string) error {
+func (c *resources) SetOwner(resource_ids []string, owner_resource_id string) error {
 	// Given a list of resource ids as strings and an owner_resource_id as string, it sets the given user as the owner of the list
 	data := Set_Resource_Owner_Request{
 		Resource_IDs:      resource_ids,
@@ -340,7 +343,7 @@ func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id stri
 		return err
 	}
 
-	_, err = c.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", bytes.NewBuffer(payload))
+	_, err = c.client.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
@@ -348,8 +351,8 @@ func (c Client) Set_Resource_Owner(resource_ids []string, owner_resource_id stri
 	return nil
 }
 
-func (c Client) Get_Resource_Associations(resource_id string) (Resource_Associations, error) {
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/associations/get", resource_id), nil)
+func (c *resources) GetAssociations(resource_id string) (Resource_Associations, error) {
+	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/associations/get", resource_id), nil)
 	if err != nil {
 		return Resource_Associations{}, err
 	}
@@ -362,21 +365,21 @@ func (c Client) Get_Resource_Associations(resource_id string) (Resource_Associat
 	return ret, nil
 }
 
-func (c Client) List_Resource_Tags(resource_id string) ([]Tags, error) {
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil)
+func (c *resources) ListTags(resource_id string) ([]Tag, error) {
+	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil)
 	if err != nil {
-		return []Tags{}, err
+		return []Tag{}, err
 	}
 
 	var ret Tags_Response
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return []Tags{}, nil
+		return []Tag{}, nil
 	}
 	return ret.Tags, nil
 }
 
-func (c Client) List_Resource_Settings(resource_id string) (Resource_Settings, error) {
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/settings/list", resource_id), nil)
+func (c *resources) List_Settings(resource_id string) (Resource_Settings, error) {
+	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/settings/list", resource_id), nil)
 	if err != nil {
 		return Resource_Settings{}, err
 	}
@@ -387,9 +390,6 @@ func (c Client) List_Resource_Settings(resource_id string) (Resource_Settings, e
 	}
 	return ret, nil
 }
-
-// VALIDATION FUNCTIONS
-///////////////////////////////////////////
 
 func validateBadgeFilterOperator(b string) error {
 	// Validation Function for Query.Badge_Filter_Operator

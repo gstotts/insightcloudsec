@@ -8,7 +8,19 @@ import (
 	"strings"
 )
 
-// STRUCTS
+var _ Users = (*users)(nil)
+
+type Users interface {
+	Create(user User) (UserListDetails, error)
+	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
+	Delete(user_resource_id string) error
+	DeleteByUsername(username string) error
+	List() (UserList, error)
+}
+
+type users struct {
+	client *Client
+}
 
 type User struct {
 	// For use when creating a user.
@@ -81,10 +93,10 @@ type UserList struct {
 
 // USER FUNCTIONS
 
-func (c Client) ListUsers() (UserList, error) {
+func (c *users) List() (UserList, error) {
 	// List all InsightCloudSec users
 
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
 	if err != nil {
 		return UserList{}, err
 	}
@@ -97,7 +109,7 @@ func (c Client) ListUsers() (UserList, error) {
 	return ret, nil
 }
 
-func (c Client) CreateUser(user User) (UserListDetails, error) {
+func (c *users) Create(user User) (UserListDetails, error) {
 	// Creates an InsightCloudSec User account
 
 	if user.Password == "" || user.AccessLevel == "" || user.Name == "" || user.Username == "" || user.Email == "" {
@@ -119,7 +131,7 @@ func (c Client) CreateUser(user User) (UserListDetails, error) {
 		return UserListDetails{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(data))
 	if err != nil {
 		return UserListDetails{}, err
 	}
@@ -132,7 +144,7 @@ func (c Client) CreateUser(user User) (UserListDetails, error) {
 	return ret, nil
 }
 
-func (c Client) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
+func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	// Creates an InsightCloudSec API Only User
 
 	if api_user.Username == "" || api_user.Email == "" || api_user.Name == "" {
@@ -146,7 +158,7 @@ func (c Client) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 		return APIUserResponse{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", bytes.NewBuffer(data))
 	if err != nil {
 		return APIUserResponse{}, err
 	}
@@ -157,24 +169,24 @@ func (c Client) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	return ret, nil
 }
 
-func (c Client) DeleteUser(user_resource_id string) error {
+func (c *users) Delete(user_resource_id string) error {
 	// Deletes the user corresponding to the given user_resource_id.
 	//
 	// Example usage:  client.DeleteUser("divvyuser:7")
 
-	resp, err := c.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
+	resp, err := c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
 	return nil
 }
 
-func (c Client) DeleteUserByUsername(username string) error {
+func (c *users) DeleteByUsername(username string) error {
 	// Deletes the user corresponding to the given username.
 	//
 	// Example usage: client.DeleteUserByUsername("jdoe")
 
-	users, err := c.ListUsers()
+	users, err := c.List()
 	if err != nil {
 		return err
 	}
@@ -190,7 +202,7 @@ func (c Client) DeleteUserByUsername(username string) error {
 		return fmt.Errorf("[-] ERROR: Username not found")
 	}
 
-	err = c.DeleteUser(id)
+	err = c.Delete(id)
 	if err != nil {
 		return err
 	}
