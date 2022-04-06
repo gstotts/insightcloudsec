@@ -360,7 +360,6 @@ func (s *clouds) Delete(cloud_resource_id string) error {
 	return nil
 }
 
-
 // MANAGING CLOUD FUNCTIONS
 ///////////////////////////////////////////
 
