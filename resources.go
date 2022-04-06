@@ -17,7 +17,7 @@ type Resources interface {
 	Query(q Query) (Query_Results, error)
 	GetDetails(resource_id string) (Resource_Details, error)
 	GetAssociations(resource_id string) (Resource_Associations, error)
-	ListTags(resource_id string) ([]Tags, error)
+	ListTags(resource_id string) ([]Tag, error)
 	List_Settings(resource_id string) (Resource_Settings, error)
 	SetOwner(resource_ids []string, owner_resource_id string) error
 }
@@ -37,17 +37,8 @@ type Query struct {
 	OrderBy                string          `json:"order_by,omitempty"`
 	Scopes                 []string        `json:"scopes,omitempty"`
 	Selected_Resource_Type string          `json:"selected_resource_type,omitempty"`
-	Tags                   *[]Tags         `json:"tags,omitempty"`
+	Tags                   *[]Tag          `json:"tags,omitempty"`
 	Cursor                 string          `json:"cursor,omitempty"`
-}
-
-type Tags struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type Tags_Response struct {
-	Tags []Tags `json:"resource_tags"`
 }
 
 type Query_Filter struct {
@@ -374,15 +365,15 @@ func (c *resources) GetAssociations(resource_id string) (Resource_Associations, 
 	return ret, nil
 }
 
-func (c *resources) ListTags(resource_id string) ([]Tags, error) {
+func (c *resources) ListTags(resource_id string) ([]Tag, error) {
 	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil)
 	if err != nil {
-		return []Tags{}, err
+		return []Tag{}, err
 	}
 
 	var ret Tags_Response
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return []Tags{}, nil
+		return []Tag{}, nil
 	}
 	return ret.Tags, nil
 }
