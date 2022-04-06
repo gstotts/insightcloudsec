@@ -70,9 +70,9 @@ func (r *rsgroup) Create(name string, description string) (ResourceGroup, error)
 	return ret, nil
 }
 
-func (r *rsgroup) AddToGroup(resource_ids []string, group_name string) error {
+func (r *rsgroup) AddToGroup(resource_ids []string, group_id string) error {
 	config := ResourcesToGroup{
-		ResourceGroupIDs: []string{group_name},
+		ResourceGroupIDs: []string{group_id},
 		ResourceIDs:      resource_ids,
 	}
 	data, err := json.Marshal(config)
@@ -80,7 +80,7 @@ func (r *rsgroup) AddToGroup(resource_ids []string, group_name string) error {
 		return err
 	}
 
-	_, err = r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/add", bytes.NewBuffer(data))
+	_, err = r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/resources/add", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
