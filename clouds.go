@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// CONSTANTS
-///////////////////////////////////////////
+var _ Clouds = (*clouds)(nil)
+
 const (
 	// Cloud Type Constants
 	AWS_CLOUD_TYPE   = "AWS"
@@ -28,8 +28,26 @@ const (
 	GCP_DEFAULT_TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 )
 
-// STRUCTS
-///////////////////////////////////////////
+type Clouds interface {
+	AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error)
+	AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error)
+	AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error)
+	Delete(cloud_resource_id string) error
+	Update(id int, cloud_data CloudAccountParameters) (Cloud, error)
+	List() (CloudList, error)
+	ListHarvestingStrategies() ([]HarvestingStrategy, error)
+	ListProvisioningClouds() (CloudList, error)
+	ListRegions(target Cloud) (CloudRegionList, error)
+	ListTypes() (CloudTypesList, error)
+	GetByName(name string) (Cloud, error)
+	GetByID(id int) (Cloud, error)
+	QueueStatus() (QueueStatus, error)
+}
+
+type clouds struct {
+	client *Client
+}
+
 type Cloud struct {
 	ID                  int                   `json:"id"`
 	Name                string                `json:"name"`
@@ -177,7 +195,7 @@ type TimeStats struct {
 // CLOUD ACCOUNT SETUP FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
+func (s *clouds) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	err := validateAWSCloud(cloud_data)
 	if err != nil {
 		return Cloud{}, err
@@ -188,7 +206,7 @@ func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -201,7 +219,7 @@ func (c Client) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
+func (s *clouds) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 	err := validateAzureCloud(cloud_data)
 	if err != nil {
 		return Cloud{}, err
@@ -212,7 +230,7 @@ func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -225,7 +243,7 @@ func (c Client) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
+func (s *clouds) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 	err := validateGCPCloud(cloud_data)
 	if err != nil {
 		return Cloud{}, err
@@ -236,7 +254,7 @@ func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -249,7 +267,7 @@ func (c Client) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 	return ret, nil
 }
 
-func (c Client) UpdateCloud(id int, cloud_data CloudAccountParameters) (Cloud, error) {
+func (s *clouds) Update(id int, cloud_data CloudAccountParameters) (Cloud, error) {
 	if cloud_data.CloudType == AWS_CLOUD_TYPE {
 		err := validateAWSCloud(AWSCloudAccount{cloud_data})
 		if err != nil {
@@ -274,7 +292,7 @@ func (c Client) UpdateCloud(id int, cloud_data CloudAccountParameters) (Cloud, e
 		return Cloud{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), bytes.NewBuffer(data))
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -333,8 +351,8 @@ func validateGCPCloud(cloud_data GCPCloudAccount) error {
 	return nil
 }
 
-func (c Client) DeleteCloud(cloud_resource_id string) error {
-	resp, err := c.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/%s/delete", cloud_resource_id), nil)
+func (s *clouds) Delete(cloud_resource_id string) error {
+	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/%s/delete", cloud_resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
@@ -342,15 +360,12 @@ func (c Client) DeleteCloud(cloud_resource_id string) error {
 	return nil
 }
 
-// CLOUD ORG FUNCTIONS
-///////////////////////////////////////////
-
 // MANAGING CLOUD FUNCTIONS
 ///////////////////////////////////////////
 
-func (c Client) ListClouds() (CloudList, error) {
+func (s *clouds) List() (CloudList, error) {
 	// Return a CloudList item containing all the clouds from the API.
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
 	if err != nil {
 		return CloudList{}, err
 	}
@@ -363,9 +378,9 @@ func (c Client) ListClouds() (CloudList, error) {
 	return ret, nil
 }
 
-func (c Client) GetCloudByName(name string) (Cloud, error) {
+func (s *clouds) GetByName(name string) (Cloud, error) {
 	// Returns the specific cloud of the name given.
-	all_clouds, _ := c.ListClouds()
+	all_clouds, _ := s.List()
 	for _, cloud := range all_clouds.Clouds {
 		if strings.EqualFold(cloud.Name, name) {
 			return cloud, nil
@@ -375,9 +390,9 @@ func (c Client) GetCloudByName(name string) (Cloud, error) {
 	return Cloud{}, fmt.Errorf("[-] ERROR: Cloud Named %s Not Found", name)
 }
 
-func (c Client) GetCloudByID(id int) (Cloud, error) {
+func (s *clouds) GetByID(id int) (Cloud, error) {
 	// Returns the specific cloud of the ID given.
-	all_clouds, _ := c.ListClouds()
+	all_clouds, _ := s.List()
 	for _, cloud := range all_clouds.Clouds {
 		if id == cloud.ID {
 			return cloud, nil
@@ -387,9 +402,9 @@ func (c Client) GetCloudByID(id int) (Cloud, error) {
 	return Cloud{}, fmt.Errorf("[-] ERROR: Cloud of ID %d Not Found", id)
 }
 
-func (c Client) ListCloudTypes() (CloudTypesList, error) {
+func (s *clouds) ListTypes() (CloudTypesList, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
 	if err != nil {
 		return CloudTypesList{}, err
 	}
@@ -402,9 +417,9 @@ func (c Client) ListCloudTypes() (CloudTypesList, error) {
 	return ret, nil
 }
 
-func (c Client) ListProvisioningClouds() (CloudList, error) {
+func (s *clouds) ListProvisioningClouds() (CloudList, error) {
 	// Returns a list of provisioning clouds.
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/clouds/provisioning/list", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/provisioning/list", nil)
 	if err != nil {
 		return CloudList{}, err
 	}
@@ -416,9 +431,9 @@ func (c Client) ListProvisioningClouds() (CloudList, error) {
 	return ret, nil
 }
 
-func (c Client) QueueStatus() (QueueStatus, error) {
+func (c *clouds) QueueStatus() (QueueStatus, error) {
 	// Returns the queue status statistics.
-	resp, err := c.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
 	if err != nil {
 		return QueueStatus{}, err
 	}
@@ -430,9 +445,9 @@ func (c Client) QueueStatus() (QueueStatus, error) {
 	return ret, nil
 }
 
-func (c Client) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
+func (s *clouds) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
-	resp, err := c.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -445,11 +460,11 @@ func (c Client) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 	return ret.Strategies, nil
 }
 
-func (c Client) ListCloudRegions(target Cloud) (CloudRegionList, error) {
+func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
 	fmt.Println(target.ResourceID)
-	resp, err := c.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
+	resp, err := s.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
 	if err != nil {
 		return CloudRegionList{}, err
 	}
