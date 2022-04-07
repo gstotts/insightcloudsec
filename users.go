@@ -13,6 +13,7 @@ var _ Users = (*users)(nil)
 type Users interface {
 	Create(user User) (UserListDetails, error)
 	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
+	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
 	CurrentUserInfo() (UserListDetails, error)
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
@@ -57,7 +58,7 @@ type SAMLUser struct {
 	Email                  string `json:"email"`
 	AccessLevel            string `json:"access_level"`
 	AuthenticationType     string `json:"authentication_type"`
-	AuthenticationServerID int    `json:"authentication_server_id"`
+	AuthenticationServerID int32  `json:"authentication_server_id"`
 }
 
 type UserListDetails struct {
@@ -170,12 +171,30 @@ func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	return ret, nil
 }
 
-func (c *users) Delete(user_resource_id string) error {
+func (u *users) CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error) {
+	payload, err := json.Marshal(saml_user)
+	if err != nil {
+		return UserListDetails{}, err
+	}
+
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(payload))
+	if err != nil {
+		return UserListDetails{}, err
+	}
+
+	var ret UserListDetails
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UserListDetails{}, err
+	}
+	return ret, err
+}
+
+func (u *users) Delete(user_resource_id string) error {
 	// Deletes the user corresponding to the given user_resource_id.
 	//
 	// Example usage:  client.DeleteUser("divvyuser:7")
 
-	resp, err := c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
+	resp, err := u.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
