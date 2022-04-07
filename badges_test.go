@@ -30,7 +30,7 @@ func TestBadges_createBadgesFromMap(t *testing.T) {
 	input := map[string]string{"SKU": "1234-1234-1234444", "Name": "Test Badging 453", "Dog": "Cat"}
 	results := createBadgesFromMap(input)
 
-	assert.Equal(t, want, results)
+	assert.ElementsMatch(t, want, results)
 }
 
 func TestBadges_Create(t *testing.T) {
@@ -71,6 +71,6 @@ func TestBadgges_ListResourceBadges(t *testing.T) {
 	}
 
 	assert.NoError(t, err)
-	assert.Equal(t, want, list)
+	assert.ElementsMatch(t, want, list)
 	teardown()
 }
