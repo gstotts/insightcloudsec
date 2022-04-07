@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -37,6 +38,14 @@ func setup() {
 
 func teardown() {
 	server.Close()
+}
+
+func getJSONFile(path string) string {
+	b, err := ioutil.ReadFile("testdata/" + path)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }
 
 func TestClient_Headers(t *testing.T) {

@@ -53,18 +53,7 @@ func TestBadgges_ListResourceBadges(t *testing.T) {
 	mux.HandleFunc("/v2/public/badges/divvyorganizationservice:1/list", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `[
-			{
-				"key": "BadgeKey1",
-				"value": "BadgeValue1",
-				"auto_generated": false
-			},
-			{
-				"key": "BadgeKey2",
-				"value": "BadgeValue2",
-				"auto_generated": false
-			}
-		]`)
+		fmt.Fprint(w, getJSONFile("badges/listResourceBadges.json"))
 	})
 
 	list, err := client.Badges.ListResourceBadges("divvyorganizationservice:1")
