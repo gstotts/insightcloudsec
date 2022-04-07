@@ -57,7 +57,6 @@ func TestBadgges_ListResourceBadges(t *testing.T) {
 	})
 
 	list, err := client.Badges.ListResourceBadges("divvyorganizationservice:1")
-	fmt.Println(list)
 	want := []Badge{
 		{
 			Key:            "BadgeKey1",
