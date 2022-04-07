@@ -7,8 +7,14 @@ import (
 	"strings"
 )
 
-// STRUCTS
-///////////////////////////////////////////
+type CloudOrganizations interface {
+	Create(cloud_type string, creds string, nickname string, auto_add bool, auto_remove bool, domain_name string, parent_folder_id []string, remove_suspended bool, skip_prefixes []string) (Cloud_Organization, error)
+	List() ([]Cloud_Organization, error)
+}
+
+type corgs struct {
+	client *Client
+}
 
 type Cloud_Organization_Create struct {
 	// For use in creating Cloud Organizations
@@ -44,7 +50,7 @@ type Cloud_Organizations_List struct {
 // Functions
 ///////////////////////////////////////////
 
-func (c Client) Create_Cloud_Organization(cloud_type string, creds string, nickname string, auto_add bool, auto_remove bool, domain_name string, parent_folder_id []string, remove_suspended bool, skip_prefixes []string) (Cloud_Organization, error) {
+func (c *corgs) Create(cloud_type string, creds string, nickname string, auto_add bool, auto_remove bool, domain_name string, parent_folder_id []string, remove_suspended bool, skip_prefixes []string) (Cloud_Organization, error) {
 	// Creates a cloud organization
 
 	if creds == "" {
@@ -81,7 +87,7 @@ func (c Client) Create_Cloud_Organization(cloud_type string, creds string, nickn
 		return Cloud_Organization{}, err
 	}
 
-	resp, err := c.makeRequest(http.MethodPost, "/v2/public/cloud/domain/add", bytes.NewBuffer(payload))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/cloud/domain/add", bytes.NewBuffer(payload))
 	if err != nil {
 		return Cloud_Organization{}, err
 	}
@@ -132,9 +138,9 @@ func create_GCE_Cloud_Org(creds string, nickname string, auto_add bool, auto_rem
 	}
 }
 
-func (c Client) List_Cloud_Organizations() ([]Cloud_Organization, error) {
+func (c *corgs) List() ([]Cloud_Organization, error) {
 	// Returns a list of cloud organizations
-	resp, err := c.makeRequest(http.MethodGet, "/v2/public/cloud/domains", nil)
+	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/cloud/domains", nil)
 	if err != nil {
 		return []Cloud_Organization{}, err
 	}
@@ -147,10 +153,10 @@ func (c Client) List_Cloud_Organizations() ([]Cloud_Organization, error) {
 	return ret.Domains, nil
 }
 
-func (c Client) Delete_Cloud_Organization() error {
+func (c Client) Delete() error {
 	return nil
 }
 
-func (c Client) Edit_Cloud_Organization() error {
+func (c Client) Edit() error {
 	return nil
 }
