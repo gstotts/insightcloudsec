@@ -123,3 +123,12 @@ func (c Client) makeRequest(method, path string, data io.Reader) (*http.Response
 	}
 	return resp, nil
 }
+
+func (c Client) Close() error {
+	_, err := c.makeRequest(http.MethodPost, "/v2/public/user/logout", nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
