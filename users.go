@@ -15,6 +15,7 @@ type Users interface {
 	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
 	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
 	CurrentUserInfo() (UserListDetails, error)
+	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
@@ -91,6 +92,15 @@ type UserList struct {
 	// For use with data returned from a listing of users.
 	Users []UserListDetails `json:"users"`
 	Count int               `json:"total_count"`
+}
+
+type MFAStatus struct {
+	UserID int32 `json:"user_id,omitempty"`
+}
+
+type UsersMFAStatus struct {
+	Enabled  bool `json:"enabled"`
+	Required bool `json:"required"`
 }
 
 // USER FUNCTIONS
@@ -242,4 +252,24 @@ func (u *users) CurrentUserInfo() (UserListDetails, error) {
 	}
 
 	return user, nil
+}
+
+func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
+	id := MFAStatus{UserID: user_id}
+	payload, err := json.Marshal(id)
+	if err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_state", bytes.NewBuffer(payload))
+	if err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	var ret UsersMFAStatus
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	return ret, err
 }
