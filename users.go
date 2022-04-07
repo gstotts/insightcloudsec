@@ -13,6 +13,9 @@ var _ Users = (*users)(nil)
 type Users interface {
 	Create(user User) (UserListDetails, error)
 	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
+	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
+	CurrentUserInfo() (UserListDetails, error)
+	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
@@ -56,7 +59,7 @@ type SAMLUser struct {
 	Email                  string `json:"email"`
 	AccessLevel            string `json:"access_level"`
 	AuthenticationType     string `json:"authentication_type"`
-	AuthenticationServerID int    `json:"authentication_server_id"`
+	AuthenticationServerID int32  `json:"authentication_server_id"`
 }
 
 type UserListDetails struct {
@@ -69,26 +72,35 @@ type UserListDetails struct {
 	ResourceID          string   `json:"resource_id"`
 	TwoFactorEnabled    bool     `json:"two_factor_enabled"`
 	TwoFactorRequired   bool     `json:"two_factor_required"`
-	FailedLoginAttempts int      `json:"consecutive_failed_login_attempts"`
-	LastLogin           string   `json:"last_login_time"`
-	Suspended           bool     `json:"suspended"`
+	FailedLoginAttempts int      `json:"consecutive_failed_login_attempts,omitempty"`
+	LastLogin           string   `json:"last_login_time,omitempty"`
+	Suspended           bool     `json:"suspended,omitempty"`
 	NavigationBlacklist []string `json:"navigation_blacklist"`
 	RequirePWReset      bool     `json:"require_pw_reset"`
-	ConsoleAccessDenied bool     `json:"console_access_denied"`
-	ActiveAPIKey        bool     `json:"active_api_key_present"`
+	ConsoleAccessDenied bool     `json:"console_access_denied,omitempty"`
+	ActiveAPIKey        bool     `json:"active_api_key_present,omitempty"`
 	Org                 string   `json:"organization_name"`
 	OrgID               int      `json:"organization_id"`
 	DomainAdmin         bool     `json:"domain_admin"`
 	DomainViewer        bool     `json:"domain_viewer"`
 	OrgAdmin            bool     `json:"organization_admin"`
-	Groups              int      `json:"groups"`
-	OwnedResources      int      `json:"owned_resources"`
+	Groups              int      `json:"groups,omitempty"`
+	OwnedResources      int      `json:"owned_resources,omitempty"`
 }
 
 type UserList struct {
 	// For use with data returned from a listing of users.
 	Users []UserListDetails `json:"users"`
 	Count int               `json:"total_count"`
+}
+
+type MFAStatus struct {
+	UserID int32 `json:"user_id,omitempty"`
+}
+
+type UsersMFAStatus struct {
+	Enabled  bool `json:"enabled"`
+	Required bool `json:"required"`
 }
 
 // USER FUNCTIONS
@@ -169,12 +181,30 @@ func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	return ret, nil
 }
 
-func (c *users) Delete(user_resource_id string) error {
+func (u *users) CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error) {
+	payload, err := json.Marshal(saml_user)
+	if err != nil {
+		return UserListDetails{}, err
+	}
+
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(payload))
+	if err != nil {
+		return UserListDetails{}, err
+	}
+
+	var ret UserListDetails
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UserListDetails{}, err
+	}
+	return ret, err
+}
+
+func (u *users) Delete(user_resource_id string) error {
 	// Deletes the user corresponding to the given user_resource_id.
 	//
 	// Example usage:  client.DeleteUser("divvyuser:7")
 
-	resp, err := c.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
+	resp, err := u.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
 	if err != nil || resp.StatusCode != 200 {
 		return err
 	}
@@ -208,4 +238,38 @@ func (c *users) DeleteByUsername(username string) error {
 	}
 
 	return nil
+}
+
+func (u *users) CurrentUserInfo() (UserListDetails, error) {
+	resp, err := u.client.makeRequest(http.MethodGet, "/v2/public/user/info", nil)
+	if err != nil {
+		return UserListDetails{}, err
+	}
+
+	var user UserListDetails
+	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+		return UserListDetails{}, err
+	}
+
+	return user, nil
+}
+
+func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
+	id := MFAStatus{UserID: user_id}
+	payload, err := json.Marshal(id)
+	if err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_state", bytes.NewBuffer(payload))
+	if err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	var ret UsersMFAStatus
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UsersMFAStatus{}, err
+	}
+
+	return ret, err
 }
