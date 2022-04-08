@@ -74,3 +74,32 @@ func TestBadgges_ListResourceBadges(t *testing.T) {
 	assert.ElementsMatch(t, want, list)
 	teardown()
 }
+
+func TestBadgges_ListCloudsWithBadges(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/badge/clouds/list", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("badges/listCloudsWithBadges.json"))
+	})
+
+	list, err := client.Badges.ListCloudsWithBadges(nil)
+	want := []CloudBadges{
+		{
+			Resource_ID: "divvyorganizationservice:1",
+			Name:        "lonestar",
+		},
+		{
+			Resource_ID: "divvyorganizationservice:2",
+			Name:        "darkHelmet123",
+		},
+		{
+			Resource_ID: "divvyorganizationservice:4",
+			Name:        "the_schwartz",
+		},
+	}
+
+	assert.NoError(t, err)
+	assert.ElementsMatch(t, want, list)
+	teardown()
+}

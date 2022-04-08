@@ -13,7 +13,7 @@ type Badges interface {
 	Create(target_org_resource_ids []string, badge_data map[string]string) error
 	Update(org_resource_id string, badges map[string]string) error
 	Delete(target_org_resource_ids []string, badges map[string]string) error
-	ListCloudsWithBadges(badges map[string]string) ([]Cloud, error)
+	ListCloudsWithBadges(badges map[string]string) ([]CloudBadges, error)
 	ListResourceBadges(org_resource_id string) ([]Badge, error)
 	ListResourcesBadgeCount() (BadgeCountResponse, error)
 }
@@ -40,6 +40,11 @@ type BadgeRequest struct {
 
 type BadgeCountResponse struct {
 	Resource_Count []interface{} `json:"resource_count"`
+}
+
+type CloudBadges struct {
+	Resource_ID string `json:"resource_id"`
+	Name        string `json:"name"`
 }
 
 func (s *badges) Create(target_org_resource_ids []string, badge_data map[string]string) error {
@@ -94,21 +99,21 @@ func (s *badges) Delete(target_org_resource_ids []string, badges map[string]stri
 	return nil
 }
 
-func (s *badges) ListCloudsWithBadges(badges map[string]string) ([]Cloud, error) {
+func (s *badges) ListCloudsWithBadges(badges map[string]string) ([]CloudBadges, error) {
 	// Returns a list of cloud accounts what contain the given badges defined as a map of key / values.
 	data, err := json.Marshal(badges)
 	if err != nil {
-		return []Cloud{}, err
+		return []CloudBadges{}, err
 	}
 
 	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/badge/clouds/list", bytes.NewBuffer(data))
 	if err != nil {
-		return []Cloud{}, err
+		return []CloudBadges{}, err
 	}
 
-	var clouds []Cloud
+	var clouds []CloudBadges
 	if err := json.NewDecoder(resp.Body).Decode(&clouds); err != nil {
-		return []Cloud{}, err
+		return []CloudBadges{}, err
 	}
 
 	return clouds, nil
