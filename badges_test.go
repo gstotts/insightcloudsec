@@ -103,3 +103,26 @@ func TestBadgges_ListCloudsWithBadges(t *testing.T) {
 	assert.ElementsMatch(t, want, list)
 	teardown()
 }
+
+func TestBadgges_ListResourceBadgeCount(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/badges/count", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("badges/listResourceBadgeCounts.json"))
+	})
+
+	list, err := client.Badges.ListResourceBadgeCount([]string{"divvyorganizationservice:3"})
+	want := Resource_Count{
+		Resource_Count: []BadgeResourceCount{
+			{
+				Resource_ID: "divvyorganizationservice:3",
+				Count:       4,
+			},
+		},
+	}
+
+	assert.NoError(t, err)
+	assert.Equal(t, want, list)
+	teardown()
+}

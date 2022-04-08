@@ -44,7 +44,7 @@ type Resource_Count struct {
 
 type BadgeResourceCount struct {
 	Resource_ID string `json:"resource_id"`
-	Count       int    `json:"count"`
+	Count       int32  `json:"count"`
 }
 
 type BadgeResourceCountRequest struct {
