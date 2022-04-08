@@ -405,12 +405,12 @@ func validateBadgeFilterOperator(b string) error {
 
 func validateQueryLimit(l int32) error {
 	// Validation Function for Query.Limit
-	if l < 0 || l > 1000 {
+	if l < 1 || l > 1000 {
 		return ValidationError{
 			ItemToValidate: "Limit",
 			ExpectedValues: []string{"0-1000"},
 		}
-	} else {
-		return nil
 	}
+
+	return nil
 }
