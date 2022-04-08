@@ -15,41 +15,7 @@ func TestAuthServers_List(t *testing.T) {
 
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
-		{
-			"servers": [
-			  {
-				"server_id": 1,
-				"server_name": "Okta SSO",
-				"server_host": "",
-				"server_port": 0,
-				"secure": 1,
-				"server_type": "saml",
-				"global_scope": false,
-				"mapped_groups": 0
-			  },
-			  {
-				"server_id": 2,
-				"server_name": "Azure AD",
-				"server_host": "",
-				"server_port": 0,
-				"secure": 1,
-				"server_type": "saml",
-				"global_scope": true,
-				"mapped_groups": 0
-			  },
-			  {
-				"server_id": 3,
-				"server_name": "Rapid7 Okta",
-				"server_host": "",
-				"server_port": 0,
-				"secure": 1,
-				"server_type": "saml",
-				"global_scope": null,
-				"mapped_groups": 1
-			  }
-			]
-		  }`)
+		fmt.Fprintf(w, getJSONFile("authServers/list.json"))
 	})
 
 	resp, err := client.AuthenticationServers.List()

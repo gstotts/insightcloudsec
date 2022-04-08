@@ -1,0 +1,12 @@
+[
+    {
+        "key": "BadgeKey1",
+        "value": "BadgeValue1",
+        "auto_generated": false
+    },
+    {
+        "key": "BadgeKey2",
+        "value": "BadgeValue2",
+        "auto_generated": false
+    }
+]
