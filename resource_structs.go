@@ -6,13 +6,13 @@ type Common_Resource_Values struct {
 	//Common Attributes
 	Resource_ID             string            `json:"resource_id"`
 	Resource_Name           string            `json:"resource_name"`
-	Type                    string            `json:"type"`
+	Type                    string            `json:"resource_type"`
 	Cloud                   string            `json:"cloud"`
 	Account                 string            `json:"account"`
 	Account_ID              string            `json:"account_id"`
 	Account_Status          string            `json:"account_status"`
 	Organization_Service_ID int               `json:"organization_service_id"`
-	Availability_Zone       string            `json:"availablility_zone"`
+	Availability_Zone       string            `json:"availability_zone"`
 	Region                  string            `json:"region"`
 	Creation_Timestamp      string            `json:"creation_timestamp"`
 	Discovered_Timestamp    string            `json:"discovered_timestamp"`

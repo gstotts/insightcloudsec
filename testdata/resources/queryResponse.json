@@ -220,7 +220,7 @@
                 "platform": "linux",
                 "state": "running",
                 "root_device_type": "ebs",
-                "key_name": "mega_main_key",
+                "key_name": "mega_maid_key",
                 "image_id": "ami-123456789101112",
                 "private_ip_address": "10.1.2.3",
                 "tenancy": "default",
