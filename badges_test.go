@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -45,6 +46,45 @@ func TestBadges_Create(t *testing.T) {
 	err := client.Badges.Create([]string{"divvyorganizationservice:1"}, map[string]string{"BadgeKey1": "BadgeValue1", "BadgeKey2": "BadgeValue2"})
 
 	assert.NoError(t, err)
+	teardown()
+}
+
+func TestBadges_Update(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/badges/divvyserviceorganization:5/update", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		var body_object BadgeRequest
+		err := json.NewDecoder(r.Body).Decode(&body_object)
+		assert.NoError(t, err)
+		assert.Equal(t,
+			BadgeRequest{
+				Org_Resource_IDs: []string{"divvyorganizationservice:5"},
+				Badges:           []Badge{{Key: "name", Value: "barf"}},
+			},
+			body_object)
+	})
+
+	client.Badges.Update("divvyorganizationservice:5", map[string]string{"name": "barf"})
+
+	teardown()
+}
+
+func TestBadges_Delete(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/badges/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		var body_object BadgeRequest
+		err := json.NewDecoder(r.Body).Decode(&body_object)
+		assert.NoError(t, err)
+		assert.Equal(t,
+			BadgeRequest{
+				Org_Resource_IDs: []string{"divvyorganizationservice:5"},
+				Badges:           []Badge{{Key: "Name", Value: "Barf"}},
+			},
+			body_object)
+	})
+
+	client.Badges.Delete([]string{"divvyorganizationservice:5"}, map[string]string{"Name": "Barf"})
 	teardown()
 }
 
