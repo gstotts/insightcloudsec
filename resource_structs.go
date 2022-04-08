@@ -656,6 +656,7 @@ type Instance struct {
 	Object_ID                                            string                 `json:"object_id"`
 	Key_Name                                             string                 `json:"key_name,omitempty"`
 	Role_Name                                            string                 `json:"role_name,omitempty"`
+	Role_Resource_ID                                     string                 `json:"role_resource_id"`
 	Termination_Protection                               string                 `json:"termination_protection,omitempty"`
 	VM_Extensions                                        string                 `json:"vm_extensions,omitempty"`
 	JIT_Access_Policy                                    string                 `json:"jit_access_policy"`
