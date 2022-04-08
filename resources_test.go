@@ -1,6 +1,8 @@
 package insightcloudsec
 
 import (
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,8 +32,28 @@ func TestResources_validateQueryLimit(t *testing.T) {
 	assert.Error(t, validateQueryLimit(1500))
 }
 
-func TestResources_Query(t *testing.T) {
+func TestResources_InstanceQuery(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v3/public/resource/etl-query", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("resources/queryResponse.json"))
+	})
 
+	resource, err := client.Resources.Query(Query{
+		Limit:                  1000,
+		Selected_Resource_Type: "instance",
+	})
+
+	assert.NoError(t, err)
+	assert.Equal(t, "instance:18:us-east-1:i-12300000000000:", resource.Resources[0].Instance.Common.Resource_ID)
+	assert.Equal(t, "mega_maid", resource.Resources[0].Instance.Common.Resource_Name)
+	assert.Equal(t, "Spaceballs", resource.Resources[0].Instance.Common.Account)
+	assert.Equal(t, "1234567891011", resource.Resources[0].Instance.Common.Account_ID)
+	assert.Equal(t, "instance", resource.Resources[0].Instance.Common.Type)
+	assert.Equal(t, "AWS", resource.Resources[0].Instance.Common.Cloud)
+	teardown()
 }
 
 func TestResources_GetDetails(t *testing.T) {
