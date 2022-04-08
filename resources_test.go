@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -94,11 +95,36 @@ func TestResources_InstanceQuery(t *testing.T) {
 }
 
 func TestResources_GetDetails(t *testing.T) {
-
+	setup()
+	mux.HandleFunc("/v2/public/resource//detail", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("resources/getDetailsResponse.json"))
+	})
+	// Details Here
+	teardown()
 }
 
 func TestResources_SetOwner(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/resource/owner/set", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
 
+		var req Set_Resource_Owner_Request
+		err := json.NewDecoder(r.Body).Decode(&req)
+		assert.NoError(t, err)
+		assert.Equal(t, req, Set_Resource_Owner_Request{
+			Resource_IDs:      []string{""},
+			Owner_Resource_ID: "divvyuser:1",
+		})
+	})
+
+	err := client.Resources.SetOwner([]string{""}, "")
+	assert.NoError(t, err)
+	teardown()
 }
 
 func TestResources_GetAssociations(t *testing.T) {
