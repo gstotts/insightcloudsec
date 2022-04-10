@@ -162,7 +162,23 @@ func TestResources_GetAssociations(t *testing.T) {
 }
 
 func TestResources_ListTags(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/resource/instance:18:us-east-1:i-12300000000000:/tags/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("resources/listResourceTags.json"))
+	})
 
+	resp, err := client.Resources.ListTags("instance:18:us-east-1:i-12300000000000:")
+	assert.NoError(t, err)
+	assert.Equal(t, "Name", resp[0].Key)
+	assert.Equal(t, "mega_maid", resp[0].Value)
+	assert.Equal(t, "Owner", resp[1].Key)
+	assert.Equal(t, "Dark Helmet", resp[1].Value)
+	assert.Equal(t, "Environment", resp[2].Key)
+	assert.Equal(t, "Prod", resp[2].Value)
+	teardown()
 }
 
 func TestResources_ListSettings(t *testing.T) {
