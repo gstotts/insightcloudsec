@@ -198,5 +198,13 @@ func TestResources_ListTags(t *testing.T) {
 }
 
 func TestResources_ListSettings(t *testing.T) {
-
+	setup()
+	mux.HandleFunc("/v2/public/resource/instance:18:us-east-1:i-12300000000000:/settings/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	_, err := client.Resources.List_Settings("instance:18:us-east-1:i-12300000000000:")
+	assert.NoError(t, err)
+	teardown()
 }
