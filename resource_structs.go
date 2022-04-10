@@ -6,13 +6,13 @@ type Common_Resource_Values struct {
 	//Common Attributes
 	Resource_ID             string            `json:"resource_id"`
 	Resource_Name           string            `json:"resource_name"`
-	Type                    string            `json:"type"`
+	Type                    string            `json:"resource_type"`
 	Cloud                   string            `json:"cloud"`
 	Account                 string            `json:"account"`
 	Account_ID              string            `json:"account_id"`
 	Account_Status          string            `json:"account_status"`
 	Organization_Service_ID int               `json:"organization_service_id"`
-	Availability_Zone       string            `json:"availablility_zone"`
+	Availability_Zone       string            `json:"availability_zone"`
 	Region                  string            `json:"region"`
 	Creation_Timestamp      string            `json:"creation_timestamp"`
 	Discovered_Timestamp    string            `json:"discovered_timestamp"`
@@ -656,6 +656,7 @@ type Instance struct {
 	Object_ID                                            string                 `json:"object_id"`
 	Key_Name                                             string                 `json:"key_name,omitempty"`
 	Role_Name                                            string                 `json:"role_name,omitempty"`
+	Role_Resource_ID                                     string                 `json:"role_resource_id"`
 	Termination_Protection                               string                 `json:"termination_protection,omitempty"`
 	VM_Extensions                                        string                 `json:"vm_extensions,omitempty"`
 	JIT_Access_Policy                                    string                 `json:"jit_access_policy"`
@@ -666,7 +667,7 @@ type Instance struct {
 	Secondary_Public_IP_Addresses                        []string               `json:"secondary_public_ip_addresses,omitempty"`
 	Architecture                                         string                 `json:"architecture,omitempty"`
 	AWS_Instance_Metadata_Service_V2_Required            bool                   `json:"aws_instance_metadata_service_v2_required,omitempty"`
-	AWS_Instance_Metadata_Service_Hop_Limit              int                    `json:"aws_instance_metadata_hop_limit,omitempty"`
+	AWS_Instance_Metadata_Service_Hop_Limit              int                    `json:"aws_instance_metadata_service_hop_limit,omitempty"`
 	AWS_Instance_Metadata_Service_Endpoint_Enabled       string                 `json:"aws_instance_metadata_service_endpoint_enabled,omitempty"`
 	AWS_Instance_Metadata_Service_Endpoint_Config_Status string                 `json:"aws_instance_metadata_service_endpoint_config_status,omitempty"`
 	State_Transition_Reason                              string                 `json:"state_transition_reason,omitempty"`
@@ -678,6 +679,11 @@ type Instance_Reservation struct {
 
 type Internet_Gateway struct {
 	Common Common_Resource_Values `json:"common"`
+}
+
+type IPAddress struct {
+	IPAddress string `json:"ip_address"`
+	Type      string `json:"ip_address_type"`
 }
 
 type K8s_Cluster_Role struct {
@@ -825,7 +831,17 @@ type Network_Flow_Log struct {
 }
 
 type Network_Interface struct {
-	Common Common_Resource_Values `json:"common"`
+	Common             Common_Resource_Values `json:"common"`
+	Description        string                 `json:"description"`
+	DeviceIndex        int                    `json:"device_index"`
+	InstanceID         string                 `json:"instance_id"`
+	InstanceResourceID string                 `json:"instance_resource_id"`
+	IPAddresses        []IPAddress            `json:"ip_addresses"`
+	MacAddress         string                 `json:"mac_address"`
+	NetworkInterfaceID string                 `json:"network_interface_id"`
+	NetworkResourceID  string                 `json:"network_resource_id"`
+	SubnetID           string                 `json:"subnet_id"`
+	SubnetResourceID   string                 `json:"subnet_resource_id"`
 }
 
 type Network_Peer struct {
@@ -891,6 +907,7 @@ type Resource_Access_List_Rule struct {
 type Resource_Group struct {
 	Common            Common_Resource_Values `json:"common,omitemtpy"`
 	Resource_ID       string                 `json:"resource_id"`
+	ID                string                 `json:"id,omitempty"`
 	Name              string                 `json:"name"`
 	Group_Type        string                 `json:"group_type"`
 	Owner_Type        string                 `json:"owner_type"`

@@ -393,24 +393,24 @@ func (c *resources) List_Settings(resource_id string) (Resource_Settings, error)
 
 func validateBadgeFilterOperator(b string) error {
 	// Validation Function for Query.Badge_Filter_Operator
-	if strings.ToUpper(b) != "OR" || strings.ToUpper(b) != "AND" {
+	if strings.ToUpper(b) != "OR" && strings.ToUpper(b) != "AND" {
 		return ValidationError{
 			ItemToValidate: "BadgeFilterOperator",
 			ExpectedValues: []string{"OR", "AND"},
 		}
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
 func validateQueryLimit(l int32) error {
 	// Validation Function for Query.Limit
-	if l < 0 || l > 1000 {
+	if l < 1 || l > 1000 {
 		return ValidationError{
 			ItemToValidate: "Limit",
 			ExpectedValues: []string{"0-1000"},
 		}
-	} else {
-		return nil
 	}
+
+	return nil
 }
