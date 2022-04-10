@@ -53,4 +53,22 @@ func TestResourceGroups_AddToGroup(t *testing.T) {
 	teardown()
 }
 
-func TestResourceGroups_Delete(t *testing.T) {}
+func TestResourceGroups_Delete(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/prototype/resources/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		var req ResourceGroupIDsList
+		err := json.NewDecoder(r.Body).Decode(&req)
+		assert.NoError(t, err)
+		assert.Equal(t, req, ResourceGroupIDsList{
+			ResourceIDs: []string{"instance:20:us-east-1:i-0000a0b11cd33e4:"},
+		})
+	})
+
+	err := client.ResourceGroups.Delete([]string{"instance:20:us-east-1:i-0000a0b11cd33e4:"})
+	assert.NoError(t, err)
+	teardown()
+}
