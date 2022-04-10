@@ -56,7 +56,7 @@
                 "resource_name": "eni-111111111111111",
                 "resource_type": "networkinterface"
             },
-            "description": "mega_main_network_interface",
+            "description": "mega_maid_network_interface",
             "device_index": 0,
             "instance_id": "i-12300000000000",
             "instance_resource_id": "instance:18:us-east-1:i-12300000000000:",

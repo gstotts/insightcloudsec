@@ -681,6 +681,11 @@ type Internet_Gateway struct {
 	Common Common_Resource_Values `json:"common"`
 }
 
+type IPAddress struct {
+	IPAddress string `json:"ip_address"`
+	Type      string `json:"ip_address_type"`
+}
+
 type K8s_Cluster_Role struct {
 	Common Common_Resource_Values `json:"common"`
 }
@@ -826,7 +831,17 @@ type Network_Flow_Log struct {
 }
 
 type Network_Interface struct {
-	Common Common_Resource_Values `json:"common"`
+	Common             Common_Resource_Values `json:"common"`
+	Description        string                 `json:"description"`
+	DeviceIndex        int                    `json:"device_index"`
+	InstanceID         string                 `json:"instance_id"`
+	InstanceResourceID string                 `json:"instance_resource_id"`
+	IPAddresses        []IPAddress            `json:"ip_addresses"`
+	MacAddress         string                 `json:"mac_address"`
+	NetworkInterfaceID string                 `json:"network_interface_id"`
+	NetworkResourceID  string                 `json:"network_resource_id"`
+	SubnetID           string                 `json:"subnet_id"`
+	SubnetResourceID   string                 `json:"subnet_resource_id"`
 }
 
 type Network_Peer struct {

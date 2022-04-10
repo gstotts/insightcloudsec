@@ -96,13 +96,43 @@ func TestResources_InstanceQuery(t *testing.T) {
 
 func TestResources_GetDetails(t *testing.T) {
 	setup()
-	mux.HandleFunc("/v2/public/resource//detail", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/v2/public/resource/networkinterface:18:us-east-1:eni-111111111111111:/detail", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("resources/getDetailsResponse.json"))
 	})
-	// Details Here
+
+	resp, err := client.Resources.GetDetails("networkinterface:18:us-east-1:eni-111111111111111:")
+	assert.NoError(t, err)
+	assert.Equal(t, "i-12300000000000", resp.Dependencies["instance"][0].ID)
+	assert.Equal(t, "mega_maid", resp.Dependencies["instance"][0].Name)
+	assert.Equal(t, "instance:18:us-east-1:i-12300000000000:", resp.Dependencies["instance"][0].Resource_ID)
+	assert.Equal(t, "instance", resp.Dependencies["instance"][0].Type)
+	assert.Equal(t, "vpc-0c11aa22c3d4a5555", resp.Dependencies["privatenetwork"][0].ID)
+	assert.Equal(t, "spaceball_1", resp.Dependencies["privatenetwork"][0].Name)
+	assert.Equal(t, "privatenetwork:18:us-east-1:vpc-0c11aa22c3d4a5555:", resp.Dependencies["privatenetwork"][0].Resource_ID)
+	assert.Equal(t, "privatenetwork", resp.Dependencies["privatenetwork"][0].Type)
+	assert.Equal(t, "subnet-01aa1aa1aa0aa00aa", resp.Dependencies["privatesubnet"][0].ID)
+	assert.Equal(t, "spaceball_1a", resp.Dependencies["privatesubnet"][0].Name)
+	assert.Equal(t, "privatesubnet:18:us-east-1:subnet-01aa1aa1aa0aa00aa:", resp.Dependencies["privatesubnet"][0].Resource_ID)
+	assert.Equal(t, "privatesubnet", resp.Dependencies["privatesubnet"][0].Type)
+	assert.Equal(t, "sg-0111aa1121bb112ba1", resp.Dependencies["resourceaccesslist"][0].ID)
+	assert.Equal(t, "acl-spaceball", resp.Dependencies["resourceaccesslist"][0].Name)
+	assert.Equal(t, "resourceaccesslist:18:us-east-1:sg-0111aa1121bb112ba1:", resp.Dependencies["resourceaccesslist"][0].Resource_ID)
+	assert.Equal(t, "resourceaccesslist", resp.Dependencies["resourceaccesslist"][0].Type)
+	assert.Equal(t, "mega_maid_network_interface", resp.Details.Network_Interface.Description)
+	assert.Equal(t, 0, resp.Details.Network_Interface.DeviceIndex)
+	assert.Equal(t, "i-12300000000000", resp.Details.Network_Interface.InstanceID)
+	assert.Equal(t, "instance:18:us-east-1:i-12300000000000:", resp.Details.Network_Interface.InstanceResourceID)
+	assert.Equal(t, "10.1.2.3", resp.Details.Network_Interface.IPAddresses[0].IPAddress)
+	assert.Equal(t, "Ipv4PrivateAddress", resp.Details.Network_Interface.IPAddresses[0].Type)
+	assert.Equal(t, "02:e2:c3:cc:00:11", resp.Details.Network_Interface.MacAddress)
+	assert.Equal(t, "eni-111111111111111", resp.Details.Network_Interface.NetworkInterfaceID)
+	assert.Equal(t, "privatenetwork:18:us-east-1:vpc-0c11aa22c3d4a5555:", resp.Details.Network_Interface.NetworkResourceID)
+	assert.Equal(t, "subnet-01aa1aa1aa0aa00aa", resp.Details.Network_Interface.SubnetID)
+	assert.Equal(t, "privatesubnet:18:us-east-1:subnet-01aa1aa1aa0aa00aa:", resp.Details.Network_Interface.SubnetResourceID)
+	assert.Equal(t, "networkinterface", resp.Details.Resource_Type)
 	teardown()
 }
 
