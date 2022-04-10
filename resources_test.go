@@ -158,6 +158,22 @@ func TestResources_SetOwner(t *testing.T) {
 }
 
 func TestResources_GetAssociations(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/resource/instance:18:us-east-1:i-12300000000000:/associations/get", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("resources/getAssociations.json"))
+	})
+
+	resp, err := client.Resources.GetAssociations("instance:18:us-east-1:i-12300000000000:")
+	assert.NoError(t, err)
+	assert.Equal(t, "resourcegroup:1:", resp.Resource_Groups[0].ID)
+	assert.Equal(t, "Instance Resources", resp.Resource_Groups[0].Name)
+	assert.Equal(t, "user", resp.Resource_Groups[0].Group_Type)
+	assert.Equal(t, "organization", resp.Resource_Groups[0].Owner_Type)
+	assert.Equal(t, "divvyuser:1:", resp.Resource_Groups[0].Owner_Resource_ID)
+	teardown()
 
 }
 

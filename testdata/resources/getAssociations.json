@@ -1,0 +1,11 @@
+{
+    "resource_groups": [
+        {
+            "id": "resourcegroup:1:",
+            "name": "Instance Resources",
+            "group_type": "user",
+            "owner_type": "organization",
+            "owner_resource_id": "divvyuser:1:"
+        }
+    ]
+}
