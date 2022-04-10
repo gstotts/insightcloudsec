@@ -667,7 +667,7 @@ type Instance struct {
 	Secondary_Public_IP_Addresses                        []string               `json:"secondary_public_ip_addresses,omitempty"`
 	Architecture                                         string                 `json:"architecture,omitempty"`
 	AWS_Instance_Metadata_Service_V2_Required            bool                   `json:"aws_instance_metadata_service_v2_required,omitempty"`
-	AWS_Instance_Metadata_Service_Hop_Limit              int                    `json:"aws_instance_metadata_hop_limit,omitempty"`
+	AWS_Instance_Metadata_Service_Hop_Limit              int                    `json:"aws_instance_metadata_service_hop_limit,omitempty"`
 	AWS_Instance_Metadata_Service_Endpoint_Enabled       string                 `json:"aws_instance_metadata_service_endpoint_enabled,omitempty"`
 	AWS_Instance_Metadata_Service_Endpoint_Config_Status string                 `json:"aws_instance_metadata_service_endpoint_config_status,omitempty"`
 	State_Transition_Reason                              string                 `json:"state_transition_reason,omitempty"`
