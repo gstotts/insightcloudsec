@@ -1,0 +1,11 @@
+{
+    "id": "resourcegroup:3:",
+    "name": "Test Resource Group",
+    "resource_group_id": 3,
+    "description": "Would you believe it's for grouping things?",
+    "category": "system",
+    "creation_time": "2022-04-10 05:59:34",
+    "group_type": "user",
+    "owner_type": "organization",
+    "nested_resource_groups": []
+}
