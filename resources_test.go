@@ -117,12 +117,12 @@ func TestResources_SetOwner(t *testing.T) {
 		err := json.NewDecoder(r.Body).Decode(&req)
 		assert.NoError(t, err)
 		assert.Equal(t, req, Set_Resource_Owner_Request{
-			Resource_IDs:      []string{""},
+			Resource_IDs:      []string{"instance:20:us-east-1:i-0000a0b11cd33e4:"},
 			Owner_Resource_ID: "divvyuser:1",
 		})
 	})
 
-	err := client.Resources.SetOwner([]string{""}, "")
+	err := client.Resources.SetOwner([]string{"instance:20:us-east-1:i-0000a0b11cd33e4:"}, "divvyuser:1")
 	assert.NoError(t, err)
 	teardown()
 }

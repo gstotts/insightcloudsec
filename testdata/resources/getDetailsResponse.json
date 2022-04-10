@@ -1,0 +1,78 @@
+{
+    "dependencies": {
+        "instance": [
+            {
+                "id": "i-12300000000000",
+                "name": "mega_maid",
+                "resource_id": "instance:18:us-east-1:i-12300000000000:",
+                "type": "instance"
+            }
+        ],
+        "privatenetwork": [
+            {
+                "id": "vpc-0c11aa22c3d4a5555",
+                "name": "spaceball_1",
+                "resource_id": "privatenetwork:18:us-east-1:vpc-0c11aa22c3d4a5555:",
+                "type": "privatenetwork"
+            }
+        ],
+        "privatesubnet": [
+            {
+                "id": "subnet-01aa1aa1aa0aa00aa",
+                "name": "spaceball_1a",
+                "resource_id": "privatesubnet:18:us-east-1:subnet-01aa1aa1aa0aa00aa:",
+                "type": "privatesubnet"
+            }
+        ],
+        "resourceaccesslist": [
+            {
+                "id": "sg-0111aa1121bb112ba1",
+                "name": "acl-spaceball",
+                "resource_id": "resourceaccesslist:18:us-east-1:sg-0111aa1121bb112ba1:",
+                "type": "resourceaccesslist"
+            }
+        ]
+    },
+    "details": {
+        "networkinterface": {
+            "common": {
+                "account": "Spaceballs",
+                "account_id": "1234567891011",
+                "account_status": "PAUSED",
+                "availability_zone": "us-east-1c",
+                "cloud": "AWS",
+                "creation_timestamp": "2022-02-18 05:35:47",
+                "direct_link": "https://console.aws.amazon.com/ec2/?region=us-east-1#NIC:search=eni-111111111111111",
+                "discovered_timestamp": "2022-04-05 04:13:31",
+                "modified_timestamp": "2022-04-05 04:13:31",
+                "namespace_id": "arn:aws:ec2:us-east-1:1234567891011:network-interface/eni-111111111111111",
+                "noncompliance": [],
+                "organization_service_id": 18,
+                "properties": {
+                    "property_list": []
+                },
+                "region": "us-east-1",
+                "resource_id": "networkinterface:18:us-east-1:eni-111111111111111:",
+                "resource_name": "eni-111111111111111",
+                "resource_type": "networkinterface"
+            },
+            "description": "mega_main_network_interface",
+            "device_index": 0,
+            "instance_id": "i-12300000000000",
+            "instance_resource_id": "instance:18:us-east-1:i-12300000000000:",
+            "ip_addresses": [
+                {
+                    "ip_address": "10.1.2.3",
+                    "ip_address_type": "Ipv4PrivateAddress"
+                }
+            ],
+            "mac_address": "02:e2:c3:cc:00:11",
+            "network_interface_id": "eni-111111111111111",
+            "network_resource_id": "privatenetwork:18:us-east-1:vpc-0c11aa22c3d4a5555:",
+            "private_ip_address": "10.1.2.3",
+            "subnet_id": "subnet-01aa1aa1aa0aa00aa",
+            "subnet_resource_id": "privatesubnet:18:us-east-1:subnet-01aa1aa1aa0aa00aa:"
+        },
+        "resource_type": "networkinterface"
+    }
+}
