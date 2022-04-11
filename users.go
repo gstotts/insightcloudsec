@@ -66,7 +66,7 @@ type UserListDetails struct {
 	// For use with data returned from individual users in a UserList struct.
 	Username            string   `json:"username"`
 	ID                  int      `json:"user_id"`
-	Created             string   `json:"created_date"`
+	Created             string   `json:"create_date"`
 	Name                string   `json:"name"`
 	Email               string   `json:"email_address"`
 	ResourceID          string   `json:"resource_id"`
@@ -85,6 +85,7 @@ type UserListDetails struct {
 	DomainViewer        bool     `json:"domain_viewer"`
 	OrgAdmin            bool     `json:"organization_admin"`
 	Groups              int      `json:"groups,omitempty"`
+	AuthPluginExists    bool     `json:"auth_plugin_exists,omitempty"`
 	OwnedResources      int      `json:"owned_resources,omitempty"`
 }
 
