@@ -71,7 +71,77 @@ func TestClouds_validateAWSCloud(t *testing.T) {
 	assert.NoError(t, validateAWSCloud(good))
 }
 
-func TestClouds_validateAzureCloud(t *testing.T) {}
+func TestClouds_validateAzureCloud(t *testing.T) {
+	// Wrong Cloud Type
+	wrong := AzureCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType:      "AWS",
+			AuthType:       "assume_role",
+			Name:           "Test Cloud AWS Bad 1",
+			ApiKeyOrCert:   "1231241241234123",
+			TenantID:       "tenant_id",
+			SubscriptionID: "sub_id",
+			AppID:          "app_id",
+		},
+	}
+	assert.Error(t, validateAzureCloud(wrong))
+
+	// Invalid Auth Type
+	wrong2 := AzureCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType:      "AZURE_ARM",
+			AuthType:       "assume_role",
+			Name:           "Test Cloud AWS Bad 1",
+			ApiKeyOrCert:   "1231241241234123",
+			TenantID:       "tenant_id",
+			SubscriptionID: "sub_id",
+			AppID:          "app_id",
+		},
+	}
+	assert.Error(t, validateAzureCloud(wrong2))
+
+	// Missing required parameters for auth
+	wrong3 := AzureCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType:      "AZURE_ARM",
+			AuthType:       STANDARD_AUTH,
+			Name:           "Test Cloud AWS Bad 1",
+			TenantID:       "tenant_id",
+			SubscriptionID: "sub_id",
+			AppID:          "app_id",
+		},
+	}
+	assert.Error(t, validateAzureCloud(wrong3))
+
+	// Other cloud parameters exist
+	wrong4 := AzureCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType:      "AZURE_ARM",
+			AuthType:       STANDARD_AUTH,
+			Name:           "Test Cloud AWS Bad 1",
+			ApiKeyOrCert:   "1231241241234123",
+			RoleArn:        "arn:asdfasdf:asdfasdfasdF:asdfasdfsad/asdfasdf",
+			TenantID:       "tenant_id",
+			SubscriptionID: "sub_id",
+			AppID:          "app_id",
+		},
+	}
+	assert.Error(t, validateAzureCloud(wrong4))
+
+	//Good
+	good := AzureCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType:      "AZURE_ARM",
+			AuthType:       STANDARD_AUTH,
+			Name:           "Test Cloud AWS Bad 1",
+			ApiKeyOrCert:   "1231241241234123",
+			TenantID:       "tenant_id",
+			SubscriptionID: "sub_id",
+			AppID:          "app_id",
+		},
+	}
+	assert.NoError(t, validateAzureCloud(good))
+}
 
 func TestClouds_validateGCPCloud(t *testing.T) {}
 

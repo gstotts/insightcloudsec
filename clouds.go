@@ -326,6 +326,9 @@ func validateAWSCloud(cloud_data AWSCloudAccount) error {
 }
 
 func validateAzureCloud(cloud_data AzureCloudAccount) error {
+	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD_TYPE {
+		return fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
+	}
 	if cloud_data.CreationParameters.AuthType == STANDARD_AUTH && cloud_data.CreationParameters.ApiKeyOrCert == "" {
 		return fmt.Errorf("[-] ERROR: azure cloud of AuthType standard requires ApiKeyOrCert be set")
 	} else if cloud_data.CreationParameters.AuthType == CERT_AUTH && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
@@ -339,6 +342,8 @@ func validateAzureCloud(cloud_data AzureCloudAccount) error {
 	if cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.Duration != 0 || cloud_data.CreationParameters.AccountNumber != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.GCPAuth.Type != "" {
 		return fmt.Errorf("[-] ERROR: cloud account of type AZURE_ARM must not have RoleArn, SecretKey, SessionName, Duration, AccountNumber or ExternalID set")
 	}
+
+	// Make sure tenant_id and
 
 	return nil
 }
