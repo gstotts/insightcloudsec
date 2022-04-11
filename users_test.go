@@ -34,6 +34,14 @@ func TestUsers_CreateSAMLUser(t *testing.T) {
 
 func TestUsers_Delete(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/prototype/user/divvyuser:2:/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodDelete, r.Method, "Expected method 'DELETE', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	err := client.Users.Delete("divvyuser:2:")
+	assert.NoError(t, err)
 
 	teardown()
 }
