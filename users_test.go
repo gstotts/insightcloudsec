@@ -89,19 +89,75 @@ func TestUsers_List(t *testing.T) {
 
 func TestUsers_Create(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/user/create", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/createUserResponse.json"))
+	})
 
+	resp, err := client.Users.Create(User{
+		Name:              "Boaty McBoatFace",
+		Username:          "Boatface",
+		Email:             "boat@boatface.com",
+		Password:          "password",
+		ConfirmPassword:   "password",
+		AccessLevel:       "BASIC_USER",
+		TwoFactorRequired: false,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 11, resp.ID)
+	assert.Equal(t, 1, resp.OrgID)
+	assert.Equal(t, "Boaty McBoatFace", resp.Name)
+	assert.Equal(t, "Boatface", resp.Username)
+	assert.Equal(t, "f7.,Pcd!RBm|", resp.TempPassword)
+	assert.Equal(t, "2022-04-11T19:34:34Z", resp.TempPasswordExpiration)
 	teardown()
 }
 
 func TestUsers_CreateAPIUser(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/user/create_api_only_user", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
 
 	teardown()
 }
 
 func TestUsers_CreateSAMLUser(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/user/create", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/createUserSAMLResponse.json"))
+	})
 
+	resp, err := client.Users.CreateSAMLUser(SAMLUser{
+		Name:                   "Boat McBoatFace",
+		Username:               "Boatface",
+		Email:                  "boat@boatface.com",
+		AccessLevel:            "BASIC_USER",
+		AuthenticationType:     "saml",
+		AuthenticationServerID: 1,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "divvyuser:12:", resp.ResourceID)
+	assert.Equal(t, "Boaty McBoatFace", resp.Name)
+	assert.Equal(t, "Boatface", resp.Username)
+	assert.Equal(t, 12, resp.ID)
+	assert.Equal(t, false, resp.OrgAdmin)
+	assert.Equal(t, false, resp.DomainAdmin)
+	assert.Equal(t, false, resp.DomainViewer)
+	assert.Equal(t, "boat@boatface.com", resp.Email)
+	assert.Equal(t, "Boatface", resp.Username)
+	assert.Equal(t, "Default Organization", resp.Org)
+	assert.Equal(t, 1, resp.OrgID)
+	assert.Equal(t, false, resp.TwoFactorEnabled)
+	assert.Equal(t, false, resp.TwoFactorRequired)
+	assert.Equal(t, []string{}, resp.NavigationBlacklist)
 	teardown()
 }
 
