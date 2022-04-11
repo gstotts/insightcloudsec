@@ -76,6 +76,17 @@ func TestUsers_CurrentUserInfo(t *testing.T) {
 
 func TestUsers_Get2FAStatus(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/user/tfa_state", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/get2FAStatus.json"))
+	})
+
+	resp, err := client.Users.Get2FAStatus(2)
+	assert.NoError(t, err)
+	assert.Equal(t, true, resp.Enabled)
+	assert.Equal(t, false, resp.Required)
 
 	teardown()
 }
