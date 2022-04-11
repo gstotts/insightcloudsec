@@ -35,7 +35,7 @@
             "username": "bbobb",
             "organization_name": "Default Organization",
             "organization_id": 1,
-            "two_factor_enabled": false,
+            "two_factor_enabled": true,
             "two_factor_required": true,
             "groups": 0,
             "owned_resources": 0,
