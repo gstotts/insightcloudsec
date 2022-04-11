@@ -121,8 +121,21 @@ func TestUsers_CreateAPIUser(t *testing.T) {
 		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/createAPIUserResponse.json"))
 	})
 
+	resp, err := client.Users.CreateAPIUser(APIUser{
+		Name:               "Boaty McBoatface",
+		Username:           "Boatface",
+		Email:              "boat@boatface.com",
+		AuthenticationType: "internal",
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "Boaty McBoatface", resp.Name)
+	assert.Equal(t, 13, resp.ID)
+	assert.Equal(t, 1, resp.OrgID)
+	assert.Equal(t, "Boatface", resp.Username)
+	assert.Equal(t, "FakeKEY====================================ENDHere", resp.APIKey)
 	teardown()
 }
 
