@@ -1,0 +1,18 @@
+{
+    "resource_id": "divvyuser:6:",
+    "name": "Lord Farquad",
+    "user_id": 6,
+    "organization_admin": false,
+    "domain_admin": true,
+    "domain_viewer": false,
+    "email_address": "farquad@dulock.org",
+    "username": "farquad",
+    "organization_name": "Dulock",
+    "organization_id": 3,
+    "two_factor_enabled": true,
+    "two_factor_required": false,
+    "auth_plugin_exists": false,
+    "navigation_blacklist": [],
+    "require_pw_reset": false,
+    "create_date": "2021-10-11 11:38:38"
+}
