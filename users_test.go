@@ -40,6 +40,20 @@ func TestUsers_Delete(t *testing.T) {
 
 func TestUsers_DeleteByUsername(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/users/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
+	})
+	mux.HandleFunc("/v2/prototype/user/divvyuser:2:/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodDelete, r.Method, "Expected method 'DELETE', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	err := client.Users.DeleteByUsername("testuser1")
+	assert.NoError(t, err)
 
 	teardown()
 }
