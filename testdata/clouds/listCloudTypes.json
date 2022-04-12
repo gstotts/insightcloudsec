@@ -1,0 +1,49 @@
+{
+    "clouds": [
+        {
+            "name": "AliCloud",
+            "cloud_type_id": "ALICLOUD",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Amazon Web Services",
+            "cloud_type_id": "AWS",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Amazon Web Services (China)",
+            "cloud_type_id": "AWS_CHINA",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Amazon Web Services (GovCloud)",
+            "cloud_type_id": "AWS_GOV",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Microsoft Azure",
+            "cloud_type_id": "AZURE_ARM",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Microsoft Azure (China)",
+            "cloud_type_id": "AZURE_CHINA",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Microsoft Azure (GovCloud)",
+            "cloud_type_id": "AZURE_GOV",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Google Cloud Platform",
+            "cloud_type_id": "GCE",
+            "cloud_access": "public"
+        },
+        {
+            "name": "Oracle Cloud",
+            "cloud_type_id": "OCI",
+            "cloud_access": "public"
+        }
+    ]
+}
