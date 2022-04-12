@@ -156,13 +156,24 @@ type CloudAccountParameters struct {
 }
 
 type QueueStatus struct {
-	P0          int       `json:"p0"`
-	P1          int       `json:"p1"`
-	P2          int       `json:"p2"`
-	SlowestJobs []SlowJob `json:"slowest_jobs"`
-	ProcessTime TimeStats `json:"process_time"`
-	Workers     int       `json:"workers"`
-	QueueWait   TimeStats `json:"queue_wait"`
+	P0                int       `json:"p0"`
+	P1                int       `json:"p1"`
+	P2                int       `json:"p2"`
+	P3                int       `json:"p3"`
+	SlowestJobs       []SlowJob `json:"slowest_jobs"`
+	ProcessTime       TimeStats `json:"process_time"`
+	ProcessTimeP0     TimeStats `json:"process_time_p0"`
+	ProcessTimeP1     TimeStats `json:"process_time_p1"`
+	ProcessTimeP2     TimeStats `json:"process_time_p2"`
+	ProcessTimeP3     TimeStats `json:"process_time_p3"`
+	Workers           int       `json:"workers"`
+	QueueWait         TimeStats `json:"queue_wait"`
+	QueueWaitP0       TimeStats `json:"queue_wait_p0"`
+	QueueWaitP1       TimeStats `json:"queue_wait_p1"`
+	QueueWaitP2       TimeStats `json:"queue_wait_p2"`
+	QueueWaitP3       TimeStats `json:"queue_wait_p3"`
+	QueueWaitAll      TimeStats `json:"queue_wait_all"`
+	SchedulerInternal int       `json:"scheduler_internal"`
 }
 
 type SlowJob struct {
@@ -183,13 +194,15 @@ func (s *SlowJob) UnmarshalJSON(b []byte) error {
 }
 
 type TimeStats struct {
-	Count   int     `json:"count"`
-	Min     float32 `json:"min"`
-	Max     float32 `json:"max"`
-	Sum     float32 `json:"sum"`
-	SumSQ   float64 `json:"sumsq"`
-	StdDev  float64 `json:"stddev"`
-	Average float64 `json:"average"`
+	Count    int     `json:"count"`
+	Min      float32 `json:"min"`
+	Max      float32 `json:"max"`
+	Sum      float32 `json:"sum"`
+	SumSQ    float64 `json:"sumsq"`
+	StdDev   float64 `json:"stddev"`
+	Average  float64 `json:"average"`
+	Current  float64 `json:"current,omitempty"`
+	Variance float64 `json:"variance,omitempty"`
 }
 
 // CLOUD ACCOUNT SETUP FUNCTIONS

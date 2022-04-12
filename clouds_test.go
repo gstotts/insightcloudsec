@@ -208,7 +208,7 @@ func TestClouds_Update(t *testing.T) {
 
 func TestClouds_List(t *testing.T) {
 	setup()
-	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:1/delete", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -256,6 +256,30 @@ func TestClouds_GetByID(t *testing.T) {
 
 func TestClouds_QueueStatus(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/prototype/diagnostics/queues/status/get", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("clouds/getQueueStatus.json"))
+	})
 
+	resp, err := client.Clouds.QueueStatus()
+	assert.NoError(t, err)
+	assert.Equal(t, 0, resp.SchedulerInternal)
+	assert.Equal(t, 2, resp.Workers)
+	assert.Equal(t, []int{0, 0, 0, 0}, []int{resp.P0, resp.P1, resp.P2, resp.P3})
+	assert.Equal(t, 0, resp.QueueWait.Count)
+	assert.Equal(t, []float32{0, 0, 0}, []float32{resp.QueueWait.Min, resp.QueueWait.Max, resp.QueueWait.Sum})
+	assert.Equal(t, []float64{0, 0, 0}, []float64{resp.QueueWait.SumSQ, resp.QueueWait.StdDev, resp.QueueWait.Average})
+	assert.Equal(t, 159, resp.QueueWaitP0.Count)
+	assert.Equal(t, []float32{0, 2.393037, 93.75721199999997}, []float32{resp.QueueWaitP0.Min, resp.QueueWaitP0.Max, resp.QueueWaitP0.Sum})
+	assert.Equal(t, []float64{74.16969662233997, 0.34571581342216895, 0.5896680000000004}, []float64{resp.QueueWaitP0.SumSQ, resp.QueueWaitP0.StdDev, resp.QueueWaitP0.Average})
+	assert.Equal(t, 0.11951942365015193, resp.QueueWaitP0.Variance)
+	assert.Equal(t, 1.002351, resp.QueueWaitP0.Current)
+	// The remaining all use the same embeded structs for stats so just verifying can grab one value from each
+	assert.Equal(t, []float64{0, 0, 1.5798686302096074}, []float64{resp.QueueWaitP2.StdDev, resp.QueueWaitP3.StdDev, resp.QueueWaitAll.StdDev})
+	assert.Equal(t, []int{482, 159, 322, 0, 0}, []int{resp.ProcessTime.Count, resp.ProcessTimeP0.Count, resp.ProcessTimeP1.Count, resp.ProcessTimeP2.Count, resp.ProcessTimeP3.Count})
+	assert.Equal(t, "BackOfficeInsightHarvester", resp.SlowestJobs[0].Name)
+	assert.Equal(t, 35.0, resp.SlowestJobs[0].Duration)
 	teardown()
 }
