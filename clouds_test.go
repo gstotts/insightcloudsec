@@ -278,12 +278,6 @@ func TestClouds_ListHarvestingStrategies(t *testing.T) {
 	teardown()
 }
 
-func TestClouds_ListProvisioningClouds(t *testing.T) {
-	setup()
-
-	teardown()
-}
-
 func TestClouds_ListRegions(t *testing.T) {
 	setup()
 	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:8/regions/list", func(w http.ResponseWriter, r *http.Request) {
