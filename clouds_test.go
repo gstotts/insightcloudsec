@@ -175,6 +175,7 @@ func TestClouds_AddGCPCloud(t *testing.T) {
 	})
 	teardown()
 }
+
 func TestClouds_Delete(t *testing.T) {
 	setup()
 	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:1/delete", func(w http.ResponseWriter, r *http.Request) {
