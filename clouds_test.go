@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -207,6 +208,12 @@ func TestClouds_Update(t *testing.T) {
 
 func TestClouds_List(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:1/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("clouds/listClouds.json"))
+	})
 
 	teardown()
 }
