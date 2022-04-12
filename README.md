@@ -1,6 +1,9 @@
 # insightcloudsec
 Go Module for Interacting with InsightCloudSec API (formerly DivvyCloud)
 
+[![Go](https://github.com/gstotts/insightcloudsec/actions/workflows/go.yml/badge.svg)](https://github.com/gstotts/insightcloudsec/actions/workflows/go.yml)
+[![CodeQL](https://github.com/gstotts/insightcloudsec/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/gstotts/insightcloudsec/actions/workflows/codeql-analysis.yml)
+
 ### General Usage
 
 ```go 
