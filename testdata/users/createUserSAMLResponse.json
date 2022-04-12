@@ -1,0 +1,15 @@
+{
+    "resource_id": "divvyuser:12:",
+    "name": "Boaty McBoatFace",
+    "user_id": 12,
+    "organization_admin": false,
+    "domain_admin": false,
+    "domain_viewer": false,
+    "email_address": "boat@boatface.com",
+    "username": "Boatface",
+    "organization_name": "Default Organization",
+    "organization_id": 1,
+    "two_factor_enabled": false,
+    "two_factor_required": false,
+    "navigation_blacklist": []
+}

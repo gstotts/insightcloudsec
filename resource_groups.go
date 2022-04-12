@@ -27,7 +27,7 @@ type ResourceGroupConifg struct {
 type ResourceGroup struct {
 	ID                   string   `json:"id"`
 	Name                 string   `json:"name"`
-	ResourceGroupID      string   `json:"resource_group_id"`
+	ResourceGroupID      int      `json:"resource_group_id"`
 	Description          string   `json:"description"`
 	Category             string   `json:"category"`
 	CreationTime         string   `json:"creation_time"`

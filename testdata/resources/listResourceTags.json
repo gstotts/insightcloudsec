@@ -1,0 +1,16 @@
+{
+    "resource_tags": [
+        {
+            "key": "Name",
+            "value": "mega_maid"
+        },
+        {
+            "key": "Owner",
+            "value": "Dark Helmet"
+        },
+        {
+            "key": "Environment",
+            "value": "Prod"
+        }
+    ]
+}
