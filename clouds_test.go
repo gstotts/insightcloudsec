@@ -286,7 +286,22 @@ func TestClouds_ListProvisioningClouds(t *testing.T) {
 
 func TestClouds_ListRegions(t *testing.T) {
 	setup()
+	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:8/regions/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("clouds/listRegions.json"))
+	})
 
+	resp, err := client.Clouds.ListRegions(Cloud{
+		ResourceID: "divvyorganizationservice:8",
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "brazilsouth", resp.Regions[3].ID)
+	assert.Equal(t, "brazilsouth", resp.Regions[3].Name)
+	assert.Equal(t, "serviceregion:8:brazilsouth:", resp.Regions[3].ResourceID)
+	assert.Equal(t, "ACTIVE", resp.Regions[3].Status)
+	assert.Equal(t, float32(1.0), resp.Regions[3].HarvestRateMultiplier)
 	teardown()
 }
 

@@ -89,11 +89,11 @@ type CloudTypesList struct {
 }
 
 type CloudRegion struct {
-	ID                    string `json:"id"`
-	Name                  string `json:"name"`
-	ResourceID            string `json:"resource_id"`
-	Status                string `json:"status"`
-	HarvestRateMultiplier int    `json:"harvest_rate_multiplier"`
+	ID                    string  `json:"id"`
+	Name                  string  `json:"name"`
+	ResourceID            string  `json:"resource_id"`
+	Status                string  `json:"status"`
+	HarvestRateMultiplier float32 `json:"harvest_rate_multiplier"`
 }
 
 type CloudRegionList struct {
