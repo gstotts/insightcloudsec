@@ -1,6 +1,7 @@
 package insightcloudsec
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -145,28 +146,108 @@ func TestClouds_validateAzureCloud(t *testing.T) {
 
 func TestClouds_validateGCPCloud(t *testing.T) {}
 
-func TestClouds_AddAWSCloud(t *testing.T) {}
+func TestClouds_AddAWSCloud(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	teardown()
+}
 
-func TestClouds_AddAzureCloud(t *testing.T) {}
+func TestClouds_AddAzureCloud(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	teardown()
+}
 
-func TestClouds_AddGCPCloud(t *testing.T) {}
+func TestClouds_AddGCPCloud(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	teardown()
+}
+func TestClouds_Delete(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:1/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	err := client.Clouds.Delete("divvyorganizationservice:1")
+	assert.NoError(t, err)
+	teardown()
 
-func TestClouds_Delete(t *testing.T) {}
+	// Test when error returned from API
+	setup()
+	mux.HandleFunc("/v2/public/cloud/divvyorganizationservice:1/delete", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusForbidden)
+	})
+	err = client.Clouds.Delete("divvyorganizationservice:1")
+	assert.Error(t, err)
+	teardown()
+}
 
-func TestClouds_Update(t *testing.T) {}
+func TestClouds_Update(t *testing.T) {
+	setup()
 
-func TestClouds_List(t *testing.T) {}
+	teardown()
+}
 
-func TestClouds_ListHarvestingStrategies(t *testing.T) {}
+func TestClouds_List(t *testing.T) {
+	setup()
 
-func TestClouds_ListProvisioningClouds(t *testing.T) {}
+	teardown()
+}
 
-func TestClouds_ListRegions(t *testing.T) {}
+func TestClouds_ListHarvestingStrategies(t *testing.T) {
+	setup()
 
-func TestClouds_ListTypes(t *testing.T) {}
+	teardown()
+}
 
-func TestClouds_GetByName(t *testing.T) {}
+func TestClouds_ListProvisioningClouds(t *testing.T) {
+	setup()
 
-func TestClouds_GetByID(t *testing.T) {}
+	teardown()
+}
 
-func TestClouds_QueueStatus(t *testing.T) {}
+func TestClouds_ListRegions(t *testing.T) {
+	setup()
+
+	teardown()
+}
+
+func TestClouds_ListTypes(t *testing.T) {
+	setup()
+
+	teardown()
+}
+
+func TestClouds_GetByName(t *testing.T) {
+	setup()
+
+	teardown()
+}
+
+func TestClouds_GetByID(t *testing.T) {
+	setup()
+
+	teardown()
+}
+
+func TestClouds_QueueStatus(t *testing.T) {
+	setup()
+
+	teardown()
+}
