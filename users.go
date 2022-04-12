@@ -64,28 +64,31 @@ type SAMLUser struct {
 
 type UserListDetails struct {
 	// For use with data returned from individual users in a UserList struct.
-	Username            string   `json:"username"`
-	ID                  int      `json:"user_id"`
-	Created             string   `json:"created_date"`
-	Name                string   `json:"name"`
-	Email               string   `json:"email_address"`
-	ResourceID          string   `json:"resource_id"`
-	TwoFactorEnabled    bool     `json:"two_factor_enabled"`
-	TwoFactorRequired   bool     `json:"two_factor_required"`
-	FailedLoginAttempts int      `json:"consecutive_failed_login_attempts,omitempty"`
-	LastLogin           string   `json:"last_login_time,omitempty"`
-	Suspended           bool     `json:"suspended,omitempty"`
-	NavigationBlacklist []string `json:"navigation_blacklist"`
-	RequirePWReset      bool     `json:"require_pw_reset"`
-	ConsoleAccessDenied bool     `json:"console_access_denied,omitempty"`
-	ActiveAPIKey        bool     `json:"active_api_key_present,omitempty"`
-	Org                 string   `json:"organization_name"`
-	OrgID               int      `json:"organization_id"`
-	DomainAdmin         bool     `json:"domain_admin"`
-	DomainViewer        bool     `json:"domain_viewer"`
-	OrgAdmin            bool     `json:"organization_admin"`
-	Groups              int      `json:"groups,omitempty"`
-	OwnedResources      int      `json:"owned_resources,omitempty"`
+	Username               string   `json:"username"`
+	ID                     int      `json:"user_id"`
+	Created                string   `json:"create_date"`
+	Name                   string   `json:"name"`
+	Email                  string   `json:"email_address"`
+	ResourceID             string   `json:"resource_id"`
+	TwoFactorEnabled       bool     `json:"two_factor_enabled"`
+	TwoFactorRequired      bool     `json:"two_factor_required"`
+	FailedLoginAttempts    int      `json:"consecutive_failed_login_attempts,omitempty"`
+	LastLogin              string   `json:"last_login_time,omitempty"`
+	Suspended              bool     `json:"suspended,omitempty"`
+	NavigationBlacklist    []string `json:"navigation_blacklist"`
+	RequirePWReset         bool     `json:"require_pw_reset"`
+	ConsoleAccessDenied    bool     `json:"console_access_denied,omitempty"`
+	ActiveAPIKey           bool     `json:"active_api_key_present,omitempty"`
+	Org                    string   `json:"organization_name"`
+	OrgID                  int      `json:"organization_id"`
+	DomainAdmin            bool     `json:"domain_admin"`
+	DomainViewer           bool     `json:"domain_viewer"`
+	OrgAdmin               bool     `json:"organization_admin"`
+	Groups                 int      `json:"groups,omitempty"`
+	AuthPluginExists       bool     `json:"auth_plugin_exists,omitempty"`
+	OwnedResources         int      `json:"owned_resources,omitempty"`
+	TempPassword           string   `json:"temporary_pw,omitempty"`
+	TempPasswordExpiration string   `json:"temp_pw_expiration,omitempty"`
 }
 
 type UserList struct {
