@@ -65,6 +65,8 @@ type Cloud struct {
 	EDHRole             string                `json:"event_driven_harvest_role,omitempty"`
 	StrategyID          int                   `json:"strategy_id,omitempty"`
 	CloudOrgID          string                `json:"cloud_organization_id,omitempty"`
+	CloudOrgDomainName  string                `json:"cloud_organization_domain_name,omitempty"`
+	CloudOrgNickname    string                `json:"cloud_organization_nickname,omitempty"`
 }
 
 type FailedResourceTypes struct {

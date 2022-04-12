@@ -15,7 +15,7 @@ func TestClouds_validateAWSCloud(t *testing.T) {
 			CloudType:     "GCP",
 			AuthType:      "assume_role",
 			Name:          "Test Cloud AWS Bad 1",
-			AccountNumber: "1234567891011",
+			AccountNumber: "123456789101",
 			RoleArn:       "",
 			Duration:      0,
 			ApiKeyOrCert:  "1231241241234123",
@@ -31,7 +31,7 @@ func TestClouds_validateAWSCloud(t *testing.T) {
 			CloudType:     "AWS",
 			AuthType:      "assume_role",
 			Name:          "Test Cloud AWS Bad 2",
-			AccountNumber: "1234567891011",
+			AccountNumber: "123456789101",
 			RoleArn:       "",
 			Duration:      0,
 			SessionName:   "InsightCloudSec Test",
@@ -45,7 +45,7 @@ func TestClouds_validateAWSCloud(t *testing.T) {
 			CloudType:     "AWS",
 			AuthType:      "assume_role",
 			Name:          "Test Cloud AWS Bad 3",
-			AccountNumber: "1234567891011",
+			AccountNumber: "123456789101",
 			ApiKeyOrCert:  "1231241241234123",
 			SecretKey:     "1231241241234123",
 			RoleArn:       "",
@@ -62,7 +62,7 @@ func TestClouds_validateAWSCloud(t *testing.T) {
 			CloudType:     "AWS",
 			AuthType:      "assume_role",
 			Name:          "Test Cloud AWS Bad 1",
-			AccountNumber: "1234567891011",
+			AccountNumber: "123456789101",
 			RoleArn:       "",
 			Duration:      0,
 			ApiKeyOrCert:  "1231241241234123",
@@ -145,7 +145,9 @@ func TestClouds_validateAzureCloud(t *testing.T) {
 	assert.NoError(t, validateAzureCloud(good))
 }
 
-func TestClouds_validateGCPCloud(t *testing.T) {}
+func TestClouds_validateGCPCloud(t *testing.T) {
+
+}
 
 func TestClouds_AddAWSCloud(t *testing.T) {
 	setup()
@@ -208,13 +210,65 @@ func TestClouds_Update(t *testing.T) {
 
 func TestClouds_List(t *testing.T) {
 	setup()
-	mux.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+	mux.HandleFunc("/v2/public/clouds/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("clouds/listClouds.json"))
 	})
-
+	resp, err := client.Clouds.List()
+	assert.NoError(t, err)
+	assert.Equal(t, "my-cloud-1", resp.Clouds[0].Name)
+	assert.Equal(t, "my-cloud-2", resp.Clouds[1].Name)
+	assert.Equal(t, "my-azure-cloud", resp.Clouds[2].Name)
+	assert.Equal(t, 1, resp.Clouds[0].ID)
+	assert.Equal(t, 2, resp.Clouds[1].ID)
+	assert.Equal(t, 8, resp.Clouds[2].ID)
+	assert.Equal(t, "AWS", resp.Clouds[0].CloudTypeID)
+	assert.Equal(t, "AWS", resp.Clouds[1].CloudTypeID)
+	assert.Equal(t, "AZURE_ARM", resp.Clouds[2].CloudTypeID)
+	assert.Equal(t, "012345678910", resp.Clouds[0].AccountID)
+	assert.Equal(t, "012345678911", resp.Clouds[1].AccountID)
+	assert.Equal(t, "0aa0a000-0000-0000-aaaa-00aa0aaa000a", resp.Clouds[2].AccountID)
+	assert.Equal(t, "2022-04-05 03:35:06", resp.Clouds[0].Created)
+	assert.Equal(t, "2022-04-05 03:35:07", resp.Clouds[1].Created)
+	assert.Equal(t, "2021-12-16 22:32:04", resp.Clouds[2].Created)
+	assert.Equal(t, "PAUSED", resp.Clouds[0].Status)
+	assert.Equal(t, "PAUSED", resp.Clouds[1].Status)
+	assert.Equal(t, "PAUSED", resp.Clouds[2].Status)
+	assert.Equal(t, 2, resp.Clouds[0].BadgeCount)
+	assert.Equal(t, 4, resp.Clouds[1].BadgeCount)
+	assert.Equal(t, 0, resp.Clouds[2].BadgeCount)
+	assert.Equal(t, 424, resp.Clouds[0].ResourceCount)
+	assert.Equal(t, 176, resp.Clouds[1].ResourceCount)
+	assert.Equal(t, 42, resp.Clouds[2].ResourceCount)
+	assert.Equal(t, "2022-04-12 02:06:47", resp.Clouds[0].LastRefreshed)
+	assert.Equal(t, "2022-04-12 02:06:47", resp.Clouds[1].LastRefreshed)
+	assert.Equal(t, "2022-04-12 02:06:47", resp.Clouds[2].LastRefreshed)
+	assert.Equal(t, "master_role", resp.Clouds[0].RoleARN)
+	assert.Equal(t, "master_role", resp.Clouds[1].RoleARN)
+	assert.Equal(t, "", resp.Clouds[2].RoleARN)
+	assert.Equal(t, "divvyorganizationservice:1", resp.Clouds[0].GroupResourceID)
+	assert.Equal(t, "divvyorganizationservice:2", resp.Clouds[1].GroupResourceID)
+	assert.Equal(t, "divvyorganizationservice:8", resp.Clouds[2].GroupResourceID)
+	assert.Equal(t, "divvyorganizationservice:1", resp.Clouds[0].ResourceID)
+	assert.Equal(t, "divvyorganizationservice:2", resp.Clouds[1].ResourceID)
+	assert.Equal(t, "divvyorganizationservice:8", resp.Clouds[2].ResourceID)
+	assert.Equal(t, "idle", resp.Clouds[0].EDHRole)
+	assert.Equal(t, "idle", resp.Clouds[1].EDHRole)
+	assert.Equal(t, "idle", resp.Clouds[2].EDHRole)
+	assert.Equal(t, 1, resp.Clouds[0].StrategyID)
+	assert.Equal(t, 1, resp.Clouds[1].StrategyID)
+	assert.Equal(t, 4, resp.Clouds[2].StrategyID)
+	assert.Equal(t, "o-00aaaaaaaa", resp.Clouds[0].CloudOrgID)
+	assert.Equal(t, "o-00aaaaaaaa", resp.Clouds[1].CloudOrgID)
+	assert.Equal(t, "", resp.Clouds[2].CloudOrgID)
+	assert.Equal(t, "o-00aaaaaaaa", resp.Clouds[0].CloudOrgDomainName)
+	assert.Equal(t, "o-00aaaaaaaa", resp.Clouds[1].CloudOrgDomainName)
+	assert.Equal(t, "", resp.Clouds[2].CloudOrgDomainName)
+	assert.Equal(t, "AWS Org Test", resp.Clouds[0].CloudOrgNickname)
+	assert.Equal(t, "AWS Org Test", resp.Clouds[1].CloudOrgNickname)
+	assert.Equal(t, "", resp.Clouds[2].CloudOrgNickname)
 	teardown()
 }
 
