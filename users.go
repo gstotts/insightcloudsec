@@ -16,6 +16,8 @@ type Users interface {
 	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
 	CurrentUserInfo() (UserListDetails, error)
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
+	Enable2FACurrentUser() (OTP, error)
+	Disable2FA(user_id int32) error
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
@@ -104,6 +106,14 @@ type MFAStatus struct {
 type UsersMFAStatus struct {
 	Enabled  bool `json:"enabled"`
 	Required bool `json:"required"`
+}
+
+type OTP struct {
+	Secret string `json:"otp_secret"`
+}
+
+type Success struct {
+	Success bool `json:"success"`
 }
 
 // USER FUNCTIONS
@@ -275,4 +285,39 @@ func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
 	}
 
 	return ret, err
+}
+
+func (u users) Enable2FACurrentUser() (OTP, error) {
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_enable", nil)
+	if err != nil {
+		return OTP{}, err
+	}
+	var ret OTP
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return OTP{}, err
+	}
+	return ret, nil
+}
+
+func (u users) Disable2FA(user_id int32) error {
+	id := MFAStatus{UserID: user_id}
+	payload, err := json.Marshal(id)
+	if err != nil {
+		return err
+	}
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_disable", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
+	var ret Success
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return err
+	}
+
+	if ret.Success == true {
+		return nil
+	}
+
+	return fmt.Errorf("ERROR: API Returned a failure attempting to disable")
 }
