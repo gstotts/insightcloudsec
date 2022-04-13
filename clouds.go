@@ -101,12 +101,16 @@ type CloudRegionList struct {
 }
 
 type HarvestingStrategy struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	OrgID       int    `json:"organization_id"`
-	OrgServices int    `json:"organization_services"`
-	Default     bool   `json:"type_default"`
-	CloudTypeID string `json:"cloud_type_id"`
+	ID                       int      `json:"id"`
+	Name                     string   `json:"name"`
+	OrgID                    int      `json:"organization_id"`
+	OrgServices              int      `json:"organization_services"`
+	Default                  bool     `json:"type_default"`
+	CloudTypeID              string   `json:"cloud_type_id"`
+	SystemDefined            bool     `json:"system_defined"`
+	DisabledRegions          []string `json:"disabled_regions"`
+	DynamicScheduling        bool     `json:"dynamic_scheduling"`
+	DynamicSchedulingEnabled bool     `json:"dynamic_scheduling_enabled"`
 }
 
 type HarvestingStrategyList struct {
