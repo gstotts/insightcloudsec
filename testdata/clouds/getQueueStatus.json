@@ -1,0 +1,388 @@
+{
+    "scheduler_internal": 0,
+    "workers": 2,
+    "p0": 0,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "queue_wait": {
+        "sum": 0,
+        "min": 0,
+        "max": 0,
+        "sumsq": 0,
+        "average": 0,
+        "count": 0,
+        "stddev": 0
+    },
+    "queue_wait_p0": {
+        "min": 0,
+        "max": 2.393037,
+        "current": 1.002351,
+        "average": 0.5896680000000004,
+        "variance": 0.11951942365015193,
+        "stddev": 0.34571581342216895,
+        "count": 159,
+        "sum": 93.75721199999997,
+        "sumsq": 74.16969662233997
+    },
+    "queue_wait_p1": {
+        "min": 0,
+        "max": 9.018104,
+        "current": 0.916365,
+        "average": 1.2466877204968945,
+        "variance": 3.537072263257699,
+        "stddev": 1.8807105740271943,
+        "count": 322,
+        "sum": 401.43344599999983,
+        "sumsq": 1635.8623442306741
+    },
+    "queue_wait_p3": {
+        "sum": 0,
+        "min": 0,
+        "max": 0,
+        "sumsq": 0,
+        "average": 0,
+        "count": 0,
+        "stddev": 0
+    },
+    "queue_wait_all": {
+        "min": 0,
+        "max": 9.018104,
+        "current": 1.002351,
+        "average": 1.028297363070539,
+        "variance": 2.4959848887203813,
+        "stddev": 1.5798686302096074,
+        "count": 482,
+        "sum": 495.6393289999996,
+        "sumsq": 1710.2333465192542
+    },
+    "process_time": {
+        "min": 0,
+        "max": 6.572301,
+        "current": 0.069488,
+        "average": 0.12948249585062233,
+        "variance": 0.3344719397423334,
+        "stddev": 0.5783354906473693,
+        "count": 482,
+        "sum": 62.410562999999975,
+        "sumsq": 168.9620784807449
+    },
+    "process_time_p0": {
+        "min": 0,
+        "max": 6.572301,
+        "current": 0.069488,
+        "average": 0.1423834213836478,
+        "variance": 0.5271031844723466,
+        "stddev": 0.7260187218469966,
+        "count": 159,
+        "sum": 22.638963999999998,
+        "sumsq": 86.50571629753199
+    },
+    "process_time_p1": {
+        "min": 0,
+        "max": 5.71514,
+        "current": 0.049997,
+        "average": 0.12336258074534162,
+        "variance": 0.24160023357770846,
+        "stddev": 0.4915284667012771,
+        "count": 322,
+        "sum": 39.722750999999995,
+        "sumsq": 82.45397605610901
+    },
+    "process_time_p2": {
+        "sum": 0,
+        "min": 0,
+        "max": 0,
+        "sumsq": 0,
+        "average": 0,
+        "count": 0,
+        "stddev": 0
+    },
+    "process_time_p3": {
+        "sum": 0,
+        "min": 0,
+        "max": 0,
+        "sumsq": 0,
+        "average": 0,
+        "count": 0,
+        "stddev": 0
+    },
+    "slowest_jobs": [
+        [
+            "BackOfficeInsightHarvester",
+            35.0
+        ],
+        [
+            "FilterUsageCount",
+            34.0
+        ],
+        [
+            "DivvyFilterManager",
+            18.0
+        ],
+        [
+            "TemplateCache",
+            6.0
+        ],
+        [
+            "CloudMatrix",
+            5.0
+        ],
+        [
+            "LicenseHarvester",
+            2.0
+        ],
+        [
+            "IacSimulationDataClone",
+            2.0
+        ],
+        [
+            "ResourceGroupInsightPackFindings",
+            1.0
+        ],
+        [
+            "InsightPackFindings",
+            1.0
+        ],
+        [
+            "ComplianceTimeseries",
+            1.0
+        ],
+        [
+            "AWSOrganizationSyncTags",
+            1.0
+        ],
+        [
+            "AWSOrganizationHarvestAccounts",
+            1.0
+        ],
+        [
+            "WorkloadProcessor",
+            0.0
+        ],
+        [
+            "WorkloadContainerExporter",
+            0.0
+        ],
+        [
+            "ValidateStackdriverSinks",
+            0.0
+        ],
+        [
+            "UpdateNamespaceIds",
+            0.0
+        ],
+        [
+            "SystemResourceCleanup",
+            0.0
+        ],
+        [
+            "SubscriptionProcessor",
+            0.0
+        ],
+        [
+            "SimulatedResourceCleanup",
+            0.0
+        ],
+        [
+            "ScheduledEventCleanup",
+            0.0
+        ],
+        [
+            "ResourcePolicyProcessor",
+            0.0
+        ],
+        [
+            "ResourceLockProcessor",
+            0.0
+        ],
+        [
+            "ResourceDeletion",
+            0.0
+        ],
+        [
+            "ResourceCreation",
+            0.0
+        ],
+        [
+            "ResourceCount",
+            0.0
+        ],
+        [
+            "ResourceAgentProcessor",
+            0.0
+        ],
+        [
+            "ResourceAgentHourlyProcessor",
+            0.0
+        ],
+        [
+            "PopulateAutoIds",
+            0.0
+        ],
+        [
+            "LogWriter",
+            0.0
+        ],
+        [
+            "LogCleanup",
+            0.0
+        ],
+        [
+            "LPAAggregationJob",
+            0.0
+        ],
+        [
+            "KnownIssues",
+            0.0
+        ],
+        [
+            "JobBacklogExport",
+            0.0
+        ],
+        [
+            "InvalidCredentialScan",
+            0.0
+        ],
+        [
+            "InsightResourceCleanup",
+            0.0
+        ],
+        [
+            "IncompletePermissionScan",
+            0.0
+        ],
+        [
+            "IacScanReaperProcessor",
+            0.0
+        ],
+        [
+            "IAMStatusCheckin",
+            0.0
+        ],
+        [
+            "IAMPolicyProcessor",
+            0.0
+        ],
+        [
+            "HealthChecks",
+            0.0
+        ],
+        [
+            "GCE:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "EventBusWatchdogJob",
+            0.0
+        ],
+        [
+            "DatabaseFlushHosts",
+            0.0
+        ],
+        [
+            "ContainerAssessmentQueueProcessor",
+            0.0
+        ],
+        [
+            "CloudMetadataHarvester",
+            0.0
+        ],
+        [
+            "CloudAccountProcessor",
+            0.0
+        ],
+        [
+            "BotVersions",
+            0.0
+        ],
+        [
+            "BotTemplateScan",
+            0.0
+        ],
+        [
+            "BotScopeRefreshJob",
+            0.0
+        ],
+        [
+            "BotDoctor",
+            0.0
+        ],
+        [
+            "AzureOrganizationSyncTags",
+            0.0
+        ],
+        [
+            "AzureOrganizationSyncSubscriptions",
+            0.0
+        ],
+        [
+            "AzureOrganizationSyncBadges",
+            0.0
+        ],
+        [
+            "AzureOrganizationHarvest",
+            0.0
+        ],
+        [
+            "AzureOrganizationAutoBadge",
+            0.0
+        ],
+        [
+            "AuthenticationServerUserSync",
+            0.0
+        ],
+        [
+            "ApiActivityProcessor",
+            0.0
+        ],
+        [
+            "AZURE_GOV:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "AZURE_CHINA:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "AZURE_ARM:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "AWS_GOV:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "AWS_CHINA:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "AWSOrganizationalUnitHarvestMembership",
+            0.0
+        ],
+        [
+            "AWSOrganizationSyncBadges",
+            0.0
+        ],
+        [
+            "AWSOrganizationSyncAccounts",
+            0.0
+        ],
+        [
+            "AWSOrganizationAutoBadge",
+            0.0
+        ],
+        [
+            "AWSEventBusConsumer",
+            0.0
+        ],
+        [
+            "AWS:ServiceManagedPolicyHarvester",
+            0.0
+        ],
+        [
+            "ALICLOUD:ServiceManagedPolicyHarvester",
+            0.0
+        ]
+    ]
+}

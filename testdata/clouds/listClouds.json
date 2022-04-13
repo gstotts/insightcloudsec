@@ -1,0 +1,58 @@
+{
+    "clouds": [
+        {
+            "id": 1,
+            "name": "my-cloud-1",
+            "cloud_type_id": "AWS",
+            "account_id": "012345678910",
+            "creation_time": "2022-04-05 03:35:06",
+            "status": "PAUSED",
+            "badge_count": 2,
+            "resource_count": 424,
+            "last_refreshed": "2022-04-12 02:06:47",
+            "role_arn": "master_role",
+            "group_resource_id": "divvyorganizationservice:1",
+            "resource_id": "divvyorganizationservice:1",
+            "event_driven_harvest_role": "idle",
+            "strategy_id": 1,
+            "cloud_organization_id": "o-00aaaaaaaa",
+            "cloud_organization_domain_name": "o-00aaaaaaaa",
+            "cloud_organization_nickname": "AWS Org Test"
+        },
+        {
+            "id": 2,
+            "name": "my-cloud-2",
+            "cloud_type_id": "AWS",
+            "account_id": "012345678911",
+            "creation_time": "2022-04-05 03:35:07",
+            "status": "PAUSED",
+            "badge_count": 4,
+            "resource_count": 176,
+            "last_refreshed": "2022-04-12 02:06:47",
+            "role_arn": "master_role",
+            "group_resource_id": "divvyorganizationservice:2",
+            "resource_id": "divvyorganizationservice:2",
+            "event_driven_harvest_role": "idle",
+            "strategy_id": 1,
+            "cloud_organization_id": "o-00aaaaaaaa",
+            "cloud_organization_domain_name": "o-00aaaaaaaa",
+            "cloud_organization_nickname": "AWS Org Test"
+        },
+        {
+            "id": 8,
+            "name": "my-azure-cloud",
+            "cloud_type_id": "AZURE_ARM",
+            "account_id": "0aa0a000-0000-0000-aaaa-00aa0aaa000a",
+            "creation_time": "2021-12-16 22:32:04",
+            "status": "PAUSED",
+            "badge_count": 0,
+            "resource_count": 42,
+            "last_refreshed": "2022-04-12 02:06:47",
+            "group_resource_id": "divvyorganizationservice:8",
+            "resource_id": "divvyorganizationservice:8",
+            "event_driven_harvest_role": "idle",
+            "strategy_id": 4
+        }
+    ],
+    "total_count": 3
+}
