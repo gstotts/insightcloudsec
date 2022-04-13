@@ -16,6 +16,7 @@ type Users interface {
 	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
 	CurrentUserInfo() (UserListDetails, error)
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
+	Enable2FACurrentUser() (OTP, error)
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
@@ -104,6 +105,10 @@ type MFAStatus struct {
 type UsersMFAStatus struct {
 	Enabled  bool `json:"enabled"`
 	Required bool `json:"required"`
+}
+
+type OTP struct {
+	Secret string `json:"otp_secret"`
 }
 
 // USER FUNCTIONS
@@ -275,4 +280,16 @@ func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
 	}
 
 	return ret, err
+}
+
+func (u users) Enable2FACurrentUser() (OTP, error) {
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_enable", nil)
+	if err != nil {
+		return OTP{}, err
+	}
+	var ret OTP
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return OTP{}, err
+	}
+	return ret, nil
 }
