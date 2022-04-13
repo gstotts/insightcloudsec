@@ -65,6 +65,8 @@ type Cloud struct {
 	EDHRole             string                `json:"event_driven_harvest_role,omitempty"`
 	StrategyID          int                   `json:"strategy_id,omitempty"`
 	CloudOrgID          string                `json:"cloud_organization_id,omitempty"`
+	CloudOrgDomainName  string                `json:"cloud_organization_domain_name,omitempty"`
+	CloudOrgNickname    string                `json:"cloud_organization_nickname,omitempty"`
 }
 
 type FailedResourceTypes struct {
@@ -87,11 +89,11 @@ type CloudTypesList struct {
 }
 
 type CloudRegion struct {
-	ID                    string `json:"id"`
-	Name                  string `json:"name"`
-	ResourceID            string `json:"resource_id"`
-	Status                string `json:"status"`
-	HarvestRateMultiplier int    `json:"harvest_rate_multiplier"`
+	ID                    string  `json:"id"`
+	Name                  string  `json:"name"`
+	ResourceID            string  `json:"resource_id"`
+	Status                string  `json:"status"`
+	HarvestRateMultiplier float32 `json:"harvest_rate_multiplier"`
 }
 
 type CloudRegionList struct {
@@ -99,12 +101,16 @@ type CloudRegionList struct {
 }
 
 type HarvestingStrategy struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	OrgID       int    `json:"organization_id"`
-	OrgServices int    `json:"organization_services"`
-	Default     bool   `json:"type_default"`
-	CloudTypeID string `json:"cloud_type_id"`
+	ID                       int      `json:"id"`
+	Name                     string   `json:"name"`
+	OrgID                    int      `json:"organization_id"`
+	OrgServices              int      `json:"organization_services"`
+	Default                  bool     `json:"type_default"`
+	CloudTypeID              string   `json:"cloud_type_id"`
+	SystemDefined            bool     `json:"system_defined"`
+	DisabledRegions          []string `json:"disabled_regions"`
+	DynamicScheduling        bool     `json:"dynamic_scheduling"`
+	DynamicSchedulingEnabled bool     `json:"dynamic_scheduling_enabled"`
 }
 
 type HarvestingStrategyList struct {
@@ -156,13 +162,24 @@ type CloudAccountParameters struct {
 }
 
 type QueueStatus struct {
-	P0          int       `json:"p0"`
-	P1          int       `json:"p1"`
-	P2          int       `json:"p2"`
-	SlowestJobs []SlowJob `json:"slowest_jobs"`
-	ProcessTime TimeStats `json:"process_time"`
-	Workers     int       `json:"workers"`
-	QueueWait   TimeStats `json:"queue_wait"`
+	P0                int       `json:"p0"`
+	P1                int       `json:"p1"`
+	P2                int       `json:"p2"`
+	P3                int       `json:"p3"`
+	SlowestJobs       []SlowJob `json:"slowest_jobs"`
+	ProcessTime       TimeStats `json:"process_time"`
+	ProcessTimeP0     TimeStats `json:"process_time_p0"`
+	ProcessTimeP1     TimeStats `json:"process_time_p1"`
+	ProcessTimeP2     TimeStats `json:"process_time_p2"`
+	ProcessTimeP3     TimeStats `json:"process_time_p3"`
+	Workers           int       `json:"workers"`
+	QueueWait         TimeStats `json:"queue_wait"`
+	QueueWaitP0       TimeStats `json:"queue_wait_p0"`
+	QueueWaitP1       TimeStats `json:"queue_wait_p1"`
+	QueueWaitP2       TimeStats `json:"queue_wait_p2"`
+	QueueWaitP3       TimeStats `json:"queue_wait_p3"`
+	QueueWaitAll      TimeStats `json:"queue_wait_all"`
+	SchedulerInternal int       `json:"scheduler_internal"`
 }
 
 type SlowJob struct {
@@ -183,13 +200,15 @@ func (s *SlowJob) UnmarshalJSON(b []byte) error {
 }
 
 type TimeStats struct {
-	Count   int     `json:"count"`
-	Min     float32 `json:"min"`
-	Max     float32 `json:"max"`
-	Sum     float32 `json:"sum"`
-	SumSQ   float64 `json:"sumsq"`
-	StdDev  float64 `json:"stddev"`
-	Average float64 `json:"average"`
+	Count    int     `json:"count"`
+	Min      float32 `json:"min"`
+	Max      float32 `json:"max"`
+	Sum      float32 `json:"sum"`
+	SumSQ    float64 `json:"sumsq"`
+	StdDev   float64 `json:"stddev"`
+	Average  float64 `json:"average"`
+	Current  float64 `json:"current,omitempty"`
+	Variance float64 `json:"variance,omitempty"`
 }
 
 // CLOUD ACCOUNT SETUP FUNCTIONS
@@ -326,6 +345,9 @@ func validateAWSCloud(cloud_data AWSCloudAccount) error {
 }
 
 func validateAzureCloud(cloud_data AzureCloudAccount) error {
+	if cloud_data.CreationParameters.CloudType != AZURE_CLOUD_TYPE {
+		return fmt.Errorf("[-] ERROR: cloud account must be of type AZURE_ARM to use, not %s", cloud_data.CreationParameters.CloudType)
+	}
 	if cloud_data.CreationParameters.AuthType == STANDARD_AUTH && cloud_data.CreationParameters.ApiKeyOrCert == "" {
 		return fmt.Errorf("[-] ERROR: azure cloud of AuthType standard requires ApiKeyOrCert be set")
 	} else if cloud_data.CreationParameters.AuthType == CERT_AUTH && (cloud_data.CreationParameters.ApiKeyOrCert == "" || cloud_data.CreationParameters.CertificateThumbprint == "") {
@@ -340,12 +362,22 @@ func validateAzureCloud(cloud_data AzureCloudAccount) error {
 		return fmt.Errorf("[-] ERROR: cloud account of type AZURE_ARM must not have RoleArn, SecretKey, SessionName, Duration, AccountNumber or ExternalID set")
 	}
 
+	// Make sure tenant_id and
+
 	return nil
 }
 
 func validateGCPCloud(cloud_data GCPCloudAccount) error {
 	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
 		return fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
+	}
+	// Validate required GCE settings exist
+	if cloud_data.CreationParameters.GCPAuth.ProjectID == "" || cloud_data.CreationParameters.GCPAuth.Type == "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type GCE requires ProjectID and API Credentials be set")
+	}
+	// Throw error if other settings exist
+	if cloud_data.CreationParameters.AuthType != "" || cloud_data.CreationParameters.ApiKeyOrCert != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type GCE must not have AuthType, ApiKey, SecretKey, RoleArn, SessionName, ExternalID, TenantID, SubscriptionID or AppID set")
 	}
 
 	return nil

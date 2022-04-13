@@ -1,0 +1,93 @@
+{
+    "strategies": [
+        {
+            "id": 1,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "AWS",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": [
+                "sa-east-1",
+                "me-south-1",
+                "eu-north-1",
+                "eu-west-3",
+                "eu-south-1",
+                "eu-west-2",
+                "eu-west-1",
+                "eu-central-1",
+                "ap-northeast-1",
+                "ap-southeast-1",
+                "ap-south-1",
+                "ap-northeast-3",
+                "ap-east-1",
+                "af-south-1",
+                "ap-northeast-2",
+                "ap-southeast-2"
+            ],
+            "dynamic_scheduling": true,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 2
+        },
+        {
+            "id": 2,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "AWS_GOV",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": null,
+            "dynamic_scheduling": false,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 0
+        },
+        {
+            "id": 3,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "GCE",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": null,
+            "dynamic_scheduling": false,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 0
+        },
+        {
+            "id": 4,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "AZURE_ARM",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": null,
+            "dynamic_scheduling": false,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 1
+        },
+        {
+            "id": 5,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "AZURE_GOV",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": null,
+            "dynamic_scheduling": false,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 0
+        },
+        {
+            "id": 6,
+            "organization_id": 1,
+            "name": "System Generated Strategy",
+            "cloud_type_id": "AZURE_CHINA",
+            "type_default": true,
+            "system_defined": false,
+            "disabled_regions": null,
+            "dynamic_scheduling": false,
+            "dynamic_scheduling_enabled": true,
+            "organization_services": 0
+        }
+    ]
+}
