@@ -307,7 +307,15 @@ func TestClouds_List(t *testing.T) {
 
 func TestClouds_ListHarvestingStrategies(t *testing.T) {
 	setup()
-
+	mux.HandleFunc("/v2/harvestingstrategy/strategy", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("clouds/listHarvestingStrategies.json"))
+	})
+	resp, err := client.Clouds.ListHarvestingStrategies()
+	assert.NoError(t, err)
+	assert.Equal(t, 6, len(resp))
 	teardown()
 }
 
