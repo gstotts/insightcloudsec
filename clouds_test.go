@@ -146,37 +146,76 @@ func TestClouds_validateAzureCloud(t *testing.T) {
 }
 
 func TestClouds_validateGCPCloud(t *testing.T) {
-
-}
-
-func TestClouds_AddAWSCloud(t *testing.T) {
-	setup()
-	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-	})
-	teardown()
-}
-
-func TestClouds_AddAzureCloud(t *testing.T) {
-	setup()
-	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-	})
-	teardown()
-}
-
-func TestClouds_AddGCPCloud(t *testing.T) {
-	setup()
-	mux.HandleFunc("/v2/prototype/cloud/add", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-	})
-	teardown()
+	// wrong cloud
+	assert.Error(t, validateGCPCloud(GCPCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType: "AWS",
+			Name:      "GPC Test Account",
+			GCPAuth: GCPAccountApiCreds{
+				Type:                    "service-account",
+				ProjectID:               "my-gcp-project-id",
+				PrivateKeyID:            "11111aaa11111aaaaaaaa11111aaaaaaa1111aaa",
+				PrivateKey:              "----BEGIN PRIVATE KEY\n-----blahblahblah\n----END PRIVATE KEY-----",
+				ClientEmail:             "insightcloudsec-test@my-gcp-project-id.iam.gserviceaccount.com",
+				ClientID:                "101010101010101010101",
+				AuthURI:                 "https://accounts.google.com/o/oauth2/auth",
+				TokenURI:                "https://oauth2.googleapis.com/token",
+				AuthProviderx509CertURL: "https://www.googleapis.com/oauth2/v1/certs",
+				Clientx509CertUrl:       "https://www.googleapis.com/robot/v1/metadata/x509/insightcloudsec-test%40my-gcp-project-id.iam.gserviceaccount.com",
+			},
+			Project: "my-gcp-project-id",
+		},
+	}))
+	// missing credentials
+	assert.Error(t, validateGCPCloud(GCPCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType: "GCE",
+			Name:      "GPC Test Account",
+			GCPAuth:   GCPAccountApiCreds{},
+			Project:   "my-gcp-project-id",
+		},
+	}))
+	// unneeded values
+	assert.Error(t, validateGCPCloud(GCPCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType: "GCE",
+			Name:      "GPC Test Account",
+			GCPAuth: GCPAccountApiCreds{
+				Type:                    "service-account",
+				ProjectID:               "my-gcp-project-id",
+				PrivateKeyID:            "11111aaa11111aaaaaaaa11111aaaaaaa1111aaa",
+				PrivateKey:              "----BEGIN PRIVATE KEY\n-----blahblahblah\n----END PRIVATE KEY-----",
+				ClientEmail:             "insightcloudsec-test@my-gcp-project-id.iam.gserviceaccount.com",
+				ClientID:                "101010101010101010101",
+				AuthURI:                 "https://accounts.google.com/o/oauth2/auth",
+				TokenURI:                "https://oauth2.googleapis.com/token",
+				AuthProviderx509CertURL: "https://www.googleapis.com/oauth2/v1/certs",
+				Clientx509CertUrl:       "https://www.googleapis.com/robot/v1/metadata/x509/insightcloudsec-test%40my-gcp-project-id.iam.gserviceaccount.com",
+			},
+			Project:  "my-gcp-project-id",
+			TenantID: "bogus_tenant_id",
+		},
+	}))
+	// good
+	assert.NoError(t, validateGCPCloud(GCPCloudAccount{
+		CreationParameters: CloudAccountParameters{
+			CloudType: "GCE",
+			Name:      "GPC Test Account",
+			GCPAuth: GCPAccountApiCreds{
+				Type:                    "service-account",
+				ProjectID:               "my-gcp-project-id",
+				PrivateKeyID:            "11111aaa11111aaaaaaaa11111aaaaaaa1111aaa",
+				PrivateKey:              "----BEGIN PRIVATE KEY\n-----blahblahblah\n----END PRIVATE KEY-----",
+				ClientEmail:             "insightcloudsec-test@my-gcp-project-id.iam.gserviceaccount.com",
+				ClientID:                "101010101010101010101",
+				AuthURI:                 "https://accounts.google.com/o/oauth2/auth",
+				TokenURI:                "https://oauth2.googleapis.com/token",
+				AuthProviderx509CertURL: "https://www.googleapis.com/oauth2/v1/certs",
+				Clientx509CertUrl:       "https://www.googleapis.com/robot/v1/metadata/x509/insightcloudsec-test%40my-gcp-project-id.iam.gserviceaccount.com",
+			},
+			Project: "my-gcp-project-id",
+		},
+	}))
 }
 
 func TestClouds_Delete(t *testing.T) {
@@ -199,12 +238,6 @@ func TestClouds_Delete(t *testing.T) {
 	})
 	err = client.Clouds.Delete("divvyorganizationservice:1")
 	assert.Error(t, err)
-	teardown()
-}
-
-func TestClouds_Update(t *testing.T) {
-	setup()
-
 	teardown()
 }
 

@@ -367,6 +367,14 @@ func validateGCPCloud(cloud_data GCPCloudAccount) error {
 	if cloud_data.CreationParameters.CloudType != GCP_CLOUD_TYPE {
 		return fmt.Errorf("[-] ERROR: cloud account must be of type GCE to use, not %s", cloud_data.CreationParameters.CloudType)
 	}
+	// Validate required GCE settings exist
+	if cloud_data.CreationParameters.GCPAuth.ProjectID == "" || cloud_data.CreationParameters.GCPAuth.Type == "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type GCE requires ProjectID and API Credentials be set")
+	}
+	// Throw error if other settings exist
+	if cloud_data.CreationParameters.AuthType != "" || cloud_data.CreationParameters.ApiKeyOrCert != "" || cloud_data.CreationParameters.SecretKey != "" || cloud_data.CreationParameters.RoleArn != "" || cloud_data.CreationParameters.SessionName != "" || cloud_data.CreationParameters.ExternalID != "" || cloud_data.CreationParameters.TenantID != "" || cloud_data.CreationParameters.SubscriptionID != "" || cloud_data.CreationParameters.AppID != "" {
+		return fmt.Errorf("[-] ERROR: cloud account of type GCE must not have AuthType, ApiKey, SecretKey, RoleArn, SessionName, ExternalID, TenantID, SubscriptionID or AppID set")
+	}
 
 	return nil
 }
