@@ -254,3 +254,42 @@ func TestUsers_Get2FAStatus(t *testing.T) {
 
 	teardown()
 }
+
+func TestUsers_Enable2FACurrentUser(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/tfa_enable", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"otp_secret\": \"123456789\"\n}")
+	})
+	resp, err := client.Users.Enable2FACurrentUser()
+	assert.NoError(t, err)
+	assert.Equal(t, "123456789", resp.Secret)
+
+	teardown()
+}
+
+func TestUsers_Disable2FA(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/tfa_disable", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"success\": true\n}")
+	})
+	err := client.Users.Disable2FA(3)
+	assert.NoError(t, err)
+	teardown()
+
+	setup()
+	mux.HandleFunc("/v2/public/user/tfa_disable", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"success\": false\n}")
+	})
+	err = client.Users.Disable2FA(3)
+	assert.Error(t, err)
+	teardown()
+}
