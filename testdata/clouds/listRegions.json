@@ -1,0 +1,242 @@
+{
+    "regions": [
+        {
+            "id": "australiacentral",
+            "name": "australiacentral",
+            "resource_id": "serviceregion:8:australiacentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "australiaeast",
+            "name": "australiaeast",
+            "resource_id": "serviceregion:8:australiaeast:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "australiasoutheast",
+            "name": "australiasoutheast",
+            "resource_id": "serviceregion:8:australiasoutheast:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "brazilsouth",
+            "name": "brazilsouth",
+            "resource_id": "serviceregion:8:brazilsouth:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "canadacentral",
+            "name": "canadacentral",
+            "resource_id": "serviceregion:8:canadacentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "canadaeast",
+            "name": "canadaeast",
+            "resource_id": "serviceregion:8:canadaeast:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "centralindia",
+            "name": "centralindia",
+            "resource_id": "serviceregion:8:centralindia:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "centralus",
+            "name": "centralus",
+            "resource_id": "serviceregion:8:centralus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "eastasia",
+            "name": "eastasia",
+            "resource_id": "serviceregion:8:eastasia:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "eastus",
+            "name": "eastus",
+            "resource_id": "serviceregion:8:eastus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "eastus2",
+            "name": "eastus2",
+            "resource_id": "serviceregion:8:eastus2:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "francecentral",
+            "name": "francecentral",
+            "resource_id": "serviceregion:8:francecentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "germanywestcentral",
+            "name": "germanywestcentral",
+            "resource_id": "serviceregion:8:germanywestcentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "japaneast",
+            "name": "japaneast",
+            "resource_id": "serviceregion:8:japaneast:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "japanwest",
+            "name": "japanwest",
+            "resource_id": "serviceregion:8:japanwest:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "koreacentral",
+            "name": "koreacentral",
+            "resource_id": "serviceregion:8:koreacentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "northcentralus",
+            "name": "northcentralus",
+            "resource_id": "serviceregion:8:northcentralus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "northeurope",
+            "name": "northeurope",
+            "resource_id": "serviceregion:8:northeurope:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "norwayeast",
+            "name": "norwayeast",
+            "resource_id": "serviceregion:8:norwayeast:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "southafricanorth",
+            "name": "southafricanorth",
+            "resource_id": "serviceregion:8:southafricanorth:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "southcentralus",
+            "name": "southcentralus",
+            "resource_id": "serviceregion:8:southcentralus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "southeastasia",
+            "name": "southeastasia",
+            "resource_id": "serviceregion:8:southeastasia:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "southindia",
+            "name": "southindia",
+            "resource_id": "serviceregion:8:southindia:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "swedencentral",
+            "name": "swedencentral",
+            "resource_id": "serviceregion:8:swedencentral:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "switzerlandnorth",
+            "name": "switzerlandnorth",
+            "resource_id": "serviceregion:8:switzerlandnorth:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "uaenorth",
+            "name": "uaenorth",
+            "resource_id": "serviceregion:8:uaenorth:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "uksouth",
+            "name": "uksouth",
+            "resource_id": "serviceregion:8:uksouth:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "ukwest",
+            "name": "ukwest",
+            "resource_id": "serviceregion:8:ukwest:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westcentralus",
+            "name": "westcentralus",
+            "resource_id": "serviceregion:8:westcentralus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westeurope",
+            "name": "westeurope",
+            "resource_id": "serviceregion:8:westeurope:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westindia",
+            "name": "westindia",
+            "resource_id": "serviceregion:8:westindia:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westus",
+            "name": "westus",
+            "resource_id": "serviceregion:8:westus:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westus2",
+            "name": "westus2",
+            "resource_id": "serviceregion:8:westus2:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        },
+        {
+            "id": "westus3",
+            "name": "westus3",
+            "resource_id": "serviceregion:8:westus3:",
+            "status": "ACTIVE",
+            "harvest_rate_multiplier": 1.0
+        }
+    ]
+}
