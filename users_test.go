@@ -269,3 +269,27 @@ func TestUsers_Enable2FACurrentUser(t *testing.T) {
 
 	teardown()
 }
+
+func TestUsers_Disable2FA(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/tfa_disable", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"success\": true\n}")
+	})
+	err := client.Users.Disable2FA(3)
+	assert.NoError(t, err)
+	teardown()
+
+	setup()
+	mux.HandleFunc("/v2/public/user/tfa_disable", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"success\": false\n}")
+	})
+	err = client.Users.Disable2FA(3)
+	assert.Error(t, err)
+	teardown()
+}
