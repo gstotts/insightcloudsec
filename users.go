@@ -12,12 +12,13 @@ import (
 var _ Users = (*users)(nil)
 
 type Users interface {
-	Create(user User) (UserListDetails, error)
+	Create(user User) (UserDetails, error)
 	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
-	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
-	CurrentUserInfo() (UserListDetails, error)
+	CreateSAMLUser(saml_user SAMLUser) (UserDetails, error)
+	CurrentUserInfo() (UserDetails, error)
 	ConvertToAPIOnly(user_id int) (APIKey_Response, error)
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
+	GetUserByUsername(username string) (UserDetails, error)
 	Enable2FACurrentUser() (OTP, error)
 	Disable2FA(user_id int32) error
 	DeactivateAPIKeys(user_id int) error
@@ -73,7 +74,7 @@ type SAMLUser struct {
 	AuthenticationServerID int32  `json:"authentication_server_id"`
 }
 
-type UserListDetails struct {
+type UserDetails struct {
 	// For use with data returned from individual users in a UserList struct.
 	Username               string   `json:"username"`
 	ID                     int      `json:"user_id"`
@@ -104,8 +105,8 @@ type UserListDetails struct {
 
 type UserList struct {
 	// For use with data returned from a listing of users.
-	Users []UserListDetails `json:"users"`
-	Count int               `json:"total_count"`
+	Users []UserDetails `json:"users"`
+	Count int           `json:"total_count"`
 }
 
 type UserIDPayload struct {
@@ -152,11 +153,11 @@ func (c *users) List() (UserList, error) {
 	return ret, nil
 }
 
-func (c *users) Create(user User) (UserListDetails, error) {
+func (c *users) Create(user User) (UserDetails, error) {
 	// Creates an InsightCloudSec User account
 
 	if user.Password == "" || user.AccessLevel == "" || user.Name == "" || user.Username == "" || user.Email == "" {
-		return UserListDetails{}, fmt.Errorf("[-] user's name, username, email, password and accesslevel must be set")
+		return UserDetails{}, fmt.Errorf("[-] user's name, username, email, password and accesslevel must be set")
 	}
 
 	// If user.ConfirmPassword is empty, make it the same as user.Password
@@ -166,22 +167,22 @@ func (c *users) Create(user User) (UserListDetails, error) {
 
 	// Validate AccessLevel settings
 	if user.AccessLevel != "BASIC_USER" && user.AccessLevel != "ORGANIZATION_ADMIN" && user.AccessLevel != "DOMAIN_VIEWER" && user.AccessLevel != "DOMAIN_ADMIN" {
-		return UserListDetails{}, fmt.Errorf("[-] user.AccessLevel must be one of: BASIC_USER, ORGANIZATION_ADMIN, DOMAIN_VIEWER, or DOMAIN_ADMIN")
+		return UserDetails{}, fmt.Errorf("[-] user.AccessLevel must be one of: BASIC_USER, ORGANIZATION_ADMIN, DOMAIN_VIEWER, or DOMAIN_ADMIN")
 	}
 
 	data, err := json.Marshal(user)
 	if err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
 	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(data))
 	if err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
-	var ret UserListDetails
+	var ret UserDetails
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
 	return ret, nil
@@ -212,20 +213,20 @@ func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	return ret, nil
 }
 
-func (u *users) CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error) {
+func (u *users) CreateSAMLUser(saml_user SAMLUser) (UserDetails, error) {
 	payload, err := json.Marshal(saml_user)
 	if err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
 	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", bytes.NewBuffer(payload))
 	if err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
-	var ret UserListDetails
+	var ret UserDetails
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 	return ret, err
 }
@@ -271,15 +272,15 @@ func (c *users) DeleteByUsername(username string) error {
 	return nil
 }
 
-func (u *users) CurrentUserInfo() (UserListDetails, error) {
+func (u *users) CurrentUserInfo() (UserDetails, error) {
 	resp, err := u.client.makeRequest(http.MethodGet, "/v2/public/user/info", nil)
 	if err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
-	var user UserListDetails
+	var user UserDetails
 	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
-		return UserListDetails{}, err
+		return UserDetails{}, err
 	}
 
 	return user, nil
@@ -379,4 +380,19 @@ func (u *users) DeactivateAPIKeys(user_id int) error {
 		return err
 	}
 	return nil
+}
+
+func (u *users) GetUserByUsername(username string) (UserDetails, error) {
+	listOfUsers, err := u.client.Users.List()
+	if err != nil {
+		return UserDetails{}, err
+	}
+
+	for i, user := range listOfUsers.Users {
+		if user.Username == username {
+			return listOfUsers.Users[i], nil
+		}
+	}
+
+	return UserDetails{}, fmt.Errorf("[-] ERROR: Found no user with username %s", username)
 }
