@@ -308,3 +308,15 @@ func TestUsers_CovertToAPIOnly(t *testing.T) {
 	assert.Equal(t, "Aa11111111111caa11a1a111-AaaAa1_aaa11AAaAA1111", resp.APIKey)
 	teardown()
 }
+
+func TestUsers_SetConsoleAccess(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/update_console_access", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	err := client.Users.SetConsoleAccess(2, true)
+	assert.NoError(t, err)
+	teardown()
+}

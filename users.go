@@ -23,6 +23,7 @@ type Users interface {
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
+	SetConsoleAccess(user_id int, access bool) error
 }
 
 type users struct {
@@ -347,4 +348,17 @@ func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
 		return APIKey_Response{}, err
 	}
 	return ret, nil
+}
+
+func (u *users) SetConsoleAccess(user_id int, access bool) error {
+	payload, err := json.Marshal(fmt.Sprintf("{\n\"user_id\": \"%d\",\n\"console_access_denied\": \"%t\"\n}", user_id, access))
+	if err != nil {
+		return err
+	}
+	_, err = u.client.makeRequest(http.MethodPost, "/v2/public/user/update_console_access", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
