@@ -320,3 +320,15 @@ func TestUsers_SetConsoleAccess(t *testing.T) {
 	assert.NoError(t, err)
 	teardown()
 }
+
+func TestUsers_DeactivateAPIKeys(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/apikey/deactivate", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	err := client.Users.DeactivateAPIKeys(2)
+	assert.NoError(t, err)
+	teardown()
+}

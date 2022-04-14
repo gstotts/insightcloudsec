@@ -20,6 +20,7 @@ type Users interface {
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
 	Enable2FACurrentUser() (OTP, error)
 	Disable2FA(user_id int32) error
+	DeactivateAPIKeys(user_id int) error
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
@@ -126,6 +127,11 @@ type OTP struct {
 
 type Success struct {
 	Success bool `json:"success"`
+}
+
+type ConsoleDeniedRequest struct {
+	UserID string `json:"user_id"`
+	Access bool   `json:"console_access_denied"`
 }
 
 // USER FUNCTIONS
@@ -351,7 +357,7 @@ func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
 }
 
 func (u *users) SetConsoleAccess(user_id int, access bool) error {
-	payload, err := json.Marshal(fmt.Sprintf("{\n\"user_id\": \"%d\",\n\"console_access_denied\": \"%t\"\n}", user_id, access))
+	payload, err := json.Marshal(ConsoleDeniedRequest{UserID: strconv.Itoa(user_id), Access: access})
 	if err != nil {
 		return err
 	}
@@ -360,5 +366,17 @@ func (u *users) SetConsoleAccess(user_id int, access bool) error {
 		return err
 	}
 
+	return nil
+}
+
+func (u *users) DeactivateAPIKeys(user_id int) error {
+	payload, err := json.Marshal(UserIDPayloadString{UserID: strconv.Itoa(user_id)})
+	if err != nil {
+		return err
+	}
+	_, err = u.client.makeRequest(http.MethodPost, "/v2/public/apikey/deactivate", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
 	return nil
 }
