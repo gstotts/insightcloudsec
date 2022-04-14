@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -15,6 +16,7 @@ type Users interface {
 	CreateAPIUser(api_user APIUser) (APIUserResponse, error)
 	CreateSAMLUser(saml_user SAMLUser) (UserListDetails, error)
 	CurrentUserInfo() (UserListDetails, error)
+	ConvertToAPIOnly(user_id int) (APIKey_Response, error)
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
 	Enable2FACurrentUser() (OTP, error)
 	Disable2FA(user_id int32) error
@@ -52,6 +54,11 @@ type APIUserResponse struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
 	APIKey   string `json:"api_key"`
+}
+
+type APIKey_Response struct {
+	ID     string `json:"user_id"`
+	APIKey string `json:"api_key"`
 }
 
 type SAMLUser struct {
@@ -99,8 +106,12 @@ type UserList struct {
 	Count int               `json:"total_count"`
 }
 
-type MFAStatus struct {
+type UserIDPayload struct {
 	UserID int32 `json:"user_id,omitempty"`
+}
+
+type UserIDPayloadString struct {
+	UserID string `json:"user_id"`
 }
 
 type UsersMFAStatus struct {
@@ -267,8 +278,8 @@ func (u *users) CurrentUserInfo() (UserListDetails, error) {
 	return user, nil
 }
 
-func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
-	id := MFAStatus{UserID: user_id}
+func (u *users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
+	id := UserIDPayload{UserID: user_id}
 	payload, err := json.Marshal(id)
 	if err != nil {
 		return UsersMFAStatus{}, err
@@ -287,7 +298,7 @@ func (u users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
 	return ret, err
 }
 
-func (u users) Enable2FACurrentUser() (OTP, error) {
+func (u *users) Enable2FACurrentUser() (OTP, error) {
 	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_enable", nil)
 	if err != nil {
 		return OTP{}, err
@@ -299,9 +310,8 @@ func (u users) Enable2FACurrentUser() (OTP, error) {
 	return ret, nil
 }
 
-func (u users) Disable2FA(user_id int32) error {
-	id := MFAStatus{UserID: user_id}
-	payload, err := json.Marshal(id)
+func (u *users) Disable2FA(user_id int32) error {
+	payload, err := json.Marshal(UserIDPayload{UserID: user_id})
 	if err != nil {
 		return err
 	}
@@ -320,4 +330,21 @@ func (u users) Disable2FA(user_id int32) error {
 	}
 
 	return fmt.Errorf("ERROR: API Returned a failure attempting to disable")
+}
+
+func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
+	payload, err := json.Marshal(UserIDPayloadString{UserID: strconv.Itoa(user_id)})
+	if err != nil {
+		return APIKey_Response{}, err
+	}
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_to_api_only_user", bytes.NewBuffer(payload))
+	if err != nil {
+		return APIKey_Response{}, err
+	}
+
+	var ret APIKey_Response
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return APIKey_Response{}, err
+	}
+	return ret, nil
 }
