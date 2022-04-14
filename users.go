@@ -18,6 +18,7 @@ type Users interface {
 	CurrentUserInfo() (UserDetails, error)
 	ConvertToAPIOnly(user_id int) (APIKey_Response, error)
 	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
+	GetUserByID(user_id int) (UserDetails, error)
 	GetUserByUsername(username string) (UserDetails, error)
 	Enable2FACurrentUser() (OTP, error)
 	Disable2FA(user_id int32) error
@@ -395,4 +396,19 @@ func (u *users) GetUserByUsername(username string) (UserDetails, error) {
 	}
 
 	return UserDetails{}, fmt.Errorf("[-] ERROR: Found no user with username %s", username)
+}
+
+func (u *users) GetUserByID(user_id int) (UserDetails, error) {
+	listOfUsers, err := u.client.Users.List()
+	if err != nil {
+		return UserDetails{}, err
+	}
+
+	for i, user := range listOfUsers.Users {
+		if user.ID == user_id {
+			return listOfUsers.Users[i], nil
+		}
+	}
+
+	return UserDetails{}, fmt.Errorf("[-] ERROR: Found no user with user_id: %d", user_id)
 }
