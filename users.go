@@ -157,7 +157,7 @@ func (c *users) List() (UserList, error) {
 func (c *users) Create(user User) (UserDetails, error) {
 	// Creates an InsightCloudSec User account
 
-	if user.Password == "" || user.AccessLevel == "" || user.Name == "" || user.Username == "" || user.Email == "" {
+	if user.AccessLevel == "" || user.Name == "" || user.Username == "" || user.Email == "" {
 		return UserDetails{}, fmt.Errorf("[-] user's name, username, email, password and accesslevel must be set")
 	}
 
