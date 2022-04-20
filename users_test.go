@@ -293,3 +293,78 @@ func TestUsers_Disable2FA(t *testing.T) {
 	assert.Error(t, err)
 	teardown()
 }
+
+func TestUsers_CovertToAPIOnly(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/update_to_api_only_user", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "{\n\"user_id\": \"2\",\n\"api_key\": \"Aa11111111111caa11a1a111-AaaAa1_aaa11AAaAA1111\"}")
+	})
+	resp, err := client.Users.ConvertToAPIOnly(2)
+	assert.NoError(t, err)
+	assert.Equal(t, "2", resp.ID)
+	assert.Equal(t, "Aa11111111111caa11a1a111-AaaAa1_aaa11AAaAA1111", resp.APIKey)
+	teardown()
+}
+
+func TestUsers_SetConsoleAccess(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/user/update_console_access", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	err := client.Users.SetConsoleAccess(2, true)
+	assert.NoError(t, err)
+	teardown()
+}
+
+func TestUsers_DeactivateAPIKeys(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/apikey/deactivate", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
+	err := client.Users.DeactivateAPIKeys(2)
+	assert.NoError(t, err)
+	teardown()
+}
+
+func TestUsers_GetUserByUsername(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/users/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
+	})
+	user, err := client.Users.GetUserByUsername("bbobb")
+	assert.NoError(t, err)
+	assert.Equal(t, "bbobb", user.Username)
+	assert.Equal(t, "bbobb@bingo.xyz", user.Email)
+
+	_, err = client.Users.GetUserByUsername("ddddd")
+	assert.Error(t, err)
+	teardown()
+}
+
+func TestUsers_GetUserByID(t *testing.T) {
+	setup()
+	mux.HandleFunc("/v2/public/users/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method, "Expected method 'GET', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
+	})
+	user, err := client.Users.GetUserByID(9)
+	assert.NoError(t, err)
+	assert.Equal(t, 9, user.ID)
+	assert.Equal(t, "bbobb@bingo.xyz", user.Email)
+
+	_, err = client.Users.GetUserByID(22)
+	assert.Error(t, err)
+	teardown()
+}
