@@ -17,3 +17,5 @@ test/
 test/*
 vendor/
 vendor/*
+
+.DS_Store
