@@ -44,6 +44,8 @@ type Clouds interface {
 	GetByName(name string) (Cloud, error)
 	GetByID(id int) (Cloud, error)
 	QueueStatus() (QueueStatus, error)
+	PauseHarvesting(targets Cloud) error
+	ResumeHarvesting(targets Cloud) error
 }
 
 type clouds struct {
@@ -558,5 +560,39 @@ func (s *clouds) EnableRegionByName(target Cloud, region string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func setHarvestingStatus(target Cloud, status string) ([]byte, error) {
+	payload, err := json.Marshal(map[string]interface{}{
+		"resource_ids": []string{target.ResourceID},
+		"status":       status,
+	})
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return payload, nil
+}
+
+func (s *clouds) PauseHarvesting(target Cloud) error {
+	payload, err := setHarvestingStatus(target, "PAUSED")
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+
+	return nil
+}
+
+func (s *clouds) ResumeHarvesting(target Cloud) error {
+	payload, err := setHarvestingStatus(target, "DEFAULT")
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+
 	return nil
 }
