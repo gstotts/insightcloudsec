@@ -38,6 +38,8 @@ type Clouds interface {
 	ListHarvestingStrategies() ([]HarvestingStrategy, error)
 	ListProvisioningClouds() (CloudList, error)
 	ListRegions(target Cloud) (CloudRegionList, error)
+	EnableRegionByName(target Cloud, region string) error
+	DisableRegionByName(target Cloud, region string) error
 	ListTypes() (CloudTypesList, error)
 	GetByName(name string) (Cloud, error)
 	GetByID(id int) (Cloud, error)
@@ -412,7 +414,11 @@ func (s *clouds) List() (CloudList, error) {
 
 func (s *clouds) GetByName(name string) (Cloud, error) {
 	// Returns the specific cloud of the name given.
-	all_clouds, _ := s.List()
+	all_clouds, err := s.List()
+	if err != nil {
+		return Cloud{}, err
+	}
+
 	for _, cloud := range all_clouds.Clouds {
 		if strings.EqualFold(cloud.Name, name) {
 			return cloud, nil
@@ -495,7 +501,6 @@ func (s *clouds) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
-	fmt.Println(target.ResourceID)
 	resp, err := s.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
 	if err != nil {
 		return CloudRegionList{}, err
@@ -506,4 +511,52 @@ func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	}
 
 	return ret, nil
+}
+
+func (s *clouds) DisableRegionByName(target Cloud, region string) error {
+	regions, err := s.client.Clouds.ListRegions(target)
+	if err != nil {
+		return err
+	}
+
+	var resource_id string
+	for _, list_region := range regions.Regions {
+		if strings.EqualFold(list_region.Name, region) {
+			resource_id = list_region.ResourceID
+		}
+	}
+
+	if resource_id == "" {
+		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/disable", resource_id), nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *clouds) EnableRegionByName(target Cloud, region string) error {
+	regions, err := s.client.Clouds.ListRegions(target)
+	if err != nil {
+		return err
+	}
+
+	var resource_id string
+	for _, list_region := range regions.Regions {
+		if strings.EqualFold(list_region.Name, region) {
+			resource_id = list_region.ResourceID
+		}
+	}
+
+	if resource_id == "" {
+		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/enable", resource_id), nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
