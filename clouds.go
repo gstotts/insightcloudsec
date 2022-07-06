@@ -44,6 +44,7 @@ type Clouds interface {
 	GetByName(name string) (Cloud, error)
 	GetByID(id int) (Cloud, error)
 	QueueStatus() (QueueStatus, error)
+	SystemStatus() (SystemStatus, error)
 	PauseHarvesting(targets Cloud) error
 	ResumeHarvesting(targets Cloud) error
 }
@@ -189,6 +190,10 @@ type QueueStatus struct {
 type SlowJob struct {
 	Name     string
 	Duration float64
+}
+
+type SystemStatus struct {
+	Diagnostics []map[string]interface{} `json:"diagnostics"`
 }
 
 // Custom Unmarshal to separate out the array into name and duration
@@ -471,9 +476,9 @@ func (s *clouds) ListProvisioningClouds() (CloudList, error) {
 	return ret, nil
 }
 
-func (c *clouds) QueueStatus() (QueueStatus, error) {
+func (s *clouds) QueueStatus() (QueueStatus, error) {
 	// Returns the queue status statistics.
-	resp, err := c.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
 	if err != nil {
 		return QueueStatus{}, err
 	}
@@ -481,6 +486,20 @@ func (c *clouds) QueueStatus() (QueueStatus, error) {
 	var ret QueueStatus
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return QueueStatus{}, err
+	}
+	return ret, nil
+}
+
+func (s *clouds) SystemStatus() (SystemStatus, error) {
+	// Returns the system status diagnostics as a map[string]interface{}
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/system/status/get", nil)
+	if err != nil {
+		return SystemStatus{}, err
+	}
+
+	var ret SystemStatus
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return SystemStatus{}, err
 	}
 	return ret, nil
 }
