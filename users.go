@@ -334,7 +334,7 @@ func (u *users) Disable2FA(user_id int32) error {
 		return err
 	}
 
-	if ret.Success == true {
+	if ret.Success {
 		return nil
 	}
 
