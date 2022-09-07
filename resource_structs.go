@@ -1,7 +1,7 @@
 package insightcloudsec
 
 // STRUCTS
-///////////////////////////////////////////
+// /////////////////////////////////////////
 type Common_Resource_Values struct {
 	//Common Attributes
 	Resource_ID             string            `json:"resource_id"`
@@ -905,7 +905,7 @@ type Resource_Access_List_Rule struct {
 }
 
 type Resource_Group struct {
-	Common            Common_Resource_Values `json:"common,omitemtpy"`
+	Common            Common_Resource_Values `json:"common,omitempty"`
 	Resource_ID       string                 `json:"resource_id"`
 	ID                string                 `json:"id,omitempty"`
 	Name              string                 `json:"name"`

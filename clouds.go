@@ -38,10 +38,15 @@ type Clouds interface {
 	ListHarvestingStrategies() ([]HarvestingStrategy, error)
 	ListProvisioningClouds() (CloudList, error)
 	ListRegions(target Cloud) (CloudRegionList, error)
+	EnableRegionByName(target Cloud, region string) error
+	DisableRegionByName(target Cloud, region string) error
 	ListTypes() (CloudTypesList, error)
 	GetByName(name string) (Cloud, error)
 	GetByID(id int) (Cloud, error)
 	QueueStatus() (QueueStatus, error)
+	SystemStatus() (SystemStatus, error)
+	PauseHarvesting(targets Cloud) error
+	ResumeHarvesting(targets Cloud) error
 }
 
 type clouds struct {
@@ -185,6 +190,10 @@ type QueueStatus struct {
 type SlowJob struct {
 	Name     string
 	Duration float64
+}
+
+type SystemStatus struct {
+	Diagnostics []map[string]interface{} `json:"diagnostics"`
 }
 
 // Custom Unmarshal to separate out the array into name and duration
@@ -412,7 +421,11 @@ func (s *clouds) List() (CloudList, error) {
 
 func (s *clouds) GetByName(name string) (Cloud, error) {
 	// Returns the specific cloud of the name given.
-	all_clouds, _ := s.List()
+	all_clouds, err := s.List()
+	if err != nil {
+		return Cloud{}, err
+	}
+
 	for _, cloud := range all_clouds.Clouds {
 		if strings.EqualFold(cloud.Name, name) {
 			return cloud, nil
@@ -463,9 +476,9 @@ func (s *clouds) ListProvisioningClouds() (CloudList, error) {
 	return ret, nil
 }
 
-func (c *clouds) QueueStatus() (QueueStatus, error) {
+func (s *clouds) QueueStatus() (QueueStatus, error) {
 	// Returns the queue status statistics.
-	resp, err := c.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
 	if err != nil {
 		return QueueStatus{}, err
 	}
@@ -473,6 +486,20 @@ func (c *clouds) QueueStatus() (QueueStatus, error) {
 	var ret QueueStatus
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return QueueStatus{}, err
+	}
+	return ret, nil
+}
+
+func (s *clouds) SystemStatus() (SystemStatus, error) {
+	// Returns the system status diagnostics as a map[string]interface{}
+	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/system/status/get", nil)
+	if err != nil {
+		return SystemStatus{}, err
+	}
+
+	var ret SystemStatus
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return SystemStatus{}, err
 	}
 	return ret, nil
 }
@@ -495,7 +522,6 @@ func (s *clouds) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
-	fmt.Println(target.ResourceID)
 	resp, err := s.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
 	if err != nil {
 		return CloudRegionList{}, err
@@ -506,4 +532,92 @@ func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	}
 
 	return ret, nil
+}
+
+func (s *clouds) DisableRegionByName(target Cloud, region string) error {
+	regions, err := s.client.Clouds.ListRegions(target)
+	if err != nil {
+		return err
+	}
+
+	var resource_id string
+	for _, list_region := range regions.Regions {
+		if strings.EqualFold(list_region.Name, region) {
+			resource_id = list_region.ResourceID
+		}
+	}
+
+	if resource_id == "" {
+		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/disable", resource_id), nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *clouds) EnableRegionByName(target Cloud, region string) error {
+	regions, err := s.client.Clouds.ListRegions(target)
+	if err != nil {
+		return err
+	}
+
+	var resource_id string
+	for _, list_region := range regions.Regions {
+		if strings.EqualFold(list_region.Name, region) {
+			resource_id = list_region.ResourceID
+		}
+	}
+
+	if resource_id == "" {
+		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/enable", resource_id), nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setHarvestingStatus(target Cloud, status string) ([]byte, error) {
+	payload, err := json.Marshal(map[string]interface{}{
+		"resource_ids": []string{target.ResourceID},
+		"status":       status,
+	})
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return payload, nil
+}
+
+func (s *clouds) PauseHarvesting(target Cloud) error {
+	payload, err := setHarvestingStatus(target, "PAUSED")
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *clouds) ResumeHarvesting(target Cloud) error {
+	payload, err := setHarvestingStatus(target, "DEFAULT")
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

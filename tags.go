@@ -1,13 +1,7 @@
 package insightcloudsec
 
-var _ Tags = (*tags)(nil)
-
 type Tags interface {
 	Create(m map[string]string) []Tag
-}
-
-type tags struct {
-	client *Client
 }
 
 type Tag struct {
@@ -19,7 +13,7 @@ type Tags_Response struct {
 	Tags []Tag `json:"resource_tags"`
 }
 
-func (t *tags) Create(m map[string]string) []Tag {
+func Create(m map[string]string) []Tag {
 	tags := []Tag{}
 	for tag, value := range m {
 		item := Tag{
