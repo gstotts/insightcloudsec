@@ -1,9 +1,9 @@
 package insightcloudsec
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,7 +41,7 @@ func teardown() {
 }
 
 func getJSONFile(path string) string {
-	b, err := ioutil.ReadFile("testdata/" + path)
+	b, err := os.ReadFile("testdata/" + path)
 	if err != nil {
 		panic(err)
 	}

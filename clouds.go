@@ -601,6 +601,9 @@ func (s *clouds) PauseHarvesting(target Cloud) error {
 	}
 
 	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -612,6 +615,9 @@ func (s *clouds) ResumeHarvesting(target Cloud) error {
 	}
 
 	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
