@@ -50,6 +50,7 @@ type Client struct {
 	Resources             Resources
 	ResourceGroups        ResourceGroups
 	Users                 Users
+	Iac                   Iac
 }
 
 // NewClient creates a new InsightCloudSec API client
@@ -96,6 +97,7 @@ func NewClient(cfg *Config) (*Client, error) {
 	client.Organizations = &orgs{client: client}
 	client.Resources = &resources{client: client}
 	client.ResourceGroups = &rsgroup{client: client}
+	client.Iac = &iac{client: client}
 	return client, nil
 }
 

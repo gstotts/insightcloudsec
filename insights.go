@@ -44,7 +44,7 @@ type Insight struct {
 	Filters             []InsightFilter `json:"filters"`
 	Timeseries          bool            `json:"timeseries,omitempty"`
 	TimeseriesCache     int             `json:"timeseries_cache,omitempty"`
-	Badges              []Badge         `json:"badges,omitempty"`
+	Badges              []string        `json:"badges,omitempty"`
 	BadgeFilterOperator string          `json:"badge_filter_operator,omitempty"`
 }
 
