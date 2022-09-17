@@ -119,6 +119,12 @@ type Rules struct {
 	Detail      string `json:"rule_detail"`
 }
 
+type IACResults struct {
+}
+
+type IACResultsReadable struct {
+}
+
 func (c *iac) Get_Configs() ([]IACConfigs, error) {
 	// Returns a list of all IAC Configs from the API
 	resp, err := c.client.makeRequest(http.MethodGet, "/v3/iac/configs", nil)
