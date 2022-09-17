@@ -91,13 +91,32 @@ type IACInsightDetails struct {
 }
 
 type IACScanResponseReadable struct {
-	BuildID     int      `json:"build_id"`
-	ConfigName  string   `json:"config_name"`
-	Message     string   `json:"message"`
-	ScanResults string   `json:"scan_results"`
-	Success     bool     `json:"success"`
-	Status      string   `json:"status"`
-	Errors      []string `json:"errors"`
+	BuildID     int                      `json:"build_id"`
+	ConfigName  string                   `json:"config_name"`
+	Message     string                   `json:"message"`
+	ScanResults string                   `json:"scan_results"`
+	Success     bool                     `json:"success"`
+	Status      string                   `json:"status"`
+	Errors      []string                 `json:"errors"`
+	Resources   []IACScanResourceDetails `json:"resources"`
+}
+
+type IACScanResourceDetails struct {
+	Source       string  `json:"resource_source"`
+	Address      string  `json:"resource_address"`
+	Name         string  `json:"resource_name"`
+	Type         string  `json:"resource_type"`
+	Region       string  `json:"resource_region"`
+	PassedRules  []Rules `json:"passed_rules"`
+	WarningRules []Rules `json:"warning_rules"`
+	FailedRules  []Rules `json:"failed_rules"`
+	Stacktrace   string  `json:"stacktrace"`
+}
+
+type Rules struct {
+	Name        string `json:"rule_name"`
+	Description string `json:"rule_description"`
+	Detail      string `json:"rule_detail"`
 }
 
 func (c *iac) Get_Configs() ([]IACConfigs, error) {
