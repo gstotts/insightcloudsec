@@ -19,6 +19,7 @@ var _ Insights = (*insights)(nil)
 
 type Insights interface {
 	Create(i Insight) error
+	Edit(i Insight) (*Insight, error)
 	Delete(insight_id int) error
 	Get_Insight(insight_id int, insight_source string) (*Insight, error)
 	Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error)
@@ -116,6 +117,68 @@ func (c *insights) Create(i Insight) error {
 	}
 
 	return nil
+}
+
+func (c *insights) Edit(i Insight) (*Insight, error) {
+	current_data, err := c.client.Insights.Get_Insight(i.ID, "custom")
+	if err != nil {
+		return nil, err
+	}
+
+	// Cleanup any missing required fields for update using existing fields
+	if i.Name == "" {
+		i.Name = current_data.Name
+	}
+	if i.Description == "" {
+		i.Description = current_data.Description
+	}
+	if i.ResourceTypes == nil {
+		i.ResourceTypes = current_data.ResourceTypes
+	}
+	if i.OwnerResourceID == "" {
+		i.OwnerResourceID = current_data.OwnerResourceID
+	}
+	if i.TemplateID == 0 {
+		i.TemplateID = current_data.TemplateID
+	}
+	if i.Severity == 0 {
+		i.Severity = current_data.Severity
+	}
+	if i.Filters == nil {
+		i.Filters = current_data.Filters
+	}
+
+	// Clean up any empty config and collection fields for filters so they return empty object in json
+	for idx, filter := range i.Filters {
+		if filter.Config == nil {
+			i.Filters[idx].Config = make(map[string]interface{})
+		}
+		if filter.Collections == nil {
+			i.Filters[idx].Collections = make(map[string]interface{})
+		}
+	}
+
+	// Clean up any empty scopes so they return an empty object in json
+	if i.Scopes == nil {
+		i.Scopes = make([]string, 0)
+	}
+
+	data, err := json.Marshal(i)
+	if err != nil {
+		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
+	}
+
+	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
+
+	var ret Insight
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
 
 func (c *insights) List() ([]Insight, error) {
