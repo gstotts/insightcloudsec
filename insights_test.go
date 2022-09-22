@@ -16,7 +16,7 @@ func TestInsights_Create(t *testing.T) {
 	})
 
 	// Shoud return error as Severity is not set
-	assert.Error(t, client.Insights.Create(Insight{
+	assert.Error(t, (_, err := client.Insights.Create(Insight{
 		Name:          "Test Insight",
 		Description:   "Description goes here.",
 		Tags:          nil,
@@ -25,7 +25,7 @@ func TestInsights_Create(t *testing.T) {
 			Name: "divvy.filter.cloud_trail_in_all_regions",
 		}},
 		Badges: nil,
-	}))
+	})))
 	// Should return error as filters are not set
 	assert.Error(t, client.Insights.Create(Insight{
 		Name:          "Test Insight",
