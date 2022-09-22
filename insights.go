@@ -18,7 +18,7 @@ const (
 var _ Insights = (*insights)(nil)
 
 type Insights interface {
-	Create(i Insight) error
+	Create(i Insight) (*Insight, error)
 	Edit(i Insight) (*Insight, error)
 	Delete(insight_id int) error
 	Get_Insight(insight_id int, insight_source string) (*Insight, error)
