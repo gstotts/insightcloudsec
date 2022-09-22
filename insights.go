@@ -45,7 +45,7 @@ type Insight struct {
 	Filters             []InsightFilter `json:"filters"`
 	Timeseries          bool            `json:"timeseries,omitempty"`
 	TimeseriesCache     int             `json:"timeseries_cache,omitempty"`
-	Badges              []string        `json:"badges,omitempty"`
+	Badges              []Badge         `json:"badges,omitempty"`
 	BadgeFilterOperator string          `json:"badge_filter_operator,omitempty"`
 }
 
@@ -78,17 +78,17 @@ type InsightPack struct {
 	Custom              []int                `json:"custom"`
 }
 
-func (c *insights) Create(i Insight) error {
+func (c *insights) Create(i Insight) (*Insight, error) {
 	// Creates an Insight in InsightCloudSec given the insight object with appropriate configs.  Returns an error if insight creation fails.
 
 	// Make sure severity is set
 	if i.Severity == 0 {
-		return fmt.Errorf("[-] ERROR: Insight Severity must be set")
+		return nil, fmt.Errorf("[-] ERROR: Insight Severity must be set")
 	}
 
 	// Make sure Filters are set
 	if i.Filters == nil {
-		return fmt.Errorf("[-] ERROR: Insight filters must be set")
+		return nil, fmt.Errorf("[-] ERROR: Insight filters must be set")
 	}
 
 	// Clean up any empty config and collection fields for filters so they return empty object in json
@@ -108,15 +108,20 @@ func (c *insights) Create(i Insight) error {
 
 	data, err := json.Marshal(i)
 	if err != nil {
-		return fmt.Errorf("[-] ERROR: Marshal error: %s", err)
+		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
 	}
 
-	_, err = c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	var ret Insight
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return nil, err
+	}
+
+	return &ret, nil
 }
 
 func (c *insights) Edit(i Insight) (*Insight, error) {
