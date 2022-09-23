@@ -19,7 +19,7 @@ var _ Insights = (*insights)(nil)
 
 type Insights interface {
 	Create(i Insight) (*Insight, error)
-	Edit(i Insight) (*Insight, error)
+	Edit(i Insight) error
 	Delete(insight_id int) error
 	Get_Insight(insight_id int, insight_source string) (*Insight, error)
 	Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error)
@@ -37,7 +37,7 @@ type Insight struct {
 	Description         string          `json:"description"`
 	TemplateID          int             `json:"template_id"`
 	OrgID               int             `json:"organization_id,omitempty"`
-	OwnerResourceID     string          `json:"owner_resource_id,omitempty"`
+	OwnerResourceID     *string         `json:"owner_resource_id"`
 	Severity            int             `json:"severity"`
 	Scopes              []string        `json:"scopes"`
 	Tags                []string        `json:"tags"`
@@ -124,12 +124,12 @@ func (c *insights) Create(i Insight) (*Insight, error) {
 	return &ret, nil
 }
 
-func (c *insights) Edit(i Insight) (*Insight, error) {
+func (c *insights) Edit(i Insight) error {
 	current_data, err := c.client.Insights.Get_Insight(i.ID, "custom")
 	if err != nil {
-		return nil, err
+		return err
 	}
-
+	fmt.Println(current_data)
 	// Cleanup any missing required fields for update using existing fields
 	if i.Name == "" {
 		i.Name = current_data.Name
@@ -140,9 +140,7 @@ func (c *insights) Edit(i Insight) (*Insight, error) {
 	if i.ResourceTypes == nil {
 		i.ResourceTypes = current_data.ResourceTypes
 	}
-	if i.OwnerResourceID == "" {
-		i.OwnerResourceID = current_data.OwnerResourceID
-	}
+
 	if i.TemplateID == 0 {
 		i.TemplateID = current_data.TemplateID
 	}
@@ -170,20 +168,15 @@ func (c *insights) Edit(i Insight) (*Insight, error) {
 
 	data, err := json.Marshal(i)
 	if err != nil {
-		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
+		return fmt.Errorf("[-] ERROR: Marshal error: %s", err)
 	}
 
-	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), bytes.NewBuffer(data))
+	_, err = c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), bytes.NewBuffer(data))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var ret Insight
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
-		return nil, err
-	}
-
-	return &ret, nil
+	return nil
 }
 
 func (c *insights) List() ([]Insight, error) {
@@ -203,6 +196,7 @@ func (c *insights) List() ([]Insight, error) {
 
 func (c *insights) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
 	// Returns the specific Insight associated with the Insight ID and the Source provided
+
 	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err
