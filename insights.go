@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -106,12 +105,7 @@ func (c *insights) Create(i Insight) (*Insight, error) {
 		i.Scopes = make([]string, 0)
 	}
 
-	data, err := json.Marshal(i)
-	if err != nil {
-		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
-	}
-
-	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", i)
 	if err != nil {
 		return nil, err
 	}
@@ -166,12 +160,7 @@ func (c *insights) Edit(i Insight) error {
 		i.Scopes = make([]string, 0)
 	}
 
-	data, err := json.Marshal(i)
-	if err != nil {
-		return fmt.Errorf("[-] ERROR: Marshal error: %s", err)
-	}
-
-	_, err = c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), bytes.NewBuffer(data))
+	_, err = c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), i)
 	if err != nil {
 		return err
 	}

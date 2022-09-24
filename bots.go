@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -144,12 +143,7 @@ func (s *bots) Create(bot_data Bot) (BotResults, error) {
 		return BotResults{}, nil
 	}
 
-	data, err := json.Marshal(bot_data)
-	if err != nil {
-		return BotResults{}, err
-	}
-
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/bot/create", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/bot/create", bot_data)
 	if err != nil {
 		return BotResults{}, err
 	}
@@ -166,9 +160,8 @@ func (s *bots) List() (BotList, error) {
 	default_body := make(map[string]interface{})
 	default_body["filters"] = []string{}
 	default_body["offset"] = 0
-	data, _ := json.Marshal(default_body)
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/list", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/list", default_body)
 	if err != nil {
 		return BotList{}, err
 	}

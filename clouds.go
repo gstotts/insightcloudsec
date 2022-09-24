@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -229,12 +228,7 @@ func (s *clouds) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	data, err := json.Marshal(cloud_data)
-	if err != nil {
-		return Cloud{}, err
-	}
-
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -253,12 +247,7 @@ func (s *clouds) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	data, err := json.Marshal(cloud_data)
-	if err != nil {
-		return Cloud{}, err
-	}
-
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -277,12 +266,8 @@ func (s *clouds) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 
 	}
-	data, err := json.Marshal(cloud_data)
-	if err != nil {
-		return Cloud{}, err
-	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -315,12 +300,7 @@ func (s *clouds) Update(id int, cloud_data CloudAccountParameters) (Cloud, error
 		return Cloud{}, fmt.Errorf("[-] ERROR: Invalid cloud type to update: %s", cloud_data.CloudType)
 	}
 
-	data, err := json.Marshal(cloud_data)
-	if err != nil {
-		return Cloud{}, err
-	}
-
-	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), bytes.NewBuffer(data))
+	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), cloud_data)
 	if err != nil {
 		return Cloud{}, err
 	}
@@ -582,25 +562,17 @@ func (s *clouds) EnableRegionByName(target Cloud, region string) error {
 	return nil
 }
 
-func setHarvestingStatus(target Cloud, status string) ([]byte, error) {
-	payload, err := json.Marshal(map[string]interface{}{
+func setHarvestingStatus(target Cloud, status string) map[string]interface{} {
+	payload := map[string]interface{}{
 		"resource_ids": []string{target.ResourceID},
 		"status":       status,
-	})
-	if err != nil {
-		return []byte{}, err
 	}
 
-	return payload, nil
+	return payload
 }
 
 func (s *clouds) PauseHarvesting(target Cloud) error {
-	payload, err := setHarvestingStatus(target, "PAUSED")
-	if err != nil {
-		return err
-	}
-
-	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "PAUSED"))
 	if err != nil {
 		return err
 	}
@@ -609,12 +581,8 @@ func (s *clouds) PauseHarvesting(target Cloud) error {
 }
 
 func (s *clouds) ResumeHarvesting(target Cloud) error {
-	payload, err := setHarvestingStatus(target, "DEFAULT")
-	if err != nil {
-		return err
-	}
 
-	_, err = s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", bytes.NewBuffer(payload))
+	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "DEFAULT"))
 	if err != nil {
 		return err
 	}
