@@ -82,12 +82,7 @@ func (c *corgs) Create(cloud_type string, creds string, nickname string, auto_ad
 		}
 	}
 
-	payload, err := json.Marshal(cloud_org)
-	if err != nil {
-		return Cloud_Organization{}, err
-	}
-
-	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/cloud/domain/add", bytes.NewBuffer(payload))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/cloud/domain/add", cloud_org)
 	if err != nil {
 		return Cloud_Organization{}, err
 	}
