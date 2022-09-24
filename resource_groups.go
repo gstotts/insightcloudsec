@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 )
@@ -46,18 +45,8 @@ type ResourcesToGroup struct {
 }
 
 func (r *rsgroup) Create(name string, description string) (ResourceGroup, error) {
-	config := ResourceGroupConifg{
-		Name:        name,
-		Description: description,
-		OwnerType:   "organization",
-	}
-
-	data, err := json.Marshal(config)
-	if err != nil {
-		return ResourceGroup{}, err
-	}
-
-	resp, err := r.client.makeRequest(http.MethodPost, "/v2/public/resourcegroup/create", bytes.NewBuffer(data))
+	// Creates a resource group of given name and description
+	resp, err := r.client.makeRequest(http.MethodPost, "/v2/public/resourcegroup/create", ResourceGroupConifg{Name: name, Description: description, OwnerType: "organization"})
 	if err != nil {
 		return ResourceGroup{}, err
 	}
@@ -71,16 +60,8 @@ func (r *rsgroup) Create(name string, description string) (ResourceGroup, error)
 }
 
 func (r *rsgroup) AddToGroup(resource_ids []string, group_id string) error {
-	config := ResourcesToGroup{
-		ResourceGroupIDs: []string{group_id},
-		ResourceIDs:      resource_ids,
-	}
-	data, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	_, err = r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/resources/add", bytes.NewBuffer(data))
+	// Adds given resource_ids to the given resource group
+	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/resources/add", ResourcesToGroup{ResourceGroupIDs: []string{group_id}, ResourceIDs: resource_ids})
 	if err != nil {
 		return err
 	}
@@ -89,15 +70,8 @@ func (r *rsgroup) AddToGroup(resource_ids []string, group_id string) error {
 }
 
 func (r *rsgroup) Delete(resource_ids []string) error {
-	config := ResourceGroupIDsList{
-		ResourceIDs: resource_ids,
-	}
-	data, err := json.Marshal(config)
-	if err != nil {
-		return err
-	}
-
-	_, err = r.client.makeRequest(http.MethodPost, "/v2/prototype/resources/delete", bytes.NewBuffer(data))
+	// Deletes the resources from a group of the given resource_ids
+	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resources/delete", ResourceGroupIDsList{ResourceIDs: resource_ids})
 	if err != nil {
 		return err
 	}
