@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,6 +18,7 @@ var _ Insights = (*insights)(nil)
 
 type Insights interface {
 	Create(i Insight) (*Insight, error)
+	Edit(i Insight) error
 	Delete(insight_id int) error
 	Get_Insight(insight_id int, insight_source string) (*Insight, error)
 	Get_Insight_7_Days(insight_id int, insight_source string) (map[string]int, error)
@@ -36,7 +36,7 @@ type Insight struct {
 	Description         string          `json:"description"`
 	TemplateID          int             `json:"template_id"`
 	OrgID               int             `json:"organization_id,omitempty"`
-	OwnerResourceID     string          `json:"owner_resource_id,omitempty"`
+	OwnerResourceID     *string         `json:"owner_resource_id"`
 	Severity            int             `json:"severity"`
 	Scopes              []string        `json:"scopes"`
 	Tags                []string        `json:"tags"`
@@ -105,12 +105,7 @@ func (c *insights) Create(i Insight) (*Insight, error) {
 		i.Scopes = make([]string, 0)
 	}
 
-	data, err := json.Marshal(i)
-	if err != nil {
-		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
-	}
-
-	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/insights/create", i)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +116,56 @@ func (c *insights) Create(i Insight) (*Insight, error) {
 	}
 
 	return &ret, nil
+}
+
+func (c *insights) Edit(i Insight) error {
+	current_data, err := c.client.Insights.Get_Insight(i.ID, "custom")
+	if err != nil {
+		return err
+	}
+	fmt.Println(current_data)
+	// Cleanup any missing required fields for update using existing fields
+	if i.Name == "" {
+		i.Name = current_data.Name
+	}
+	if i.Description == "" {
+		i.Description = current_data.Description
+	}
+	if i.ResourceTypes == nil {
+		i.ResourceTypes = current_data.ResourceTypes
+	}
+
+	if i.TemplateID == 0 {
+		i.TemplateID = current_data.TemplateID
+	}
+	if i.Severity == 0 {
+		i.Severity = current_data.Severity
+	}
+	if i.Filters == nil {
+		i.Filters = current_data.Filters
+	}
+
+	// Clean up any empty config and collection fields for filters so they return empty object in json
+	for idx, filter := range i.Filters {
+		if filter.Config == nil {
+			i.Filters[idx].Config = make(map[string]interface{})
+		}
+		if filter.Collections == nil {
+			i.Filters[idx].Collections = make(map[string]interface{})
+		}
+	}
+
+	// Clean up any empty scopes so they return an empty object in json
+	if i.Scopes == nil {
+		i.Scopes = make([]string, 0)
+	}
+
+	_, err = c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/insights/%d/edit", i.ID), i)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *insights) List() ([]Insight, error) {
@@ -140,6 +185,7 @@ func (c *insights) List() ([]Insight, error) {
 
 func (c *insights) Get_Insight(insight_id int, insight_source string) (*Insight, error) {
 	// Returns the specific Insight associated with the Insight ID and the Source provided
+
 	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/insights/%d/%s", insight_id, insight_source), nil)
 	if err != nil {
 		return nil, err

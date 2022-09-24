@@ -4,7 +4,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -298,12 +297,7 @@ func (c *resources) Query(q Query) (Query_Results, error) {
 		validateQueryLimit(q.Limit)
 	}
 
-	data, err := json.Marshal(q)
-	if err != nil {
-		return Query_Results{}, err
-	}
-
-	resp, err := c.client.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", bytes.NewBuffer(data))
+	resp, err := c.client.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", q)
 	if err != nil {
 		return Query_Results{}, err
 	}
@@ -333,17 +327,7 @@ func (c *resources) GetDetails(resource_id string) (Resource_Details, error) {
 
 func (c *resources) SetOwner(resource_ids []string, owner_resource_id string) error {
 	// Given a list of resource ids as strings and an owner_resource_id as string, it sets the given user as the owner of the list
-	data := Set_Resource_Owner_Request{
-		Resource_IDs:      resource_ids,
-		Owner_Resource_ID: owner_resource_id,
-	}
-
-	payload, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	_, err = c.client.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", bytes.NewBuffer(payload))
+	_, err := c.client.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", Set_Resource_Owner_Request{Resource_IDs: resource_ids, Owner_Resource_ID: owner_resource_id})
 	if err != nil {
 		return err
 	}
