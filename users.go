@@ -402,7 +402,7 @@ func (u *users) GetUserByID(user_id int) (UserDetails, error) {
 func (u *users) UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error) {
 	payload, err := json.Marshal(UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level})
 	if err != nil {
-		return err
+		return UserDetails{}, err
 	}
 	resp, err = u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), bytes.NewBuffer(payload))
 	
