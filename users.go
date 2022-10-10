@@ -404,7 +404,7 @@ func (u *users) UpdateUserInfo(user_id int, name string, username string, email 
 	if err != nil {
 		return UserDetails{}, err
 	}
-	resp, err = u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), bytes.NewBuffer(payload))
+	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), bytes.NewBuffer(payload))
 	
 	var ret UserDetails
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
