@@ -27,6 +27,7 @@ type Users interface {
 	DeleteByUsername(username string) error
 	List() (UserList, error)
 	SetConsoleAccess(user_id int, access bool) error
+	UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error)
 }
 
 type users struct {
@@ -134,6 +135,13 @@ type Success struct {
 type ConsoleDeniedRequest struct {
 	UserID string `json:"user_id"`
 	Access bool   `json:"console_access_denied"`
+}
+
+type UserInfoUpdate struct {
+	Username	string `json:"username"`
+	Name 		string `json:"name"`
+	Email		string `json:"email"`
+	AccessLevel 	string `json:"access_level"`
 }
 
 // USER FUNCTIONS
@@ -389,4 +397,19 @@ func (u *users) GetUserByID(user_id int) (UserDetails, error) {
 	}
 
 	return UserDetails{}, fmt.Errorf("[-] ERROR: Found no user with user_id: %d", user_id)
+}
+
+func (u *users) UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error) {
+	payload, err := json.Marshal(UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level})
+	if err != nil {
+		return err
+	}
+	resp, err = u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), bytes.NewBuffer(payload))
+	
+	var ret UserDetails
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UserDetails{}, err
+	}
+
+	return ret, nil
 }
