@@ -16,7 +16,7 @@ type Users interface {
 	CreateSAMLUser(saml_user SAMLUser) (UserDetails, error)
 	CurrentUserInfo() (UserDetails, error)
 	ConvertToAPIOnly(user_id int) (APIKey_Response, error)
-	Get2FAStatus(user_id int32) (UsersMFAStatus, error)
+	Get2FAStatus(user_id int) (UsersMFAStatus, error)
 	GetUserByID(user_id int) (UserDetails, error)
 	GetUserByUsername(username string) (UserDetails, error)
 	Enable2FACurrentUser() (OTP, error)
