@@ -284,7 +284,7 @@ func (u *users) DeleteByUsername(username string) error {
 	//
 	// Example usage: client.DeleteUserByUsername("jdoe")
 
-	users, err := u.List()
+	users, err := u.ListAll()
 	if err != nil {
 		return err
 	}
@@ -403,7 +403,7 @@ func (u *users) DeactivateAPIKeys(user_id int) error {
 }
 
 func (u *users) GetUserByUsername(username string) (UserDetails, error) {
-	listOfUsers, err := u.client.Users.List()
+	listOfUsers, err := u.client.Users.ListAll()
 	if err != nil {
 		return UserDetails{}, err
 	}
@@ -418,7 +418,7 @@ func (u *users) GetUserByUsername(username string) (UserDetails, error) {
 }
 
 func (u *users) GetUserByID(user_id int) (UserDetails, error) {
-	listOfUsers, err := u.client.Users.List()
+	listOfUsers, err := u.client.Users.ListAll()
 	if err != nil {
 		return UserDetails{}, err
 	}

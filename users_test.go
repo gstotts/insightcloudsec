@@ -16,6 +16,12 @@ func TestUsers_List(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
 	})
+	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/DAUsersResponse.json"))
+	})
 
 	resp, err := client.Users.List()
 	assert.NoError(t, err)
@@ -196,6 +202,12 @@ func TestUsers_DeleteByUsername(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
 	})
+	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/DAUsersResponse.json"))
+	})
 	mux.HandleFunc("/v2/prototype/user/divvyuser:2:/delete", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method, "Expected method 'DELETE', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
@@ -341,6 +353,13 @@ func TestUsers_GetUserByUsername(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
 	})
+	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/DAUsersResponse.json"))
+	})
+	
 	user, err := client.Users.GetUserByUsername("bbobb")
 	assert.NoError(t, err)
 	assert.Equal(t, "bbobb", user.Username)
@@ -359,6 +378,13 @@ func TestUsers_GetUserByID(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, getJSONFile("users/listUsersResponse.json"))
 	})
+	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getJSONFile("users/DAUsersResponse.json"))
+	})
+	
 	user, err := client.Users.GetUserByID(9)
 	assert.NoError(t, err)
 	assert.Equal(t, 9, user.ID)
