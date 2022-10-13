@@ -27,6 +27,7 @@ type Users interface {
 	List() (UserList, error)
 	SetConsoleAccess(user_id int, access bool) error
 	UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error)
+	EditAccessLevel(user_id int, current string, desired string) (UserDetails, error)
 }
 
 type users struct {
@@ -141,6 +142,11 @@ type UserInfoUpdate struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	AccessLevel string `json:"access_level"`
+}
+
+type AccessLevelChange struct {
+	Current string `json:"current_access_level"`
+	Desired string `json:"new_access_level"`
 }
 
 // USER FUNCTIONS
@@ -393,6 +399,21 @@ func (u *users) GetUserByID(user_id int) (UserDetails, error) {
 func (u *users) UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error) {
 	payload := UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level}
 	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), payload)
+	if err != nil {
+		return UserDetails{}, err
+	}
+
+	var ret UserDetails
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UserDetails{}, err
+	}
+
+	return ret, nil
+}
+
+func (u *users) EditAccessLevel(user_id int, current string, desired string) (UserDetails, error) {
+	payload := AccessLevelChange{Current: current, Desired: desired}
+	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/user/divvyuser:%d:/edit-access-level", user_id), payload)
 	if err != nil {
 		return UserDetails{}, err
 	}
