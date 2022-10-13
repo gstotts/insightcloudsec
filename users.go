@@ -25,6 +25,8 @@ type Users interface {
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
 	List() (UserList, error)
+	ListDomainAdmins() (UserList, error)
+	ListAll() (UserList, error)
 	SetConsoleAccess(user_id int, access bool) error
 	UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error)
 	EditAccessLevel(user_id int, current string, desired string) (UserDetails, error)
@@ -151,9 +153,9 @@ type AccessLevelChange struct {
 
 // USER FUNCTIONS
 
-func (c *users) List() (UserList, error) {
-	// List all InsightCloudSec users
-	resp, err := c.client.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
+func (u *users) List() (UserList, error) {
+	// List all InsightCloudSec users (non-Domain Admins)
+	resp, err := u.client.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
 	if err != nil {
 		return UserList{}, err
 	}
@@ -166,7 +168,41 @@ func (c *users) List() (UserList, error) {
 	return ret, nil
 }
 
-func (c *users) Create(user User) (UserDetails, error) {
+func (u *users) ListDomainAdmins() (UserList, error) {
+	// List domain admins in InsightCloudSec
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/prototype/domains/admins/list", nil)
+	if err != nil {
+		return UserList{}, err
+	}
+
+	var ret UserList
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return UserList{}, err
+	}
+	ret.Count = len(ret.Users)
+
+	return ret, nil
+}
+
+func (u *users) ListAll() (UserList, error) {
+	//  Return one list of both domain admins and regular users
+	regular_users, err := u.List()
+	if err != nil {
+		return UserList{}, err
+	}
+	domain_admins, err := u.ListDomainAdmins()
+	if err != nil {
+		return UserList{}, err
+	}
+
+	var combined UserList
+	combined.Count = regular_users.Count + domain_admins.Count
+	combined.Users = append(regular_users.Users, domain_admins.Users...)
+
+	return combined, nil
+}
+
+func (u *users) Create(user User) (UserDetails, error) {
 	// Creates an InsightCloudSec User account
 
 	// If required values are empty, return error
@@ -184,7 +220,7 @@ func (c *users) Create(user User) (UserDetails, error) {
 		return UserDetails{}, fmt.Errorf("[-] user.AccessLevel must be one of: BASIC_USER, ORGANIZATION_ADMIN, DOMAIN_VIEWER, or DOMAIN_ADMIN")
 	}
 
-	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/user/create", user)
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", user)
 	if err != nil {
 		return UserDetails{}, err
 	}
@@ -197,7 +233,7 @@ func (c *users) Create(user User) (UserDetails, error) {
 	return ret, nil
 }
 
-func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
+func (u *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 	// Creates an InsightCloudSec API Only User
 
 	if api_user.Username == "" || api_user.Email == "" || api_user.Name == "" {
@@ -206,7 +242,7 @@ func (c *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 
 	api_user.AuthenticationType = "internal"
 
-	resp, err := c.client.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", api_user)
+	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", api_user)
 	if err != nil {
 		return APIUserResponse{}, err
 	}
@@ -243,12 +279,12 @@ func (u *users) Delete(user_resource_id string) error {
 	return nil
 }
 
-func (c *users) DeleteByUsername(username string) error {
+func (u *users) DeleteByUsername(username string) error {
 	// Deletes the user corresponding to the given username.
 	//
 	// Example usage: client.DeleteUserByUsername("jdoe")
 
-	users, err := c.List()
+	users, err := u.List()
 	if err != nil {
 		return err
 	}
@@ -264,7 +300,7 @@ func (c *users) DeleteByUsername(username string) error {
 		return fmt.Errorf("[-] ERROR: Username not found")
 	}
 
-	err = c.Delete(id)
+	err = u.Delete(id)
 	if err != nil {
 		return err
 	}
