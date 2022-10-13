@@ -20,7 +20,7 @@ type Users interface {
 	GetUserByID(user_id int) (UserDetails, error)
 	GetUserByUsername(username string) (UserDetails, error)
 	Enable2FACurrentUser() (OTP, error)
-	Disable2FA(user_id int32) error
+	Disable2FA(user_id int) error
 	DeactivateAPIKeys(user_id int) error
 	Delete(user_resource_id string) error
 	DeleteByUsername(username string) error
@@ -114,7 +114,7 @@ type UserList struct {
 }
 
 type UserIDPayload struct {
-	UserID int32 `json:"user_id,omitempty"`
+	UserID int `json:"user_id,omitempty"`
 }
 
 type UserIDPayloadString struct {
@@ -322,7 +322,7 @@ func (u *users) CurrentUserInfo() (UserDetails, error) {
 	return user, nil
 }
 
-func (u *users) Get2FAStatus(user_id int32) (UsersMFAStatus, error) {
+func (u *users) Get2FAStatus(user_id int) (UsersMFAStatus, error) {
 	// Gets the 2FA status for user of given user_id
 	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_state", UserIDPayload{UserID: user_id})
 	if err != nil {
@@ -350,7 +350,7 @@ func (u *users) Enable2FACurrentUser() (OTP, error) {
 	return ret, nil
 }
 
-func (u *users) Disable2FA(user_id int32) error {
+func (u *users) Disable2FA(user_id int) error {
 	// Disables 2FA for user of given user_id
 	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_disable", UserIDPayload{UserID: user_id})
 	if err != nil {
