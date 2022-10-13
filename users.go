@@ -179,6 +179,7 @@ func (u *users) ListDomainAdmins() (UserList, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return UserList{}, err
 	}
+	ret.Count = len(ret.Users)
 
 	return ret, nil
 }
