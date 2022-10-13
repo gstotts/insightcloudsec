@@ -19,7 +19,7 @@ func TestUsers_List(t *testing.T) {
 	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StastusOK)
+		w.WriteHeader(http.StatusOK)
 	})
 
 	resp, err := client.Users.List()
@@ -349,7 +349,7 @@ func TestUsers_GetUserByUsername(t *testing.T) {
 	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StastusOK)
+		w.WriteHeader(http.StatusOK)
 	})
 	
 	user, err := client.Users.GetUserByUsername("bbobb")
@@ -373,7 +373,7 @@ func TestUsers_GetUserByID(t *testing.T) {
 	mux.HandleFunc("/v2/prototype/domains/admins/list", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method, "Expected method 'POST', got %s", r.Method)
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StastusOK)
+		w.WriteHeader(http.StatusOK)
 	})
 	
 	user, err := client.Users.GetUserByID(9)
