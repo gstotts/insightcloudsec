@@ -1,7 +1,6 @@
 package insightcloudsec
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -138,10 +137,10 @@ type ConsoleDeniedRequest struct {
 }
 
 type UserInfoUpdate struct {
-	Username	string `json:"username"`
-	Name 		string `json:"name"`
-	Email		string `json:"email"`
-	AccessLevel 	string `json:"access_level"`
+	Username    string `json:"username"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	AccessLevel string `json:"access_level"`
 }
 
 // USER FUNCTIONS
@@ -344,11 +343,7 @@ func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
 
 func (u *users) SetConsoleAccess(user_id int, access bool) error {
 	//Sets the console access for given user_id
-	payload, err := json.Marshal(ConsoleDeniedRequest{UserID: strconv.Itoa(user_id), Access: access})
-	if err != nil {
-		return err
-	}
-	_, err = u.client.makeRequest(http.MethodPost, "/v2/public/user/update_console_access", bytes.NewBuffer(payload))
+	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_console_access", ConsoleDeniedRequest{UserID: strconv.Itoa(user_id), Access: access})
 	if err != nil {
 		return err
 	}
@@ -358,11 +353,7 @@ func (u *users) SetConsoleAccess(user_id int, access bool) error {
 
 func (u *users) DeactivateAPIKeys(user_id int) error {
 	// Deactivates the API Keys for user of given user_id
-	payload, err := json.Marshal(UserIDPayloadString{UserID: strconv.Itoa(user_id)})
-	if err != nil {
-		return err
-	}
-	_, err = u.client.makeRequest(http.MethodPost, "/v2/public/apikey/deactivate", bytes.NewBuffer(payload))
+	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/apikey/deactivate", UserIDPayloadString{UserID: strconv.Itoa(user_id)})
 	if err != nil {
 		return err
 	}
@@ -400,12 +391,11 @@ func (u *users) GetUserByID(user_id int) (UserDetails, error) {
 }
 
 func (u *users) UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error) {
-	payload, err := json.Marshal(UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level})
+	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level})
 	if err != nil {
 		return UserDetails{}, err
 	}
-	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), bytes.NewBuffer(payload))
-	
+
 	var ret UserDetails
 	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
 		return UserDetails{}, err
