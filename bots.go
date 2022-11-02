@@ -134,6 +134,10 @@ type BotAction struct {
 	Name            string      `json:"name"`
 }
 
+type BotActionResults struct {
+
+}
+
 // RESOURCE FUNCTIONS
 ///////////////////////////////////////////
 
@@ -205,7 +209,22 @@ func (s *bots) GetBotByID(id string) (BotResults, error) {
 	return ret, nil
 }
 
+func (c Client) ListBotActions() (BotActionResults, error) {
+	resp, err := c.makeRequest(http.MethodGet, "/v2/public/botfactory/function-registry/list", nil)
+	if err != nil {
+		return BotActionResults{}, err
+	}
+
+	var ret BotActionResults
+	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+		return BotActionResults{}, err
+	}
+
+	return ret, nil
+}
+
 func validateBot(b Bot) error {
+	// Function validates the severity and categories of a bot are valid prior to creation.
 	if !isInSlice(b.Severity, BOT_SEVERITY_RANGES) {
 		return fmt.Errorf("[-] ERROR: Bot Severity must be one of %s", BOT_SEVERITY_RANGES)
 	}
