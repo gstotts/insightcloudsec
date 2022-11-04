@@ -48,13 +48,13 @@ type FilterRegistryConfig_Choices struct {
 
 func (f *filters) Get_Registry() (map[string]FilterRegistryResult, error) {
 	// Returns a map of filter registry results
-	resp, err := f.client.makeRequest(http.MethodGet, "/v2/public/insights/filter-registry", nil)
+	body, err := f.client.makeRequest(http.MethodGet, "/v2/public/insights/filter-registry", nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var fr map[string]FilterRegistryResult
-	if err := json.NewDecoder(resp.Body).Decode(&fr); err != nil {
+	if err := json.Unmarshal(body, &fr); err != nil {
 		return nil, err
 	}
 

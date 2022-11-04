@@ -26,14 +26,8 @@ func setup() {
 	server = httptest.NewServer(mux)
 
 	// Configure client to use with test server
-
-	test_config := Config{
-		BaseURL:    server.URL,
-		ApiKey:     "whoami",
-		Headers:    map[string][]string{},
-		HTTPClient: &http.Client{},
-	}
-	client, _ = NewClient(&test_config)
+	apikey := "whoami"
+	client, _ = NewClient(&server.URL, nil, nil, &apikey)
 }
 
 func teardown() {

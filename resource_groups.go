@@ -46,13 +46,13 @@ type ResourcesToGroup struct {
 
 func (r *rsgroup) Create(name string, description string) (ResourceGroup, error) {
 	// Creates a resource group of given name and description
-	resp, err := r.client.makeRequest(http.MethodPost, "/v2/public/resourcegroup/create", ResourceGroupConifg{Name: name, Description: description, OwnerType: "organization"})
+	body, err := r.client.makeRequest(http.MethodPost, "/v2/public/resourcegroup/create", ResourceGroupConifg{Name: name, Description: description, OwnerType: "organization"}, nil)
 	if err != nil {
 		return ResourceGroup{}, err
 	}
 
 	var ret ResourceGroup
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return ResourceGroup{}, err
 	}
 
@@ -61,7 +61,7 @@ func (r *rsgroup) Create(name string, description string) (ResourceGroup, error)
 
 func (r *rsgroup) AddToGroup(resource_ids []string, group_id string) error {
 	// Adds given resource_ids to the given resource group
-	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/resources/add", ResourcesToGroup{ResourceGroupIDs: []string{group_id}, ResourceIDs: resource_ids})
+	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resourcegroups/resources/add", ResourcesToGroup{ResourceGroupIDs: []string{group_id}, ResourceIDs: resource_ids}, nil)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (r *rsgroup) AddToGroup(resource_ids []string, group_id string) error {
 
 func (r *rsgroup) Delete(resource_ids []string) error {
 	// Deletes the resources from a group of the given resource_ids
-	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resources/delete", ResourceGroupIDsList{ResourceIDs: resource_ids})
+	_, err := r.client.makeRequest(http.MethodPost, "/v2/prototype/resources/delete", ResourceGroupIDsList{ResourceIDs: resource_ids}, nil)
 	if err != nil {
 		return err
 	}

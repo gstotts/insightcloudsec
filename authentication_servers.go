@@ -31,13 +31,13 @@ type AuthenticationServersList struct {
 }
 
 func (s *authServers) List() (AuthenticationServersList, error) {
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil, nil)
 	if err != nil {
 		return AuthenticationServersList{}, err
 	}
 
 	var ret AuthenticationServersList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return AuthenticationServersList{}, err
 	}
 

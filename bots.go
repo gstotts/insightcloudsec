@@ -143,13 +143,13 @@ func (s *bots) Create(bot_data Bot) (BotResults, error) {
 		return BotResults{}, nil
 	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/bot/create", bot_data)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/bot/create", bot_data, nil)
 	if err != nil {
 		return BotResults{}, err
 	}
 
 	var ret BotResults
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return BotResults{}, err
 	}
 
@@ -161,13 +161,13 @@ func (s *bots) List() (BotList, error) {
 	default_body["filters"] = []string{}
 	default_body["offset"] = 0
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/list", default_body)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/public/botfactory/list", default_body, nil)
 	if err != nil {
 		return BotList{}, err
 	}
 
 	var ret BotList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return BotList{}, err
 	}
 
@@ -175,30 +175,30 @@ func (s *bots) List() (BotList, error) {
 }
 
 func (s *bots) ArchiveBot(id string) error {
-	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/archive", id), nil)
+	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/archive", id), nil, nil)
 	return err
 }
 
 func (s *bots) PauseBot(id string) error {
 	// Function pauses the bot of the given Resource ID and returns error if failed
-	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/pause", id), nil)
+	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/pause", id), nil, nil)
 	return err
 }
 
 func (s *bots) EnableBot(id string) error {
 	// Function enables the both of the given Resource ID and returns error if failed
-	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/resume", id), nil)
+	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/resume", id), nil, nil)
 	return err
 }
 
 func (s *bots) GetBotByID(id string) (BotResults, error) {
-	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/get", id), nil)
+	body, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/botfactory/%s/get", id), nil, nil)
 	if err != nil {
 		return BotResults{}, err
 	}
 
 	var ret BotResults
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return BotResults{}, err
 	}
 

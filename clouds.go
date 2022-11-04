@@ -228,13 +228,13 @@ func (s *clouds) AddAWSCloud(cloud_data AWSCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data, nil)
 	if err != nil {
 		return Cloud{}, err
 	}
 
 	var ret Cloud
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Cloud{}, err
 	}
 
@@ -247,13 +247,13 @@ func (s *clouds) AddAzureCloud(cloud_data AzureCloudAccount) (Cloud, error) {
 		return Cloud{}, err
 	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data, nil)
 	if err != nil {
 		return Cloud{}, err
 	}
 
 	var ret Cloud
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Cloud{}, err
 	}
 
@@ -267,13 +267,13 @@ func (s *clouds) AddGCPCloud(cloud_data GCPCloudAccount) (Cloud, error) {
 
 	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data)
+	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/cloud/add", cloud_data, nil)
 	if err != nil {
 		return Cloud{}, err
 	}
 
 	var ret Cloud
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Cloud{}, err
 	}
 
@@ -300,13 +300,13 @@ func (s *clouds) Update(id int, cloud_data CloudAccountParameters) (Cloud, error
 		return Cloud{}, fmt.Errorf("[-] ERROR: Invalid cloud type to update: %s", cloud_data.CloudType)
 	}
 
-	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), cloud_data)
+	body, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/cloud/%d/update", id), cloud_data, nil)
 	if err != nil {
 		return Cloud{}, err
 	}
 
 	var ret Cloud
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Cloud{}, err
 	}
 
@@ -373,8 +373,8 @@ func validateGCPCloud(cloud_data GCPCloudAccount) error {
 }
 
 func (s *clouds) Delete(cloud_resource_id string) error {
-	resp, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/%s/delete", cloud_resource_id), nil)
-	if err != nil || resp.StatusCode != 200 {
+	_, err := s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/%s/delete", cloud_resource_id), nil, nil)
+	if err != nil {
 		return err
 	}
 
@@ -386,13 +386,13 @@ func (s *clouds) Delete(cloud_resource_id string) error {
 
 func (s *clouds) List() (CloudList, error) {
 	// Return a CloudList item containing all the clouds from the API.
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/list", nil, nil)
 	if err != nil {
 		return CloudList{}, err
 	}
 
 	var ret CloudList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return CloudList{}, err
 	}
 
@@ -429,13 +429,13 @@ func (s *clouds) GetByID(id int) (Cloud, error) {
 
 func (s *clouds) ListTypes() (CloudTypesList, error) {
 	// Returns a CloudTypesList item containing all the cloud types from the API.
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/public/cloudtypes/list", nil, nil)
 	if err != nil {
 		return CloudTypesList{}, err
 	}
 
 	var ret CloudTypesList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return CloudTypesList{}, err
 	}
 
@@ -444,13 +444,13 @@ func (s *clouds) ListTypes() (CloudTypesList, error) {
 
 func (s *clouds) ListProvisioningClouds() (CloudList, error) {
 	// Returns a list of provisioning clouds.
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/provisioning/list", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/public/clouds/provisioning/list", nil, nil)
 	if err != nil {
 		return CloudList{}, err
 	}
 
 	var ret CloudList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return CloudList{}, err
 	}
 	return ret, nil
@@ -458,13 +458,13 @@ func (s *clouds) ListProvisioningClouds() (CloudList, error) {
 
 func (s *clouds) QueueStatus() (QueueStatus, error) {
 	// Returns the queue status statistics.
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/queues/status/get", nil, nil)
 	if err != nil {
 		return QueueStatus{}, err
 	}
 
 	var ret QueueStatus
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return QueueStatus{}, err
 	}
 	return ret, nil
@@ -472,13 +472,13 @@ func (s *clouds) QueueStatus() (QueueStatus, error) {
 
 func (s *clouds) SystemStatus() (SystemStatus, error) {
 	// Returns the system status diagnostics as a map[string]interface{}
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/system/status/get", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/prototype/diagnostics/system/status/get", nil, nil)
 	if err != nil {
 		return SystemStatus{}, err
 	}
 
 	var ret SystemStatus
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return SystemStatus{}, err
 	}
 	return ret, nil
@@ -486,13 +486,13 @@ func (s *clouds) SystemStatus() (SystemStatus, error) {
 
 func (s *clouds) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 	// Returns a HarvestingStrategyList item containing all the cloud harvesting strategies from the API.
-	resp, err := s.client.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil)
+	body, err := s.client.makeRequest(http.MethodGet, "/v2/harvestingstrategy/strategy", nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var ret HarvestingStrategyList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return nil, err
 	}
 
@@ -502,12 +502,12 @@ func (s *clouds) ListHarvestingStrategies() ([]HarvestingStrategy, error) {
 func (s *clouds) ListRegions(target Cloud) (CloudRegionList, error) {
 	// Returns a CloudRegionList for the given Cloud.
 	var ret CloudRegionList
-	resp, err := s.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil)
+	body, err := s.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/cloud/%s/regions/list", target.ResourceID), nil, nil)
 	if err != nil {
 		return CloudRegionList{}, err
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return CloudRegionList{}, err
 	}
 
@@ -531,7 +531,7 @@ func (s *clouds) DisableRegionByName(target Cloud, region string) error {
 		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
 	}
 
-	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/disable", resource_id), nil)
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/disable", resource_id), nil, nil)
 	if err != nil {
 		return err
 	}
@@ -555,7 +555,7 @@ func (s *clouds) EnableRegionByName(target Cloud, region string) error {
 		return fmt.Errorf("[-] ERROR: Region Named %s Not Found", region)
 	}
 
-	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/enable", resource_id), nil)
+	_, err = s.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/cloud/region/%s/enable", resource_id), nil, nil)
 	if err != nil {
 		return err
 	}
@@ -572,7 +572,7 @@ func setHarvestingStatus(target Cloud, status string) map[string]interface{} {
 }
 
 func (s *clouds) PauseHarvesting(target Cloud) error {
-	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "PAUSED"))
+	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "PAUSED"), nil)
 	if err != nil {
 		return err
 	}
@@ -582,7 +582,7 @@ func (s *clouds) PauseHarvesting(target Cloud) error {
 
 func (s *clouds) ResumeHarvesting(target Cloud) error {
 
-	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "DEFAULT"))
+	_, err := s.client.makeRequest(http.MethodPost, "/v2/public/clouds/status/set", setHarvestingStatus(target, "DEFAULT"), nil)
 	if err != nil {
 		return err
 	}

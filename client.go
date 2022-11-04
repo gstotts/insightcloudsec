@@ -3,43 +3,22 @@ package insightcloudsec
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
-	"net/url"
-	"os"
+	"time"
 )
 
-const (
-	_userAgent = "insightcloudsec-client"
-)
+const HostURL string = "http://localhost:8001"
 
-// Config provides configuration details to the client
-
-type Config struct {
-	BaseURL    string
-	ApiKey     string
-	Headers    http.Header
-	HTTPClient *http.Client
-}
-
-// DefaultConfig returns a default configuration structure
-
-func DefaultConfig() *Config {
-	config := &Config{
-		BaseURL:    os.Getenv("INSIGHTCLOUDSEC_BASE_URL"),
-		ApiKey:     os.Getenv("INSIGHTCLOUDSEC_API_KEY"),
-		HTTPClient: http.DefaultClient,
-	}
-
-	return config
-}
-
-// Client is the InsightCloudSec API client.
-
+// Client
 type Client struct {
-	baseURL *url.URL
-	apikey  string
-	http    *http.Client
+	HostURL    string
+	HTTPClient *http.Client
+	Token      string
+	APIKey     string
+	Auth       AuthStruct
 
 	AuthenticationServers AuthenticationServers
 	Badges                Badges
@@ -53,91 +32,148 @@ type Client struct {
 	Users                 Users
 }
 
-// NewClient creates a new InsightCloudSec API client
-func NewClient(cfg *Config) (*Client, error) {
-	config := DefaultConfig()
-
-	if cfg != nil {
-		if cfg.BaseURL != "" {
-			config.BaseURL = cfg.BaseURL
-		}
-		if cfg.ApiKey != "" {
-			config.ApiKey = cfg.ApiKey
-		}
-		for k, v := range cfg.Headers {
-			config.Headers[k] = v
-		}
-		if cfg.HTTPClient != nil {
-			config.HTTPClient = cfg.HTTPClient
-		}
-	}
-
-	baseURL, err := url.Parse(config.BaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("invalid baseURL address: %w", err)
-	}
-
-	if config.ApiKey == "" {
-		return nil, fmt.Errorf("missing API token")
-	}
-
-	client := &Client{
-		baseURL: baseURL,
-		apikey:  config.ApiKey,
-		http:    config.HTTPClient,
-	}
-
-	client.AuthenticationServers = &authServers{client: client}
-	client.Badges = &badges{client: client}
-	client.Bots = &bots{client: client}
-	client.Clouds = &clouds{client: client}
-	client.Filters = &filters{client: client}
-	client.Insights = &insights{client: client}
-	client.Users = &users{client: client}
-	client.Organizations = &orgs{client: client}
-	client.Resources = &resources{client: client}
-	client.ResourceGroups = &rsgroup{client: client}
-	return client, nil
+type AuthStruct struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
-func (c Client) makeRequest(method, path string, data interface{}) (*http.Response, error) {
+type AuthResponse struct {
+	UserID           int    `json:"user_id"`
+	Name             string `json:"user_name"`
+	Email            string `json:"user_email"`
+	SessionID        string `json:"session_id"`
+	Timeout          int    `json:"session_timeout"`
+	DomainAdmin      bool   `json:"domain_admin"`
+	CustomerID       string `json:"customer_id"`
+	DomainViewer     bool   `json:"domain_veiwer"`
+	AuthPluginExists bool   `json:"auth_plugin_exists"`
+}
 
-	// Marshall json if data is not nil
-	byte_data, err := json.Marshal(data)
-	if err != nil {
-		return nil, fmt.Errorf("[-] ERROR: Marshal error: %s", err)
+type APIErrorResponse struct {
+	ErrorMessage string `json:"error_message"`
+	ErrorType    string `json:"error_type"`
+	Traceback    string `json:"traceback"`
+}
+
+// NewClient
+func NewClient(host, username, pass, apikey *string) (*Client, error) {
+	c := Client{
+		HTTPClient: &http.Client{Timeout: 30 * time.Second},
+		HostURL:    HostURL,
 	}
 
-	req, err := http.NewRequest(
-		method,
-		fmt.Sprintf("%s%s", c.baseURL, path),
-		bytes.NewBuffer(byte_data),
-	)
+	if host != nil {
+		c.HostURL = *host
+	}
+
+	if apikey != nil {
+		c.APIKey = *apikey
+	}
+
+	if username == nil || pass == nil {
+		return &c, nil
+	}
+
+	c.Auth = AuthStruct{
+		Username: *username,
+		Password: *pass,
+	}
+
+	resp, err := c.Login()
 	if err != nil {
 		return nil, err
 	}
+
+	c.Token = resp.SessionID
+	c.AuthenticationServers = &authServers{client: &c}
+	c.Badges = &badges{client: &c}
+	c.Bots = &bots{client: &c}
+	c.Clouds = &clouds{client: &c}
+	c.Filters = &filters{client: &c}
+	c.Insights = &insights{client: &c}
+	c.Users = &users{client: &c}
+	c.Organizations = &orgs{client: &c}
+	c.Resources = &resources{client: &c}
+	c.ResourceGroups = &rsgroup{client: &c}
+	return &c, nil
+}
+
+// Login to InsightCloudSec
+func (c *Client) Login() (*AuthResponse, error) {
+
+	// Verify AuthStruct is not blank
+	if c.Auth.Username == "" || c.Auth.Password == "" {
+		return nil, fmt.Errorf("missing username and password")
+	}
+
+	// Make request
+	body, err := c.makeRequest(http.MethodPost, "/v2/public/user/login", c.Auth, nil)
+	if err != nil {
+		return nil, errors.New("unable to login")
+	}
+
+	// Unmarshal data
+	resp := AuthResponse{}
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *Client) makeRawRequest(method, path string, data interface{}, authtoken *string) (*http.Response, error) {
+
+	// Set token
+	token := c.Token
+	if authtoken != nil {
+		token = *authtoken
+	}
+
+	// Marshal Data for Payload
+	byte_data, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build Request
+	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", c.HostURL, path), bytes.NewBuffer(byte_data))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-Auth-Token", token)
+	req.Header.Set("API-Key", c.APIKey)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Api-Key", c.apikey)
-	req.Header.Set("User-Agent", _userAgent)
+	req.Header.Set("User-Agent", "insightcloudsec-client-go")
 
-	resp, err := c.http.Do(req)
-	if err != nil || (resp.StatusCode >= 300) {
-		return nil, APIRequestError{
-			Request:    *req,
-			StatusCode: resp.StatusCode,
-			Message:    resp.Status,
-		}
+	// Get Response
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
 	}
 
 	return resp, nil
 }
 
-func (c Client) Close() error {
-	_, err := c.makeRequest(http.MethodPost, "/v2/public/user/logout", nil)
+func (c *Client) makeRequest(method, path string, data interface{}, authtoken *string) ([]byte, error) {
+
+	resp, err := c.makeRawRequest(method, path, data, authtoken)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var api_error APIErrorResponse
+		_ = json.Unmarshal(body, &api_error)
+		return nil, fmt.Errorf("\n      HTTP Status: %d,\n   API Error Type: %s,\nAPI Error Message: %s", resp.StatusCode, api_error.ErrorType, api_error.ErrorMessage)
+	}
+
+	return body, err
 }

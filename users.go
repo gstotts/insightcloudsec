@@ -155,13 +155,13 @@ type AccessLevelChange struct {
 
 func (u *users) List() (UserList, error) {
 	// List all InsightCloudSec users (non-Domain Admins)
-	resp, err := u.client.makeRequest(http.MethodGet, "/v2/public/users/list", nil)
+	body, err := u.client.makeRequest(http.MethodGet, "/v2/public/users/list", nil, nil)
 	if err != nil {
 		return UserList{}, err
 	}
 
 	var ret UserList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserList{}, err
 	}
 
@@ -170,13 +170,13 @@ func (u *users) List() (UserList, error) {
 
 func (u *users) ListDomainAdmins() (UserList, error) {
 	// List domain admins in InsightCloudSec
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/prototype/domains/admins/list", nil)
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/prototype/domains/admins/list", nil, nil)
 	if err != nil {
 		return UserList{}, err
 	}
 
 	var ret UserList
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserList{}, err
 	}
 	ret.Count = len(ret.Users)
@@ -220,13 +220,13 @@ func (u *users) Create(user User) (UserDetails, error) {
 		return UserDetails{}, fmt.Errorf("[-] user.AccessLevel must be one of: BASIC_USER, ORGANIZATION_ADMIN, DOMAIN_VIEWER, or DOMAIN_ADMIN")
 	}
 
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", user)
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", user, nil)
 	if err != nil {
 		return UserDetails{}, err
 	}
 
 	var ret UserDetails
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserDetails{}, err
 	}
 
@@ -242,12 +242,12 @@ func (u *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 
 	api_user.AuthenticationType = "internal"
 
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", api_user)
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create_api_only_user", api_user, nil)
 	if err != nil {
 		return APIUserResponse{}, err
 	}
 	var ret APIUserResponse
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return APIUserResponse{}, err
 	}
 	return ret, nil
@@ -255,13 +255,13 @@ func (u *users) CreateAPIUser(api_user APIUser) (APIUserResponse, error) {
 
 func (u *users) CreateSAMLUser(saml_user SAMLUser) (UserDetails, error) {
 	// Creates a SAML User
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", saml_user)
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/create", saml_user, nil)
 	if err != nil {
 		return UserDetails{}, err
 	}
 
 	var ret UserDetails
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserDetails{}, err
 	}
 	return ret, err
@@ -272,8 +272,8 @@ func (u *users) Delete(user_resource_id string) error {
 	//
 	// Example usage:  client.DeleteUser("divvyuser:7")
 
-	resp, err := u.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil)
-	if err != nil || resp.StatusCode != 200 {
+	_, err := u.client.makeRequest(http.MethodDelete, fmt.Sprintf("/v2/prototype/user/%s/delete", user_resource_id), nil, nil)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -309,28 +309,28 @@ func (u *users) DeleteByUsername(username string) error {
 }
 
 func (u *users) CurrentUserInfo() (UserDetails, error) {
-	resp, err := u.client.makeRequest(http.MethodGet, "/v2/public/user/info", nil)
+	body, err := u.client.makeRequest(http.MethodGet, "/v2/public/user/info", nil, nil)
 	if err != nil {
 		return UserDetails{}, err
 	}
 
-	var user UserDetails
-	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+	var ret UserDetails
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserDetails{}, err
 	}
 
-	return user, nil
+	return ret, nil
 }
 
 func (u *users) Get2FAStatus(user_id int) (UsersMFAStatus, error) {
 	// Gets the 2FA status for user of given user_id
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_state", UserIDPayload{UserID: user_id})
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_state", UserIDPayload{UserID: user_id}, nil)
 	if err != nil {
 		return UsersMFAStatus{}, err
 	}
 
 	var ret UsersMFAStatus
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UsersMFAStatus{}, err
 	}
 
@@ -339,12 +339,12 @@ func (u *users) Get2FAStatus(user_id int) (UsersMFAStatus, error) {
 
 func (u *users) Enable2FACurrentUser() (OTP, error) {
 	// Enables 2FA for current user
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_enable", nil)
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_enable", nil, nil)
 	if err != nil {
 		return OTP{}, err
 	}
 	var ret OTP
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return OTP{}, err
 	}
 	return ret, nil
@@ -352,13 +352,13 @@ func (u *users) Enable2FACurrentUser() (OTP, error) {
 
 func (u *users) Disable2FA(user_id int) error {
 	// Disables 2FA for user of given user_id
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_disable", UserIDPayload{UserID: user_id})
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/tfa_disable", UserIDPayload{UserID: user_id}, nil)
 	if err != nil {
 		return err
 	}
 
 	var ret Success
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return err
 	}
 
@@ -371,13 +371,13 @@ func (u *users) Disable2FA(user_id int) error {
 
 func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
 	// Converts user of given user_id to API Only User
-	resp, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_to_api_only_user", UserIDPayloadString{UserID: strconv.Itoa(user_id)})
+	body, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_to_api_only_user", UserIDPayloadString{UserID: strconv.Itoa(user_id)}, nil)
 	if err != nil {
 		return APIKey_Response{}, err
 	}
 
 	var ret APIKey_Response
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return APIKey_Response{}, err
 	}
 	return ret, nil
@@ -385,7 +385,7 @@ func (u *users) ConvertToAPIOnly(user_id int) (APIKey_Response, error) {
 
 func (u *users) SetConsoleAccess(user_id int, access bool) error {
 	//Sets the console access for given user_id
-	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_console_access", ConsoleDeniedRequest{UserID: strconv.Itoa(user_id), Access: access})
+	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/user/update_console_access", ConsoleDeniedRequest{UserID: strconv.Itoa(user_id), Access: access}, nil)
 	if err != nil {
 		return err
 	}
@@ -395,7 +395,7 @@ func (u *users) SetConsoleAccess(user_id int, access bool) error {
 
 func (u *users) DeactivateAPIKeys(user_id int) error {
 	// Deactivates the API Keys for user of given user_id
-	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/apikey/deactivate", UserIDPayloadString{UserID: strconv.Itoa(user_id)})
+	_, err := u.client.makeRequest(http.MethodPost, "/v2/public/apikey/deactivate", UserIDPayloadString{UserID: strconv.Itoa(user_id)}, nil)
 	if err != nil {
 		return err
 	}
@@ -434,13 +434,13 @@ func (u *users) GetUserByID(user_id int) (UserDetails, error) {
 
 func (u *users) UpdateUserInfo(user_id int, name string, username string, email string, access_level string) (UserDetails, error) {
 	payload := UserInfoUpdate{Name: name, Username: username, Email: email, AccessLevel: access_level}
-	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), payload)
+	body, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/prototype/user/divvyuser:%d:/update", user_id), payload, nil)
 	if err != nil {
 		return UserDetails{}, err
 	}
 
 	var ret UserDetails
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserDetails{}, err
 	}
 
@@ -449,13 +449,13 @@ func (u *users) UpdateUserInfo(user_id int, name string, username string, email 
 
 func (u *users) EditAccessLevel(user_id int, current string, desired string) (UserDetails, error) {
 	payload := AccessLevelChange{Current: current, Desired: desired}
-	resp, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/user/divvyuser:%d:/edit-access-level", user_id), payload)
+	body, err := u.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/user/divvyuser:%d:/edit-access-level", user_id), payload, nil)
 	if err != nil {
 		return UserDetails{}, err
 	}
 
 	var ret UserDetails
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return UserDetails{}, err
 	}
 

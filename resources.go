@@ -297,13 +297,13 @@ func (c *resources) Query(q Query) (Query_Results, error) {
 		validateQueryLimit(q.Limit)
 	}
 
-	resp, err := c.client.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", q)
+	body, err := c.client.makeRequest(http.MethodPost, "/v3/public/resource/etl-query", nil, nil)
 	if err != nil {
 		return Query_Results{}, err
 	}
 
 	var ret Query_Results
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Query_Results{}, err
 	}
 
@@ -312,13 +312,13 @@ func (c *resources) Query(q Query) (Query_Results, error) {
 
 func (c *resources) GetDetails(resource_id string) (Resource_Details, error) {
 	// Given a resource_id as a string, it returns the resource details and dependencies
-	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil)
+	body, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/detail", resource_id), nil, nil)
 	if err != nil {
 		return Resource_Details{}, err
 	}
 
 	var ret Resource_Details
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Resource_Details{}, err
 	}
 
@@ -327,7 +327,7 @@ func (c *resources) GetDetails(resource_id string) (Resource_Details, error) {
 
 func (c *resources) SetOwner(resource_ids []string, owner_resource_id string) error {
 	// Given a list of resource ids as strings and an owner_resource_id as string, it sets the given user as the owner of the list
-	_, err := c.client.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", Set_Resource_Owner_Request{Resource_IDs: resource_ids, Owner_Resource_ID: owner_resource_id})
+	_, err := c.client.makeRequest(http.MethodPost, "/v2/public/resource/owner/set", Set_Resource_Owner_Request{Resource_IDs: resource_ids, Owner_Resource_ID: owner_resource_id}, nil)
 	if err != nil {
 		return err
 	}
@@ -336,13 +336,13 @@ func (c *resources) SetOwner(resource_ids []string, owner_resource_id string) er
 }
 
 func (c *resources) GetAssociations(resource_id string) (Resource_Associations, error) {
-	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/associations/get", resource_id), nil)
+	body, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/associations/get", resource_id), nil, nil)
 	if err != nil {
 		return Resource_Associations{}, err
 	}
 
 	var ret Resource_Associations
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Resource_Associations{}, nil
 	}
 
@@ -350,26 +350,26 @@ func (c *resources) GetAssociations(resource_id string) (Resource_Associations, 
 }
 
 func (c *resources) ListTags(resource_id string) ([]Tag, error) {
-	resp, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil)
+	body, err := c.client.makeRequest(http.MethodGet, fmt.Sprintf("/v2/public/resource/%s/tags/list", resource_id), nil, nil)
 	if err != nil {
 		return []Tag{}, err
 	}
 
 	var ret Tags_Response
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return []Tag{}, nil
 	}
 	return ret.Tags, nil
 }
 
 func (c *resources) List_Settings(resource_id string) (Resource_Settings, error) {
-	resp, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/settings/list", resource_id), nil)
+	body, err := c.client.makeRequest(http.MethodPost, fmt.Sprintf("/v2/public/resource/%s/settings/list", resource_id), nil, nil)
 	if err != nil {
 		return Resource_Settings{}, err
 	}
 
 	var ret Resource_Settings
-	if err := json.NewDecoder(resp.Body).Decode(&ret); err != nil {
+	if err := json.Unmarshal(body, &ret); err != nil {
 		return Resource_Settings{}, nil
 	}
 	return ret, nil
