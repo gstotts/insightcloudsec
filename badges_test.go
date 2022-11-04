@@ -10,7 +10,7 @@ import (
 )
 
 func TestBadges_createBadgesFromMap(t *testing.T) {
-	want := []Badge{
+	want := &[]Badge{
 		{
 			Key:            "SKU",
 			Value:          "1234-1234-1234444",
@@ -97,7 +97,7 @@ func TestBadgges_ListResourceBadges(t *testing.T) {
 	})
 
 	list, err := client.Badges.ListResourceBadges("divvyorganizationservice:1")
-	want := []Badge{
+	want := &[]Badge{
 		{
 			Key:            "BadgeKey1",
 			Value:          "BadgeValue1",
@@ -124,7 +124,7 @@ func TestBadgges_ListCloudsWithBadges(t *testing.T) {
 	})
 
 	list, err := client.Badges.ListCloudsWithBadges(nil)
-	want := []CloudBadges{
+	want := &[]CloudBadges{
 		{
 			Resource_ID: "divvyorganizationservice:1",
 			Name:        "lonestar",
@@ -153,7 +153,7 @@ func TestBadgges_ListResourceBadgeCount(t *testing.T) {
 	})
 
 	list, err := client.Badges.ListResourceBadgeCount([]string{"divvyorganizationservice:3"})
-	want := Resource_Count{
+	want := &Resource_Count{
 		Resource_Count: []BadgeResourceCount{
 			{
 				Resource_ID: "divvyorganizationservice:3",

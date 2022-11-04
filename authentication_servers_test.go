@@ -18,7 +18,7 @@ func TestAuthServers_List(t *testing.T) {
 	})
 
 	resp, err := client.AuthenticationServers.List()
-	want := AuthenticationServersList{
+	want := &AuthenticationServersList{
 		Servers: []AuthenticationServer{
 			{
 				ID:           1,
