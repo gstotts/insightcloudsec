@@ -17,7 +17,7 @@ func TestAuthServers_List(t *testing.T) {
 		fmt.Fprint(w, getJSONFile("authServers/list.json"))
 	})
 
-	resp, err := &client.AuthenticationServers.List()
+	resp, err := client.AuthenticationServers.List()
 	want := AuthenticationServersList{
 		Servers: []AuthenticationServer{
 			{
