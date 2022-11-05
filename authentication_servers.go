@@ -41,5 +41,5 @@ func (s *authServers) List() (AuthenticationServersList, error) {
 		return AuthenticationServersList{}, err
 	}
 
-	return &ret, nil
+	return ret, nil
 }
