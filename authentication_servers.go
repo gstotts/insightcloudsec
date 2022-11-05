@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-var _ AuthenticationServers = (authServers)
+var _ AuthenticationServers = (*authServers)(nil)
 
 type AuthenticationServers interface {
-	List() (AuthenticationServersList, error)
+	List() (*AuthenticationServersList, error)
 }
 
 type authServers struct {
@@ -30,16 +30,16 @@ type AuthenticationServersList struct {
 	Servers []AuthenticationServer `json:"servers"`
 }
 
-func (s authServers) List() (AuthenticationServersList, error) {
+func (s *authServers) List() (*AuthenticationServersList, error) {
 	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil, nil)
 	if err != nil {
-		return AuthenticationServersList{}, err
+		return &AuthenticationServersList{}, err
 	}
 
 	var ret AuthenticationServersList
 	if err := json.Unmarshal(body, &ret); err != nil {
-		return AuthenticationServersList{}, err
+		return &AuthenticationServersList{}, err
 	}
 
-	return ret, nil
+	return &ret, nil
 }
