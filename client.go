@@ -85,7 +85,7 @@ func NewClient(host, username, pass, apikey *string) (*Client, error) {
 	}
 
 	c.Token = resp.SessionID
-	c.AuthenticationServers = &authServers{client: &c}
+	c.AuthenticationServers = authServers{client: &c}
 	c.Badges = &badges{client: &c}
 	c.Bots = &bots{client: &c}
 	c.Clouds = &clouds{client: &c}
