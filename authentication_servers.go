@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var _ AuthenticationServers = (authServers)(nil)
+var _ AuthenticationServers = (authServers)
 
 type AuthenticationServers interface {
 	List() (AuthenticationServersList, error)
