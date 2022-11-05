@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var _ AuthenticationServers = (*authServers)(nil)
+var _ AuthenticationServers = (&authServers)(nil)
 
 type AuthenticationServers interface {
 	List() (AuthenticationServersList, error)
@@ -30,7 +30,7 @@ type AuthenticationServersList struct {
 	Servers []AuthenticationServer `json:"servers"`
 }
 
-func (s *authServers) List() (*AuthenticationServersList, error) {
+func (s authServers) List() (AuthenticationServersList, error) {
 	body, err := s.client.makeRequest(http.MethodPost, "/v2/prototype/authenticationservers/list", nil, nil)
 	if err != nil {
 		return &AuthenticationServersList{}, err
