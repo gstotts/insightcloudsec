@@ -45,6 +45,7 @@ type Client struct {
 	Badges                Badges
 	Bots                  Bots
 	Clouds                Clouds
+	CloudOrgs             CloudOrganizations
 	Filters               Filters
 	Insights              Insights
 	Organizations         Organizations
@@ -97,6 +98,7 @@ func NewClient(cfg *Config) (*Client, error) {
 	client.Organizations = &orgs{client: client}
 	client.Resources = &resources{client: client}
 	client.ResourceGroups = &rsgroup{client: client}
+	client.CloudOrgs = &corgs{client: client}
 	return client, nil
 }
 
